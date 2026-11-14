@@ -15,8 +15,13 @@ Method:
     follows the scipy convention: median(y) - slope_per_year * median(x).
     Missing values (None/NaN and the int16 fill -32768) are skipped.
 
-Also writes the tiny worked-example tile from docs/GRID_FORMAT.md section 9.4
-and the minimal index.json needed to exercise it.
+Also writes the tiny worked-example tile from docs/GRID_FORMAT.md section 9.4,
+the minimal index.json needed to exercise it, a 42-year inference tile, and the
+inference cases file used by the TypeScript tests.
+
+The inference cases are illustrative placeholders in the agreed shape, not
+computed science. The notes in that file say so; do not copy those numbers into
+results.
 
 Run from the repository root:
     python scripts/make_stats_fixtures.py
@@ -37,6 +42,12 @@ ROOT = Path(__file__).resolve().parents[1]
 OUT_DIR = ROOT / "frontend" / "src" / "lib" / "__fixtures__"
 GRID_OUT_DIR = OUT_DIR / "grid"
 FILL = -32768
+
+INFERENCE_METHOD = "MK + Hamed-Rao (3 lags)"
+SLOPE_CI_NOTE = (
+    "95% slope interval (assumes independent years; narrower than true "
+    "uncertainty when years correlate)"
+)
 
 
 def _load_backend_sen_slope():
@@ -324,6 +335,172 @@ def build_tiny_grid() -> tuple[dict[str, Any], dict[str, Any]]:
     return tile, index
 
 
+def build_inference_cases() -> list[dict[str, Any]]:
+    """Illustrative inference blocks in the agreed shape.
+
+    The p-values, strict-check values and lag-1 values are fixed placeholders so
+    the UI and type tests have every combination (pass, fail, caution, short
+    series). They are not computed from any series and are not results. The
+    short-series case is the shape the app must show whenever n < 8.
+    """
+    return [
+        {
+            "name": "ok_significant_no_caution",
+            "inference": {
+                "status": "ok",
+                "p_value": 0.012,
+                "ci": [0.004, 0.031],
+                "method": INFERENCE_METHOD,
+                "strict_check_pass": True,
+                "strict_check_p": 0.028,
+                "lag1": 0.11,
+                "caution": False,
+                "ci_note": SLOPE_CI_NOTE,
+                "n": 42,
+            },
+        },
+        {
+            "name": "ok_not_significant_with_caution",
+            "inference": {
+                "status": "ok",
+                "p_value": 0.214,
+                "ci": [-0.077, 0.087],
+                "method": INFERENCE_METHOD,
+                "strict_check_pass": False,
+                "strict_check_p": 0.19,
+                "lag1": 0.34,
+                "caution": True,
+                "ci_note": SLOPE_CI_NOTE,
+                "n": 42,
+            },
+        },
+        {
+            "name": "short_series_unavailable",
+            "inference": {
+                "status": "unavailable",
+                "p_value": None,
+                "ci": None,
+                "method": None,
+                "strict_check_pass": None,
+                "strict_check_p": None,
+                "lag1": None,
+                "caution": False,
+                "ci_note": SLOPE_CI_NOTE,
+                "n": 3,
+            },
+        },
+    ]
+
+
+def _encode_int16(value: float, scale: float) -> int:
+    return max(-32767, min(32767, int(np.rint(value / scale))))
+
+
+def build_inference_grid(
+    cases: list[dict[str, Any]],
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """A 42-year tile carrying optional inference and FDR fields.
+
+    Cell A uses the significant/no-caution case, cell B the non-significant
+    case with the caution badge, and cell C has no optional fields so tests can
+    check the unavailable fallback. Values are a deterministic sine plus trend,
+    quantized exactly like the real grid.
+    """
+    years = list(range(1984, 2026))
+    wave_a = [round(4.0 + 0.020 * i + 0.35 * math.sin(i / 2.5), 2) for i in range(len(years))]
+    wave_b = [round(3.2 + 0.001 * i + 0.45 * math.sin(i / 1.7), 2) for i in range(len(years))]
+
+    def cell(values: list[float], optional: dict[str, Any]) -> dict[str, Any]:
+        xs = [float(year) for year in years]
+        ys = [float(value) for value in values]
+        fit = theilslopes(ys, xs, alpha=0.05)
+        slope_per_decade = float(fit.slope) * 10.0
+        payload: dict[str, Any] = {
+            "s": _encode_int16(slope_per_decade, 0.001),
+            "v": [_encode_int16(value, 0.01) for value in values],
+            "c": 1000,
+        }
+        cell_optional = dict(optional)
+        if "inference" in cell_optional:
+            # The illustrative case supplies p-values and the lag-1 value; the
+            # interval itself is the real Sen interval for this series, so the
+            # fixture never shows an interval that excludes its own slope.
+            cell_optional["inference"] = {
+                **cell_optional["inference"],
+                "ci": [
+                    round(float(fit.low_slope) * 10.0, 6),
+                    round(float(fit.high_slope) * 10.0, 6),
+                ],
+            }
+        payload.update(cell_optional)
+        return payload
+
+    tile = {
+        "v_slug": "precip",
+        "season": "DJF",
+        "tile": [-80, -10],
+        "cells": {
+            "cell_-4.5_-79.5": cell(
+                wave_a,
+                {
+                    "inference": cases[0]["inference"],
+                    "fdr_significant": True,
+                },
+            ),
+            "cell_-5.5_-79.5": cell(
+                wave_b,
+                {
+                    "inference": cases[1]["inference"],
+                    "fdr_significant": False,
+                },
+            ),
+            "cell_-6.5_-79.5": cell(wave_a, {}),
+        },
+    }
+
+    index = {
+        "format_version": 1,
+        "grid_resolution_deg": 1.0,
+        "tile_size_deg": 10,
+        "fill_int16": FILL,
+        "seasons": {
+            "DJF": {
+                "code": "DJF",
+                "year_label": "January year",
+                "months": [12, 1, 2],
+                "aggregation": "day-weighted mean of 3 monthly values",
+            }
+        },
+        "variables": {
+            "precip": {
+                "variable": "precipitation",
+                "units": "mm/day",
+                "slope_units": "mm/day/decade",
+                "scale": 0.01,
+                "offset": 0.0,
+                "decimals": 2,
+                "slope_scale": 0.001,
+                "slope_offset": 0.0,
+                "slope_decimals": 3,
+                "coverage_scale": 0.001,
+                "coverage_offset": 0.0,
+                "coverage_decimals": 3,
+                "land_only": False,
+                "regrid_note": "GPCP 0.5 deg 2x2 block averaged to 1.0 deg with cos(lat) weights",
+                "source": {
+                    "product": "GPCPMON",
+                    "version": "3.3",
+                    "var": "sat_gauge_precip",
+                    "doi_or_url": "https://doi.org/10.5067/MEASURES/GPCP/DATA304",
+                },
+                "years_by_season": {"DJF": years},
+                "available_tiles": ["-80_-10"],
+            }
+        },
+    }
+    return index, tile
+
+
 def main() -> None:
     source = (
         "backend.trend.stats.sen_slope"
@@ -338,13 +515,34 @@ def main() -> None:
     }
     write_json(OUT_DIR / "stats_fixtures.json", stats_payload)
 
+    inference_cases = build_inference_cases()
+    inference_payload = {
+        "note": (
+            "Test fixtures only. Inference values are illustrative placeholders "
+            "in the agreed shape, not results for any series or real data. The "
+            "short-series case shows the opinionated unavailable shape used "
+            "whenever n < 8. Do not copy these numbers into artifacts."
+        ),
+        "ci_note": SLOPE_CI_NOTE,
+        "method": INFERENCE_METHOD,
+        "cases": inference_cases,
+    }
+    write_json(OUT_DIR / "inference_cases.json", inference_payload)
+
     tile, index = build_tiny_grid()
     write_json(GRID_OUT_DIR / "index.json", index)
     write_json(GRID_OUT_DIR / "precip" / "DJF" / "-80_-10.json", tile, minified=True)
 
+    inference_index, inference_tile = build_inference_grid(inference_cases)
+    write_json(GRID_OUT_DIR / "inference_index.json", inference_index)
+    write_json(GRID_OUT_DIR / "inference_tile.json", inference_tile, minified=True)
+
     print(f"wrote {OUT_DIR / 'stats_fixtures.json'} (source: {source})")
+    print(f"wrote {OUT_DIR / 'inference_cases.json'}")
     print(f"wrote {GRID_OUT_DIR / 'index.json'}")
     print(f"wrote {GRID_OUT_DIR / 'precip' / 'DJF' / '-80_-10.json'}")
+    print(f"wrote {GRID_OUT_DIR / 'inference_index.json'}")
+    print(f"wrote {GRID_OUT_DIR / 'inference_tile.json'}")
 
 
 if __name__ == "__main__":
