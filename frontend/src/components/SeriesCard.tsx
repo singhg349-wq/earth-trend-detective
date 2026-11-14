@@ -1,4 +1,5 @@
 import type { SeriesDoc } from '../types';
+import { validationLabel } from '../data/validation';
 import Chart from './Chart';
 import InferenceBlock from './InferenceBlock';
 import PeriodCompare from './PeriodCompare';
@@ -45,6 +46,7 @@ export default function SeriesCard({
 
   const inference = doc.trend?.inference;
   const validation = doc.validation?.status ?? 'unknown';
+  const validationText = validationLabel(validation) ?? validation;
   const slope = doc.trend?.sen_slope_per_decade;
   const firstYear = doc.years[0];
   const lastYear = doc.years[doc.years.length - 1];
@@ -59,7 +61,9 @@ export default function SeriesCard({
             {doc.season.code} · {doc.variable} · {doc.units}
           </p>
         </div>
-        <span className={`tag tag-${validation}`}>Validation: {validation}</span>
+        <span className={`tag tag-${validation}`}>
+          Validation: {validationText}
+        </span>
       </header>
 
       <Chart

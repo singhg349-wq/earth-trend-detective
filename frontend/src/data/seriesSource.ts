@@ -12,9 +12,12 @@ import {
   trendMapUrl as trendMapUrlFrom,
 } from './trendmap';
 import type { TrendMapEntry } from './trendmap';
+import { isListedValidation } from './validation';
 
 export { FDR_Q } from './trendmap';
 export type { TrendMapEntry } from './trendmap';
+export { VALIDATION_LABELS, validationLabel } from './validation';
+export type { ListedValidationStatus } from './validation';
 
 // The only module that fetches series or map data.
 //
@@ -31,7 +34,8 @@ const DATA_ROOT = `${import.meta.env.BASE_URL}data/`;
 const GRID_ROOT = `${DATA_ROOT}grid`;
 const TRENDMAP_ROOT = `${DATA_ROOT}trendmap`;
 const SERIES_ID = /^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/;
-const TIMELAPSE_KEY = 'precip_DJF';
+const VARIABLE_KEY = /^[a-z0-9]+$/;
+const SEASON_KEY = /^(ANN|DJF|MAM|JJA|SON)$/;
 
 let apiReady: Promise<boolean> | null = null;
 let gridCatalog: Promise<GridCatalog | null> | null = null;
@@ -92,17 +96,19 @@ function normalizeSummary(raw: Record<string, unknown>): SeriesSummary {
 }
 
 export async function listSeries(): Promise<SeriesSummary[]> {
-  if (await probeApi()) {
-    const body = await readJson<{ series?: Array<Record<string, unknown>> }>(
-      `${API_BASE}/api/series`,
-    );
-    return (body.series ?? []).map(normalizeSummary);
-  }
+  const body = (await probeApi())
+    ? await readJson<{ series?: Array<Record<string, unknown>> }>(
+        `${API_BASE}/api/series`,
+      )
+    : await readJson<{ series?: Array<Record<string, unknown>> }>(
+        `${DATA_ROOT}index.json`,
+      );
 
-  const body = await readJson<{ series?: Array<Record<string, unknown>> }>(
-    `${DATA_ROOT}index.json`,
-  );
-  return (body.series ?? []).map(normalizeSummary);
+  // A region without a listed validation state (including `failed`) is hidden.
+  // The label text itself always comes from the artifact's status.
+  return (body.series ?? [])
+    .map(normalizeSummary)
+    .filter((summary) => isListedValidation(summary.validation_status));
 }
 
 export async function getSeries(id: string): Promise<SeriesDoc> {
@@ -140,10 +146,28 @@ export async function getRegionsGeoJson(): Promise<RegionsGeoJson> {
   return { type: 'FeatureCollection', features: [] };
 }
 
-export async function getTimelapseIndex(): Promise<TimelapseIndex | null> {
+/**
+ * Directory key for one variable and season, e.g. `precip_DJF`.
+ * Unknown slugs and seasons fall back to the rainfall DJF set, which is the
+ * only set the interface can currently show.
+ */
+export function timelapseKey(variable: string, season: string): string {
+  const safeVariable = VARIABLE_KEY.test(variable) ? variable : 'precip';
+  const safeSeason = SEASON_KEY.test(season) ? season : 'DJF';
+  return `${safeVariable}_${safeSeason}`;
+}
+
+/**
+ * Load the time-lapse index for a variable and season. A missing set is an
+ * ordinary state, not an error: the player simply has no frames to show.
+ */
+export async function getTimelapseIndex(
+  variable = 'precip',
+  season = 'DJF',
+): Promise<TimelapseIndex | null> {
   try {
     const index = await readJson<TimelapseIndex>(
-      `${DATA_ROOT}timelapse/${TIMELAPSE_KEY}/index.json`,
+      `${DATA_ROOT}timelapse/${timelapseKey(variable, season)}/index.json`,
     );
     if (!Array.isArray(index.years) || index.years.length === 0) return null;
     return index;
@@ -152,8 +176,13 @@ export async function getTimelapseIndex(): Promise<TimelapseIndex | null> {
   }
 }
 
-export function timelapseFrameUrl(year: number): string {
-  return `${DATA_ROOT}timelapse/${TIMELAPSE_KEY}/${year}.png`;
+export function timelapseFrameUrl(
+  variable: string,
+  season: string,
+  year: number,
+): string {
+  const frame = Number.isFinite(year) ? Math.trunc(year) : 0;
+  return `${DATA_ROOT}timelapse/${timelapseKey(variable, season)}/${frame}.png`;
 }
 
 // Global grid metadata: variable slugs, seasons, year vectors and int16

@@ -16,6 +16,7 @@ import {
   trendMapHatchGeoJsonUrl,
   trendMapHatchUrl,
   trendMapUrl,
+  validationLabel,
 } from './data/seriesSource';
 import type { GridCatalog, TrendMapEntry } from './data/seriesSource';
 import type { CellSeriesOutcome } from './lib/tiles';
@@ -106,20 +107,17 @@ export default function App() {
     let alive = true;
     (async () => {
       try {
-        const [list, regionData, timelapseIndex, catalog, maps] = await Promise.all([
+        const [list, regionData, catalog, maps] = await Promise.all([
           listSeries(),
           getRegionsGeoJson(),
-          getTimelapseIndex(),
           getGridCatalog(),
           getTrendMapCatalog(),
         ]);
         if (!alive) return;
         setSeriesList(list);
         setRegions(regionData);
-        setTimelapse(timelapseIndex);
         setGridCatalog(catalog);
         setTrendMaps(maps);
-        if (timelapseIndex) setYear(timelapseIndex.years[timelapseIndex.years.length - 1]);
       } catch (error) {
         if (alive) setLoadError(errorText(error));
       }
@@ -128,6 +126,26 @@ export default function App() {
       alive = false;
     };
   }, []);
+
+  // Time-lapse frames are per variable and season. A missing set is quiet: the
+  // player reports that no frames exist rather than breaking the page.
+  useEffect(() => {
+    let alive = true;
+    setTimelapse(null);
+    setPlaying(false);
+    getTimelapseIndex(variable, season).then((index) => {
+      if (!alive) return;
+      setTimelapse(index);
+      setYear((current) => {
+        if (!index) return null;
+        if (current !== null && index.years.includes(current)) return current;
+        return index.years[index.years.length - 1];
+      });
+    });
+    return () => {
+      alive = false;
+    };
+  }, [variable, season]);
 
   useEffect(() => {
     if (!playing || !timelapse || timelapse.years.length < 2) return;
@@ -314,7 +332,8 @@ export default function App() {
           <h2>Choose a region</h2>
           <p className="muted">
             Pick from the list or click a region on the map. The next pick fills result{' '}
-            <strong>{activeSlot}</strong>.
+            <strong>{activeSlot}</strong>. A region whose check failed or is not listed
+            is hidden.
           </p>
 
           <div className="slot-switch" role="group" aria-label="Result slot to fill">
@@ -374,11 +393,15 @@ export default function App() {
                   <span className="region-meta">
                     {summary.season} &middot; {summary.variable} &middot; {summary.units}
                   </span>
-                  {(summary.fixture || summary.validation_status !== 'passed') && (
-                    <span className={`tag tag-${summary.validation_status}`}>
-                      {summary.validation_status}
-                    </span>
-                  )}
+                  {(() => {
+                    const label = validationLabel(summary.validation_status);
+                    return label ? (
+                      <span className={`tag tag-${summary.validation_status}`}>
+                        {label}
+                      </span>
+                    ) : null;
+                  })()}
+                  {summary.fixture && <span className="tag tag-fixture">fixture</span>}
                 </button>
               );
             })}
@@ -493,7 +516,11 @@ export default function App() {
               regions={regions}
               selectedRegionIds={selectedRegionIds}
               focusBbox={focus}
-              timelapseUrl={timelapse && year !== null ? timelapseFrameUrl(year) : null}
+              timelapseUrl={
+                timelapse && year !== null
+                  ? timelapseFrameUrl(variable, season, year)
+                  : null
+              }
               timelapseExtent={timelapse?.extent ?? FALLBACK_EXTENT}
               showTimelapse={showTimelapseOnMap}
               trendMapUrl={trendMapOn ? trendUrl : null}
@@ -533,6 +560,8 @@ export default function App() {
             year={year}
             playing={playing}
             showOnMap={showTimelapseOnMap}
+            season={season}
+            variableLabel={variableSelection?.label ?? variable}
             onChangeYear={setYear}
             onTogglePlay={() => setPlaying((value) => !value)}
             onToggleMap={setShowTimelapseOnMap}
@@ -587,8 +616,8 @@ export default function App() {
       <footer className="footer">
         <p>
           Time-lapse year {year ?? '--'}
-          {timelapse ? ` of ${timelapse.years.length} frames` : ''}. Cell results use
-          the same method as the featured regions and are not individually checked.
+          {timelapse ? ` of ${timelapse.years.length} frames` : ''}. Cell results
+          show the validation label carried by their grid tile.
         </p>
       </footer>
     </div>
