@@ -167,21 +167,30 @@
   "geometry_file": "data/artifacts/regions.geojson",
   "template_summary": "Southern Africa DJF precipitation for 1984-2025 has a mean of 2.613 mm/day across 42 seasons.",
   "trend": {
-    "sen_slope_per_decade": null,
-    "intercept": null,
+    "sen_slope_per_decade": 0.008157034380731948,
+    "intercept": 0.8666363915884541,
     "method": "Sen",
     "inference": {
-      "status": "unavailable",
-      "p_value": null,
-      "ci": null,
-      "method": null
+      "status": "ok",
+      "p_value": 0.8965279189482994,
+      "ci": [
+        -0.13529214208495954,
+        0.1543632297011169
+      ],
+      "method": "MK + Hamed-Rao (3 lags)",
+      "strict_check_pass": false,
+      "strict_check_p": 0.9910383984121822,
+      "lag1": -0.202613767766026,
+      "caution": false,
+      "ci_note": "95% slope interval assumes independent years; narrower than true uncertainty when years correlate",
+      "n": 42
     }
   },
   "validation": {
     "reference": "Giovanni GPCPMON 3.3 box request",
-    "status": "pending",
-    "notes": "Not individually checked."
+    "status": "unchecked-same-method",
+    "notes": "Automatic checks only; not individually checked."
   },
-  "generated": "2026-11-14T16:40:05.475302+00:00",
+  "generated": "2026-11-14T17:29:48.764476+00:00",
   "code_version": "w1-data"
 }

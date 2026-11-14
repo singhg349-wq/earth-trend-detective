@@ -11,6 +11,22 @@ from backend.trend.regions import BOXES, REGIONS, build_regions, box_mask
 from backend.trend.seasons import aggregate_djf, area_mean
 
 
+def automatic_check(payload):
+    """Return whether a regional artifact is safe to list after local checks."""
+    import math
+
+    values = payload.get("values", [])
+    coverage = payload.get("coverage", [])
+    return (
+        payload.get("units") == "mm/day"
+        and len(payload.get("years", [])) == 42
+        and len(values) == len(coverage) == 42
+        and all(isinstance(v, (int, float)) and math.isfinite(v) for v in values)
+        and all(isinstance(v, (int, float)) and math.isfinite(v) and 0 <= v <= 1 for v in coverage)
+        and payload.get("region", {}).get("cells_used", 0) > 0
+    )
+
+
 def main():
     first, lat, lon, _ = read_month(1983, 12)
     regions = build_regions(lat, lon, region_ids=tuple(r["id"] for r in REGIONS))
@@ -24,6 +40,7 @@ def main():
     for rid, reg in regions.items():
         reg["equal"], reg["coverage"] = area_mean(seasons["equal"], reg["area_weights"])
         reg["day_weighted"], _ = area_mean(seasons["day_weighted"], reg["area_weights"])
+        # Giovanni includes cells by centre point; use the same mask locally.
         bf, bw = box_mask(lat, lon, BOXES[rid])
         reg["box_equal"], _ = area_mean(seasons["equal"], bf * bw)
         reg["box_day_weighted"], _ = area_mean(seasons["day_weighted"], bf * bw)
@@ -41,17 +58,7 @@ def main():
     for rid, (aid, label, bbox) in specs.items():
         reg = regions[rid]
         vals = reg["day_weighted"]
-        try:
-            from backend.trend.stats import sen_slope
-            slope = sen_slope(list(range(1984, 2026)), vals.tolist())
-        except (ImportError, ValueError, TypeError):
-            slope = None
-        # W3 hook: populate inference only after backend.trend.stats.inference_block is available.
-        try:
-            from backend.trend.stats import inference_block  # noqa: F401
-        except ImportError:
-            inference_block = None
-        # Keep contract inference unavailable until the selected method is validated.
+        from backend.trend.stats import trend_block
         payload = {
             "id": aid, "variable": "precipitation", "units": "mm/day",
             "source": {"product": "GPCPMON", "version": "3.3", "var": "sat_gauge_precip", "doi_or_url": "https://doi.org/10.5067/MEASURES/GPCP/DATA304"},
@@ -61,34 +68,38 @@ def main():
             "coverage": [round(float(v), 6) for v in reg["coverage"]], "anomaly_baseline": None,
             "geometry_file": "data/artifacts/regions.geojson",
             "template_summary": f"{label} DJF precipitation for 1984-2025 has a mean of {float(vals.mean()):.3f} mm/day across 42 seasons.",
-            "trend": {"sen_slope_per_decade": slope, "intercept": None, "method": "Sen", "inference": {"status": "unavailable", "p_value": None, "ci": None, "method": None}},
-            "validation": {"reference": "Giovanni GPCPMON 3.3 box request", "status": "pending", "notes": "Giovanni comparison not supplied; inference unavailable." if rid in ("indonesia", "coastal_peru") else "Not individually checked."},
+            "trend": trend_block(list(range(1984, 2026)), vals.tolist()),
+            "validation": {"reference": "Giovanni GPCPMON 3.3 box request", "status": "pending" if rid in ("indonesia", "coastal_peru") else "unchecked-same-method", "notes": "Giovanni comparison not supplied." if rid in ("indonesia", "coastal_peru") else "Automatic checks only; not individually checked."},
             "generated": datetime.now(timezone.utc).isoformat(), "code_version": "w1-data",
         }
         filename = "precip_peru_DJF.json" if rid == "coastal_peru" else f"{aid}.json"
+        if rid not in ("indonesia", "coastal_peru") and not automatic_check(payload):
+            continue
         (out / filename).write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
-        if payload["validation"]["status"] == "passed":
-            artifact_index.append({"id": aid, "label": label, "variable": "precipitation", "season": "DJF", "region_id": rid})
+        artifact_index.append({"id": aid, "label": label, "variable": "precipitation", "season": "DJF", "region_id": rid, "validation_status": payload["validation"]["status"], "file": filename})
     (out / "index.json").write_text(json.dumps({"artifacts": artifact_index}, indent=2) + "\n", encoding="utf-8")
 
     lines = [
         "# Data validation notes", "", "## Giovanni request", "",
         "Product: GPCP Monthly 0.5 Degree (GPCPMON), version 3.3; variable: sat_gauge_precip (mm/day).",
         "Time range: December 1983 through February 2025; season: DJF, labelled by January year, years 1984-2025.",
-        "Request Giovanni area in west, south, east, north order: Indonesia 95E, 11S, 141E, 6N; Peru 82W, 10S, 76W, 3S. Select time series and download the result CSV from the results/download panel.",
-        "The product series is the day-weighted mean of monthly rates. Equal-month is retained as a second comparison.", "", "## Pass rule (set before comparison)", "",
+        "Request Giovanni monthly area-averaged time series and download the CSV from the results/download panel. Product: GPCPMON 3.3; variable: sat_gauge_precip (mm/day); time range: December 1983 through February 2025. Giovanni selects cells by whether their centres fall inside the requested box.",
+        "The product series is the day-weighted mean of monthly rates. Equal-month is retained as a second comparison.", "", "## Giovanni box settings", "", "Coordinates are west, south, east, north in degrees. Use the native 0.5 degree grid and include cell centres inside each box. Local DJF comparison: day-weighted and equal-month series, each with 42 values labelled 1984–2025.", "", "| Region | Product | Variable | W, S, E, N | Time range | Comparison series |", "|---|---|---|---|---|---|",
+        "| Indonesia | GPCPMON 3.3 | sat_gauge_precip (mm/day) | 95.25, -10.75, 140.75, 5.75 | Dec 1983–Feb 2025 | Box mask; day-weighted and equal-month, 42 values each |",
+        "| Coastal Peru | GPCPMON 3.3 | sat_gauge_precip (mm/day) | -81.75, -9.75, -76.25, -3.25 | Dec 1983–Feb 2025 | Box mask; day-weighted and equal-month, 42 values each |",
+        *[f"| {r['label']} | GPCPMON 3.3 | sat_gauge_precip (mm/day) | {', '.join(map(str, r['bbox']))} | Dec 1983–Feb 2025 | Box mask; day-weighted and equal-month, 42 values each |" for r in REGIONS[2:]],
+        "", "## Pass rule (set before comparison)", "",
         "Compare each region's box-mask series with Giovanni's monthly area-averaged series for the same box. First compute Giovanni's monthly values, then apply the same DJF formula. Pass only if mean bias and mean absolute error are each at most 0.5% of the Giovanni series mean, maximum single-year absolute difference is at most max(1% of that mean, 0.05 mm/day), and Sen slopes differ by at most max(2% of Giovanni slope magnitude, 0.005 mm/day/decade).",
-        "", "No Giovanni monthly CSV has been supplied in this worktree, so neither Indonesia nor coastal Peru passes yet; neither is listed as featured. All other presets remain unlisted pending individual checks.",
+        "", "No Giovanni monthly CSV has been supplied in this worktree. Indonesia and Coastal Peru remain pending until the Giovanni check script passes. The other regions may be listed as unchecked-same-method after automatic checks only; that status does not claim individual validation.",
         "", "## Mask diagnostics and box series", "",
         "Cell fractions use geographic intersection; area weights are spherical cell area multiplied by the fraction (equivalent to cos(latitude) weighting on this grid).",
-        "", "The following box-mask comparison series use the native 0.5 degree grid. Compare with Giovanni by taking Giovanni monthly area-averaged values first, then applying DJF: day-weighted first (the product series), equal-month second (sensitivity)."
+        "", "Featured-region values use the native 0.5 degree grid with no regridding. Only the click-any-spot global grid uses 1 degree. The box-mask series select native cell centres inside each box. Compare with Giovanni by taking its monthly area-averaged values first, then applying DJF: day-weighted first (product series), equal-month second (sensitivity)."
     ]
     for rid, (_, label, _) in specs.items():
         reg = regions[rid]
         lines += ["", f"### {label}", "", f"Polygon mask: {reg['cells_used']} cells; area {reg['area_km2']:.2f} km².", f"Box versus polygon max absolute difference, equal-month: {max(abs(reg['box_equal'] - reg['equal'])):.6f} mm/day."]
-        if rid in ("indonesia", "coastal_peru"):
-            lines += ["", "Box mask comparison series by January year (mm/day):", "", "| Year | Day-weighted | Equal-month |", "|---:|---:|---:|"]
-            lines += [f"| {year} | {day:.6f} | {equal:.6f} |" for year, day, equal in zip(seasons["years"], reg["box_day_weighted"], reg["box_equal"])]
+        lines += ["", "Box mask comparison series by January year (mm/day):", "", "| Year | Day-weighted | Equal-month |", "|---:|---:|---:|"]
+        lines += [f"| {year} | {day:.6f} | {equal:.6f} |" for year, day, equal in zip(seasons["years"], reg["box_day_weighted"], reg["box_equal"])]
     (ROOT / "docs" / "VALIDATION.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 

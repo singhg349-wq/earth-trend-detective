@@ -87,4 +87,11 @@ def build_regions(lat, lon, region_ids=FLAGSHIP_REGION_IDS):
     return out
 
 def box_mask(lat, lon, bounds):
-    return fractional_mask(lat, lon, box(*bounds))
+    """Select full cells whose centres lie inside the requested box."""
+    lat = np.asarray(lat, dtype=float)
+    lon = np.asarray(lon, dtype=float)
+    west, south, east, north = bounds
+    _, areas = fractional_mask(lat, lon, box(*bounds))
+    inside = ((lon[None, :] >= west) & (lon[None, :] <= east) &
+              (lat[:, None] >= south) & (lat[:, None] <= north))
+    return inside.astype(float), areas * inside

@@ -1,3 +1,94 @@
 {
-  "artifacts": []
+  "artifacts": [
+    {
+      "id": "precip_indonesia_DJF",
+      "label": "Indonesia",
+      "variable": "precipitation",
+      "season": "DJF",
+      "region_id": "indonesia",
+      "validation_status": "pending",
+      "file": "precip_indonesia_DJF.json"
+    },
+    {
+      "id": "precip_coastal_peru_DJF",
+      "label": "Coastal Peru",
+      "variable": "precipitation",
+      "season": "DJF",
+      "region_id": "coastal_peru",
+      "validation_status": "pending",
+      "file": "precip_peru_DJF.json"
+    },
+    {
+      "id": "precip_amazon_DJF",
+      "label": "Amazon",
+      "variable": "precipitation",
+      "season": "DJF",
+      "region_id": "amazon",
+      "validation_status": "unchecked-same-method",
+      "file": "precip_amazon_DJF.json"
+    },
+    {
+      "id": "precip_sahel_DJF",
+      "label": "Sahel",
+      "variable": "precipitation",
+      "season": "DJF",
+      "region_id": "sahel",
+      "validation_status": "unchecked-same-method",
+      "file": "precip_sahel_DJF.json"
+    },
+    {
+      "id": "precip_east_africa_DJF",
+      "label": "East Africa",
+      "variable": "precipitation",
+      "season": "DJF",
+      "region_id": "east_africa",
+      "validation_status": "unchecked-same-method",
+      "file": "precip_east_africa_DJF.json"
+    },
+    {
+      "id": "precip_india_DJF",
+      "label": "India",
+      "variable": "precipitation",
+      "season": "DJF",
+      "region_id": "india",
+      "validation_status": "unchecked-same-method",
+      "file": "precip_india_DJF.json"
+    },
+    {
+      "id": "precip_australia_DJF",
+      "label": "Australia",
+      "variable": "precipitation",
+      "season": "DJF",
+      "region_id": "australia",
+      "validation_status": "unchecked-same-method",
+      "file": "precip_australia_DJF.json"
+    },
+    {
+      "id": "precip_california_DJF",
+      "label": "California",
+      "variable": "precipitation",
+      "season": "DJF",
+      "region_id": "california",
+      "validation_status": "unchecked-same-method",
+      "file": "precip_california_DJF.json"
+    },
+    {
+      "id": "precip_alberta_prairies_DJF",
+      "label": "Alberta / Prairies",
+      "variable": "precipitation",
+      "season": "DJF",
+      "region_id": "alberta_prairies",
+      "validation_status": "unchecked-same-method",
+      "file": "precip_alberta_prairies_DJF.json"
+    },
+    {
+      "id": "precip_southern_africa_DJF",
+      "label": "Southern Africa",
+      "variable": "precipitation",
+      "season": "DJF",
+      "region_id": "southern_africa",
+      "validation_status": "unchecked-same-method",
+      "file": "precip_southern_africa_DJF.json"
+    }
+  ]
 }

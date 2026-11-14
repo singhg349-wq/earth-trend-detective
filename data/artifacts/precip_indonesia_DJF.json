@@ -167,21 +167,30 @@
   "geometry_file": "data/artifacts/regions.geojson",
   "template_summary": "Indonesia DJF precipitation for 1984-2025 has a mean of 9.503 mm/day across 42 seasons.",
   "trend": {
-    "sen_slope_per_decade": null,
-    "intercept": null,
+    "sen_slope_per_decade": 0.10601528995971776,
+    "intercept": -11.81606949668392,
     "method": "Sen",
     "inference": {
-      "status": "unavailable",
-      "p_value": null,
-      "ci": null,
-      "method": null
+      "status": "ok",
+      "p_value": 0.17209248059019389,
+      "ci": [
+        -0.04558856916185998,
+        0.26752984814545283
+      ],
+      "method": "MK + Hamed-Rao (3 lags)",
+      "strict_check_pass": false,
+      "strict_check_p": 0.08988158946826487,
+      "lag1": 0.010096647307911337,
+      "caution": false,
+      "ci_note": "95% slope interval assumes independent years; narrower than true uncertainty when years correlate",
+      "n": 42
     }
   },
   "validation": {
     "reference": "Giovanni GPCPMON 3.3 box request",
     "status": "pending",
-    "notes": "Giovanni comparison not supplied; inference unavailable."
+    "notes": "Giovanni comparison not supplied."
   },
-  "generated": "2026-11-14T16:40:05.459607+00:00",
+  "generated": "2026-11-14T17:29:48.726800+00:00",
   "code_version": "w1-data"
 }

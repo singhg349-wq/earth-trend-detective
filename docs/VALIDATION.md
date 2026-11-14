@@ -4,20 +4,37 @@
 
 Product: GPCP Monthly 0.5 Degree (GPCPMON), version 3.3; variable: sat_gauge_precip (mm/day).
 Time range: December 1983 through February 2025; season: DJF, labelled by January year, years 1984-2025.
-Request Giovanni area in west, south, east, north order: Indonesia 95E, 11S, 141E, 6N; Peru 82W, 10S, 76W, 3S. Select time series and download the result CSV from the results/download panel.
+Request Giovanni monthly area-averaged time series and download the CSV from the results/download panel. Product: GPCPMON 3.3; variable: sat_gauge_precip (mm/day); time range: December 1983 through February 2025. Giovanni selects cells by whether their centres fall inside the requested box.
 The product series is the day-weighted mean of monthly rates. Equal-month is retained as a second comparison.
+
+## Giovanni box settings
+
+Coordinates are west, south, east, north in degrees. Use the native 0.5 degree grid and include cell centres inside each box. Local DJF comparison: day-weighted and equal-month series, each with 42 values labelled 1984–2025.
+
+| Region | Product | Variable | W, S, E, N | Time range | Comparison series |
+|---|---|---|---|---|---|
+| Indonesia | GPCPMON 3.3 | sat_gauge_precip (mm/day) | 95.25, -10.75, 140.75, 5.75 | Dec 1983–Feb 2025 | Box mask; day-weighted and equal-month, 42 values each |
+| Coastal Peru | GPCPMON 3.3 | sat_gauge_precip (mm/day) | -81.75, -9.75, -76.25, -3.25 | Dec 1983–Feb 2025 | Box mask; day-weighted and equal-month, 42 values each |
+| Amazon | GPCPMON 3.3 | sat_gauge_precip (mm/day) | -75, -15, -45, 5 | Dec 1983–Feb 2025 | Box mask; day-weighted and equal-month, 42 values each |
+| Sahel | GPCPMON 3.3 | sat_gauge_precip (mm/day) | -18, 10, 35, 20 | Dec 1983–Feb 2025 | Box mask; day-weighted and equal-month, 42 values each |
+| East Africa | GPCPMON 3.3 | sat_gauge_precip (mm/day) | 29, -12, 42, 12 | Dec 1983–Feb 2025 | Box mask; day-weighted and equal-month, 42 values each |
+| India | GPCPMON 3.3 | sat_gauge_precip (mm/day) | 68, 6, 98, 36 | Dec 1983–Feb 2025 | Box mask; day-weighted and equal-month, 42 values each |
+| Australia | GPCPMON 3.3 | sat_gauge_precip (mm/day) | 112, -44, 154, -10 | Dec 1983–Feb 2025 | Box mask; day-weighted and equal-month, 42 values each |
+| California | GPCPMON 3.3 | sat_gauge_precip (mm/day) | -125, 32, -114, 42 | Dec 1983–Feb 2025 | Box mask; day-weighted and equal-month, 42 values each |
+| Alberta / Prairies | GPCPMON 3.3 | sat_gauge_precip (mm/day) | -120, 48, -96, 60 | Dec 1983–Feb 2025 | Box mask; day-weighted and equal-month, 42 values each |
+| Southern Africa | GPCPMON 3.3 | sat_gauge_precip (mm/day) | 11, -35, 38, -17 | Dec 1983–Feb 2025 | Box mask; day-weighted and equal-month, 42 values each |
 
 ## Pass rule (set before comparison)
 
 Compare each region's box-mask series with Giovanni's monthly area-averaged series for the same box. First compute Giovanni's monthly values, then apply the same DJF formula. Pass only if mean bias and mean absolute error are each at most 0.5% of the Giovanni series mean, maximum single-year absolute difference is at most max(1% of that mean, 0.05 mm/day), and Sen slopes differ by at most max(2% of Giovanni slope magnitude, 0.005 mm/day/decade).
 
-No Giovanni monthly CSV has been supplied in this worktree, so neither Indonesia nor coastal Peru passes yet; neither is listed as featured. All other presets remain unlisted pending individual checks.
+No Giovanni monthly CSV has been supplied in this worktree. Indonesia and Coastal Peru remain pending until the Giovanni check script passes. The other regions may be listed as unchecked-same-method after automatic checks only; that status does not claim individual validation.
 
 ## Mask diagnostics and box series
 
 Cell fractions use geographic intersection; area weights are spherical cell area multiplied by the fraction (equivalent to cos(latitude) weighting on this grid).
 
-The following box-mask comparison series use the native 0.5 degree grid. Compare with Giovanni by taking Giovanni monthly area-averaged values first, then applying DJF: day-weighted first (the product series), equal-month second (sensitivity).
+Featured-region values use the native 0.5 degree grid with no regridding. Only the click-any-spot global grid uses 1 degree. The box-mask series select native cell centres inside each box. Compare with Giovanni by taking its monthly area-averaged values first, then applying DJF: day-weighted first (product series), equal-month second (sensitivity).
 
 ### Indonesia
 
@@ -128,37 +145,413 @@ Box mask comparison series by January year (mm/day):
 Polygon mask: 2400 cells; area 7352913.96 km².
 Box versus polygon max absolute difference, equal-month: 0.000000 mm/day.
 
+Box mask comparison series by January year (mm/day):
+
+| Year | Day-weighted | Equal-month |
+|---:|---:|---:|
+| 1984 | 8.445783 | 8.465703 |
+| 1985 | 8.222234 | 8.211704 |
+| 1986 | 8.624867 | 8.635109 |
+| 1987 | 7.247345 | 7.257583 |
+| 1988 | 8.073644 | 8.100241 |
+| 1989 | 8.871135 | 8.879742 |
+| 1990 | 8.518080 | 8.538663 |
+| 1991 | 8.046271 | 8.041611 |
+| 1992 | 6.876896 | 6.913134 |
+| 1993 | 8.178454 | 8.227756 |
+| 1994 | 8.625720 | 8.644837 |
+| 1995 | 7.441169 | 7.458991 |
+| 1996 | 8.107169 | 8.121840 |
+| 1997 | 7.948085 | 7.993623 |
+| 1998 | 6.888355 | 6.914748 |
+| 1999 | 8.235665 | 8.272024 |
+| 2000 | 8.256177 | 8.269960 |
+| 2001 | 8.033362 | 8.038993 |
+| 2002 | 8.054773 | 8.079537 |
+| 2003 | 7.614276 | 7.656208 |
+| 2004 | 7.920658 | 7.965456 |
+| 2005 | 7.340123 | 7.405865 |
+| 2006 | 8.864894 | 8.870611 |
+| 2007 | 7.214255 | 7.239639 |
+| 2008 | 8.614395 | 8.626409 |
+| 2009 | 8.903196 | 8.947060 |
+| 2010 | 7.852236 | 7.850662 |
+| 2011 | 8.694967 | 8.736170 |
+| 2012 | 8.488432 | 8.516401 |
+| 2013 | 8.134814 | 8.176332 |
+| 2014 | 8.269702 | 8.326693 |
+| 2015 | 7.647124 | 7.661914 |
+| 2016 | 6.452914 | 6.472907 |
+| 2017 | 8.782085 | 8.816693 |
+| 2018 | 8.275254 | 8.318551 |
+| 2019 | 8.291341 | 8.305750 |
+| 2020 | 7.556027 | 7.562493 |
+| 2021 | 7.926581 | 7.972847 |
+| 2022 | 8.127305 | 8.138560 |
+| 2023 | 7.330376 | 7.345485 |
+| 2024 | 6.256648 | 6.268374 |
+| 2025 | 7.516552 | 7.564493 |
+
 ### Sahel
 
 Polygon mask: 2120 cells; area 6321780.74 km².
 Box versus polygon max absolute difference, equal-month: 0.000000 mm/day.
+
+Box mask comparison series by January year (mm/day):
+
+| Year | Day-weighted | Equal-month |
+|---:|---:|---:|
+| 1984 | 0.020500 | 0.020364 |
+| 1985 | 0.030043 | 0.029560 |
+| 1986 | 0.034941 | 0.034622 |
+| 1987 | 0.026893 | 0.026835 |
+| 1988 | 0.030684 | 0.030996 |
+| 1989 | 0.026801 | 0.026914 |
+| 1990 | 0.036847 | 0.036332 |
+| 1991 | 0.041645 | 0.042038 |
+| 1992 | 0.072456 | 0.072495 |
+| 1993 | 0.040536 | 0.040684 |
+| 1994 | 0.022654 | 0.022698 |
+| 1995 | 0.025136 | 0.025173 |
+| 1996 | 0.076259 | 0.075562 |
+| 1997 | 0.025765 | 0.025406 |
+| 1998 | 0.031529 | 0.031758 |
+| 1999 | 0.038771 | 0.038829 |
+| 2000 | 0.042118 | 0.041718 |
+| 2001 | 0.020831 | 0.020826 |
+| 2002 | 0.057963 | 0.056959 |
+| 2003 | 0.049813 | 0.049948 |
+| 2004 | 0.046645 | 0.046411 |
+| 2005 | 0.064901 | 0.066935 |
+| 2006 | 0.056807 | 0.057709 |
+| 2007 | 0.028067 | 0.028290 |
+| 2008 | 0.037999 | 0.037997 |
+| 2009 | 0.046015 | 0.046621 |
+| 2010 | 0.037290 | 0.037680 |
+| 2011 | 0.048290 | 0.048975 |
+| 2012 | 0.044646 | 0.045452 |
+| 2013 | 0.051948 | 0.052061 |
+| 2014 | 0.050019 | 0.049674 |
+| 2015 | 0.046091 | 0.046733 |
+| 2016 | 0.048451 | 0.048022 |
+| 2017 | 0.038594 | 0.038579 |
+| 2018 | 0.058670 | 0.060564 |
+| 2019 | 0.047018 | 0.047526 |
+| 2020 | 0.036076 | 0.036078 |
+| 2021 | 0.030798 | 0.030953 |
+| 2022 | 0.045586 | 0.045036 |
+| 2023 | 0.041976 | 0.041869 |
+| 2024 | 0.029017 | 0.029349 |
+| 2025 | 0.034183 | 0.034452 |
 
 ### East Africa
 
 Polygon mask: 1248 cells; area 3829534.94 km².
 Box versus polygon max absolute difference, equal-month: 0.000000 mm/day.
 
+Box mask comparison series by January year (mm/day):
+
+| Year | Day-weighted | Equal-month |
+|---:|---:|---:|
+| 1984 | 2.503802 | 2.496297 |
+| 1985 | 2.778685 | 2.792404 |
+| 1986 | 2.422417 | 2.418439 |
+| 1987 | 3.004190 | 2.991239 |
+| 1988 | 2.295528 | 2.296338 |
+| 1989 | 2.817918 | 2.805521 |
+| 1990 | 3.421534 | 3.442470 |
+| 1991 | 2.668569 | 2.656769 |
+| 1992 | 2.382510 | 2.383458 |
+| 1993 | 3.092064 | 3.088052 |
+| 1994 | 2.184922 | 2.207181 |
+| 1995 | 2.763910 | 2.771837 |
+| 1996 | 2.643775 | 2.660366 |
+| 1997 | 1.839590 | 1.843928 |
+| 1998 | 4.970697 | 4.926951 |
+| 1999 | 1.602495 | 1.596077 |
+| 2000 | 1.726286 | 1.723196 |
+| 2001 | 3.029282 | 3.003948 |
+| 2002 | 2.694780 | 2.679845 |
+| 2003 | 2.798574 | 2.772526 |
+| 2004 | 2.714957 | 2.717359 |
+| 2005 | 2.524764 | 2.499162 |
+| 2006 | 1.842692 | 1.863875 |
+| 2007 | 3.622733 | 3.602150 |
+| 2008 | 2.626845 | 2.628133 |
+| 2009 | 2.298892 | 2.318842 |
+| 2010 | 3.034978 | 3.049438 |
+| 2011 | 2.234649 | 2.251105 |
+| 2012 | 2.411343 | 2.401963 |
+| 2013 | 2.502237 | 2.478435 |
+| 2014 | 2.573909 | 2.585663 |
+| 2015 | 2.235358 | 2.225161 |
+| 2016 | 3.178872 | 3.166293 |
+| 2017 | 2.357001 | 2.389848 |
+| 2018 | 2.492107 | 2.481148 |
+| 2019 | 2.565570 | 2.565928 |
+| 2020 | 3.773516 | 3.758758 |
+| 2021 | 2.253572 | 2.257467 |
+| 2022 | 2.432660 | 2.441833 |
+| 2023 | 2.097887 | 2.085486 |
+| 2024 | 3.337049 | 3.333532 |
+| 2025 | 2.189658 | 2.178874 |
+
 ### India
 
 Polygon mask: 3600 cells; area 10270533.33 km².
 Box versus polygon max absolute difference, equal-month: 0.000000 mm/day.
+
+Box mask comparison series by January year (mm/day):
+
+| Year | Day-weighted | Equal-month |
+|---:|---:|---:|
+| 1984 | 2.001850 | 2.013067 |
+| 1985 | 1.240963 | 1.242867 |
+| 1986 | 1.043311 | 1.033588 |
+| 1987 | 0.801652 | 0.795231 |
+| 1988 | 1.288294 | 1.279175 |
+| 1989 | 1.059130 | 1.046024 |
+| 1990 | 0.800980 | 0.807336 |
+| 1991 | 0.983832 | 0.969595 |
+| 1992 | 0.801920 | 0.796713 |
+| 1993 | 0.718441 | 0.716517 |
+| 1994 | 1.310612 | 1.304603 |
+| 1995 | 0.822195 | 0.820953 |
+| 1996 | 0.824647 | 0.830990 |
+| 1997 | 0.979919 | 0.960387 |
+| 1998 | 1.338447 | 1.316197 |
+| 1999 | 1.423088 | 1.411302 |
+| 2000 | 1.119754 | 1.118265 |
+| 2001 | 1.023101 | 1.010512 |
+| 2002 | 1.006153 | 1.000359 |
+| 2003 | 1.149047 | 1.147138 |
+| 2004 | 0.910506 | 0.901618 |
+| 2005 | 0.927604 | 0.917509 |
+| 2006 | 1.473942 | 1.446830 |
+| 2007 | 0.798686 | 0.805449 |
+| 2008 | 1.224144 | 1.216215 |
+| 2009 | 0.776146 | 0.764816 |
+| 2010 | 1.140834 | 1.121240 |
+| 2011 | 2.134358 | 2.115631 |
+| 2012 | 1.253892 | 1.242408 |
+| 2013 | 1.507679 | 1.505841 |
+| 2014 | 1.351849 | 1.331352 |
+| 2015 | 1.500207 | 1.480723 |
+| 2016 | 0.932004 | 0.923177 |
+| 2017 | 1.450618 | 1.422161 |
+| 2018 | 1.368205 | 1.346367 |
+| 2019 | 1.362920 | 1.347680 |
+| 2020 | 0.974178 | 0.964213 |
+| 2021 | 1.446815 | 1.419975 |
+| 2022 | 1.361026 | 1.365072 |
+| 2023 | 1.368934 | 1.343807 |
+| 2024 | 1.390369 | 1.370602 |
+| 2025 | 1.574139 | 1.546286 |
 
 ### Australia
 
 Polygon mask: 5712 cells; area 15502055.51 km².
 Box versus polygon max absolute difference, equal-month: 0.000000 mm/day.
 
+Box mask comparison series by January year (mm/day):
+
+| Year | Day-weighted | Equal-month |
+|---:|---:|---:|
+| 1984 | 4.027911 | 4.043680 |
+| 1985 | 3.014206 | 3.049450 |
+| 1986 | 3.129365 | 3.119511 |
+| 1987 | 3.131993 | 3.166510 |
+| 1988 | 2.527854 | 2.539864 |
+| 1989 | 3.025434 | 3.010827 |
+| 1990 | 2.380007 | 2.370321 |
+| 1991 | 4.148630 | 4.187320 |
+| 1992 | 2.405332 | 2.437888 |
+| 1993 | 3.511083 | 3.528010 |
+| 1994 | 3.231916 | 3.283425 |
+| 1995 | 3.380420 | 3.420268 |
+| 1996 | 3.112687 | 3.115360 |
+| 1997 | 4.185765 | 4.207066 |
+| 1998 | 3.021332 | 3.013695 |
+| 1999 | 3.886857 | 3.916310 |
+| 2000 | 4.216265 | 4.249250 |
+| 2001 | 4.147425 | 4.193239 |
+| 2002 | 3.007717 | 3.063272 |
+| 2003 | 2.976399 | 3.024388 |
+| 2004 | 3.576586 | 3.603265 |
+| 2005 | 2.411716 | 2.404409 |
+| 2006 | 3.475595 | 3.446058 |
+| 2007 | 2.872466 | 2.882355 |
+| 2008 | 3.823734 | 3.861693 |
+| 2009 | 3.976677 | 3.990156 |
+| 2010 | 3.296556 | 3.299143 |
+| 2011 | 5.261698 | 5.288897 |
+| 2012 | 3.434535 | 3.425744 |
+| 2013 | 2.938582 | 2.945567 |
+| 2014 | 3.472793 | 3.495333 |
+| 2015 | 3.041769 | 3.033262 |
+| 2016 | 2.528730 | 2.514559 |
+| 2017 | 4.068740 | 4.077407 |
+| 2018 | 3.304331 | 3.296377 |
+| 2019 | 2.645292 | 2.622577 |
+| 2020 | 2.720728 | 2.739037 |
+| 2021 | 3.806075 | 3.812074 |
+| 2022 | 2.947373 | 2.949612 |
+| 2023 | 3.641165 | 3.661759 |
+| 2024 | 2.932467 | 2.929916 |
+| 2025 | 3.538558 | 3.564707 |
+
 ### California
 
 Polygon mask: 440 cells; area 1084828.49 km².
 Box versus polygon max absolute difference, equal-month: 0.000000 mm/day.
+
+Box mask comparison series by January year (mm/day):
+
+| Year | Day-weighted | Equal-month |
+|---:|---:|---:|
+| 1984 | 1.937803 | 1.928916 |
+| 1985 | 1.350629 | 1.346689 |
+| 1986 | 2.840948 | 2.904911 |
+| 1987 | 1.701094 | 1.709349 |
+| 1988 | 2.127785 | 2.097019 |
+| 1989 | 1.364882 | 1.362154 |
+| 1990 | 1.332474 | 1.342803 |
+| 1991 | 1.284051 | 1.299381 |
+| 1992 | 2.075733 | 2.102800 |
+| 1993 | 4.148498 | 4.143166 |
+| 1994 | 1.659698 | 1.683783 |
+| 1995 | 3.282516 | 3.204545 |
+| 1996 | 3.123533 | 3.131331 |
+| 1997 | 3.490938 | 3.394790 |
+| 1998 | 4.279738 | 4.390998 |
+| 1999 | 1.774858 | 1.803171 |
+| 2000 | 2.569767 | 2.610387 |
+| 2001 | 1.808486 | 1.838381 |
+| 2002 | 1.751397 | 1.722647 |
+| 2003 | 2.612651 | 2.602488 |
+| 2004 | 2.684644 | 2.699698 |
+| 2005 | 3.142100 | 3.144101 |
+| 2006 | 2.896349 | 2.855464 |
+| 2007 | 1.479865 | 1.505759 |
+| 2008 | 2.565708 | 2.545227 |
+| 2009 | 1.814938 | 1.852475 |
+| 2010 | 2.875022 | 2.855956 |
+| 2011 | 2.615768 | 2.595495 |
+| 2012 | 1.335020 | 1.336818 |
+| 2013 | 1.648276 | 1.621059 |
+| 2014 | 1.476552 | 1.525771 |
+| 2015 | 2.043939 | 2.028542 |
+| 2016 | 2.277139 | 2.248819 |
+| 2017 | 3.743138 | 3.757630 |
+| 2018 | 1.341082 | 1.322967 |
+| 2019 | 2.962456 | 3.005151 |
+| 2020 | 1.616525 | 1.598356 |
+| 2021 | 1.689247 | 1.673343 |
+| 2022 | 1.524468 | 1.496522 |
+| 2023 | 2.889408 | 2.856159 |
+| 2024 | 2.808969 | 2.828210 |
+| 2025 | 1.805144 | 1.832307 |
 
 ### Alberta / Prairies
 
 Polygon mask: 1152 cells; area 2089239.68 km².
 Box versus polygon max absolute difference, equal-month: 0.000000 mm/day.
 
+Box mask comparison series by January year (mm/day):
+
+| Year | Day-weighted | Equal-month |
+|---:|---:|---:|
+| 1984 | 0.652843 | 0.649786 |
+| 1985 | 0.692182 | 0.694973 |
+| 1986 | 0.739693 | 0.738309 |
+| 1987 | 0.646262 | 0.650378 |
+| 1988 | 0.707995 | 0.705753 |
+| 1989 | 0.790502 | 0.781533 |
+| 1990 | 0.847697 | 0.843464 |
+| 1991 | 0.792644 | 0.790454 |
+| 1992 | 0.777393 | 0.774830 |
+| 1993 | 0.590057 | 0.585102 |
+| 1994 | 0.901228 | 0.900391 |
+| 1995 | 0.712561 | 0.711460 |
+| 1996 | 0.817789 | 0.815431 |
+| 1997 | 0.883108 | 0.872192 |
+| 1998 | 0.753734 | 0.753909 |
+| 1999 | 0.920303 | 0.915865 |
+| 2000 | 0.737989 | 0.734384 |
+| 2001 | 0.583325 | 0.581163 |
+| 2002 | 0.668591 | 0.668645 |
+| 2003 | 0.757520 | 0.754859 |
+| 2004 | 0.766970 | 0.762018 |
+| 2005 | 0.972153 | 0.957668 |
+| 2006 | 0.812838 | 0.810689 |
+| 2007 | 0.773539 | 0.778086 |
+| 2008 | 0.796019 | 0.793060 |
+| 2009 | 0.864703 | 0.861188 |
+| 2010 | 0.639125 | 0.631251 |
+| 2011 | 0.878292 | 0.872090 |
+| 2012 | 0.603155 | 0.599869 |
+| 2013 | 0.780372 | 0.771064 |
+| 2014 | 0.819494 | 0.811573 |
+| 2015 | 0.800604 | 0.803164 |
+| 2016 | 0.724231 | 0.722432 |
+| 2017 | 0.751435 | 0.754970 |
+| 2018 | 0.753816 | 0.750617 |
+| 2019 | 0.752142 | 0.752844 |
+| 2020 | 0.678627 | 0.675920 |
+| 2021 | 0.612500 | 0.608761 |
+| 2022 | 0.811348 | 0.808272 |
+| 2023 | 0.637459 | 0.636326 |
+| 2024 | 0.593450 | 0.594488 |
+| 2025 | 0.648913 | 0.646201 |
+
 ### Southern Africa
 
 Polygon mask: 1944 cells; area 5378735.22 km².
 Box versus polygon max absolute difference, equal-month: 0.000000 mm/day.
+
+Box mask comparison series by January year (mm/day):
+
+| Year | Day-weighted | Equal-month |
+|---:|---:|---:|
+| 1984 | 2.038952 | 2.029915 |
+| 1985 | 2.821715 | 2.831206 |
+| 1986 | 2.611648 | 2.593661 |
+| 1987 | 1.990145 | 1.983541 |
+| 1988 | 2.961811 | 2.977587 |
+| 1989 | 3.076248 | 3.112840 |
+| 1990 | 2.301187 | 2.291644 |
+| 1991 | 2.752779 | 2.769767 |
+| 1992 | 1.631213 | 1.622322 |
+| 1993 | 2.514261 | 2.535305 |
+| 1994 | 2.632925 | 2.618901 |
+| 1995 | 1.779310 | 1.782937 |
+| 1996 | 3.372695 | 3.373031 |
+| 1997 | 2.998388 | 2.981344 |
+| 1998 | 2.377715 | 2.360964 |
+| 1999 | 3.203309 | 3.207391 |
+| 2000 | 4.008893 | 4.039359 |
+| 2001 | 2.470986 | 2.514386 |
+| 2002 | 2.365898 | 2.351137 |
+| 2003 | 1.961301 | 1.973224 |
+| 2004 | 2.489167 | 2.495330 |
+| 2005 | 2.325362 | 2.309143 |
+| 2006 | 3.544226 | 3.556489 |
+| 2007 | 2.139291 | 2.131062 |
+| 2008 | 2.819192 | 2.800771 |
+| 2009 | 2.981244 | 2.991060 |
+| 2010 | 2.478427 | 2.476404 |
+| 2011 | 3.019212 | 2.985941 |
+| 2012 | 2.479959 | 2.476317 |
+| 2013 | 2.486120 | 2.461064 |
+| 2014 | 3.252008 | 3.255480 |
+| 2015 | 2.361304 | 2.354104 |
+| 2016 | 1.791573 | 1.790209 |
+| 2017 | 3.546059 | 3.565940 |
+| 2018 | 2.470108 | 2.507089 |
+| 2019 | 2.118990 | 2.122565 |
+| 2020 | 2.679636 | 2.689662 |
+| 2021 | 3.415874 | 3.433674 |
+| 2022 | 2.171740 | 2.151535 |
+| 2023 | 2.830772 | 2.879723 |
+| 2024 | 1.875145 | 1.860741 |
+| 2025 | 2.613252 | 2.628538 |
