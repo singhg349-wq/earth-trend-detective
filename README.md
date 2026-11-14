@@ -22,6 +22,16 @@ npm run dev
 ```
 The development server will be available at `http://localhost:5173` (or the port shown in the terminal).
 
+## Local demo
+
+After `npm install` in `frontend/` (once), run from the repository root:
+
+```
+powershell -ExecutionPolicy Bypass -File scripts/run_demo.ps1
+```
+
+The script builds the frontend on the real artifacts in `data/artifacts`, starts the optional local API on port 8000, and serves the page at http://localhost:4173.
+
 ## Data Note
 
 All primary data files (GPCP Monthly v3.3 NetCDF, Natural Earth polygons, MERRA-2 temperature, NOAA Niño 3.4 index) are **not included in this repository**. They must be downloaded separately from the sources listed in `docs/SOURCES.md` and placed in the expected locations described in the project's data preparation documentation (not in this repo). The repository contains only code, configuration, small fixture JSON files for testing, and generated result artifacts under `data/artifacts/` (each < 10 MB).
