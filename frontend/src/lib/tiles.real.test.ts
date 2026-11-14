@@ -136,18 +136,24 @@ describe("real grid artifacts on disk", () => {
             (result.trend.sen_slope_per_decade as number) -
               expected.decoded.slope_per_decade_raw,
           ),
-        ).toBeLessThan(1e-9);
-        expect(result.trend.intercept).toBeCloseTo(expected.decoded.intercept, 6);
+        // The tile stores the slope quantised to 0.001 per decade, so the stored
+        // value may differ from the exact Sen slope by up to half a step.
+        ).toBeLessThanOrEqual(0.0005 + 1e-9);
+        // Intercept follows the quantised slope: half a step (0.00005 per year) times a year near 2000.
+        expect(Math.abs((result.trend.intercept as number) - expected.decoded.intercept)).toBeLessThanOrEqual(0.11);
 
         // The displayed slope must be exactly the browser Sen slope of the
         // decoded series, so the period selector returns the same number for
         // the full period.
         const direct = senSlope(result.years, result.values);
         expect(direct.slopePerDecade).not.toBeNull();
-        expect(result.trend.sen_slope_per_decade).toBeCloseTo(
-          direct.slopePerDecade as number,
-          12,
-        );
+        // The tile stores the slope in 0.001 steps, so allow half a step.
+        expect(
+          Math.abs(
+            (result.trend.sen_slope_per_decade as number) -
+              (direct.slopePerDecade as number),
+          ),
+        ).toBeLessThanOrEqual(0.0005 + 1e-9);
 
         checked += 1;
       }

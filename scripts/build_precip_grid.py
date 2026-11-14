@@ -86,7 +86,7 @@ def cell_sen(years, vals):
     if int(good.sum()) < 10:
         return None
     y, x = np.asarray(years)[good], np.asarray(vals)[good]
-    return float(_sen_slope(y.tolist(), x.tolist())[0])
+    return float(_sen_slope(y.tolist(), x.tolist())[0]) * 10.0  # per decade
 
 
 def color_image(data, vmin, vmax, cmap="viridis"):

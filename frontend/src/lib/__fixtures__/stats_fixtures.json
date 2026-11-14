@@ -2497,7 +2497,7 @@
       ],
       "source_file": "data/artifacts/grid/precip/DJF/-80_-10.json",
       "cell_id": "cell_-4.5_-79.5",
-      "note": "Real tile cell decoded from int16 with scale/offset from index.json. Stored tile slope s=-32768 is not used; the values are."
+      "note": "Real tile cell decoded from int16 with scale/offset from index.json. Stored tile slope s=240 is not used; the values are."
     },
     {
       "name": "grid_m80_m10_cell_m9.5_m79.5",
@@ -2622,7 +2622,7 @@
       ],
       "source_file": "data/artifacts/grid/precip/DJF/-80_-10.json",
       "cell_id": "cell_-9.5_-79.5",
-      "note": "Real tile cell decoded from int16 with scale/offset from index.json. Stored tile slope s=-32768 is not used; the values are."
+      "note": "Real tile cell decoded from int16 with scale/offset from index.json. Stored tile slope s=-11 is not used; the values are."
     },
     {
       "name": "grid_100_m10_cell_m0.5_100.5",
@@ -2747,7 +2747,7 @@
       ],
       "source_file": "data/artifacts/grid/precip/DJF/100_-10.json",
       "cell_id": "cell_-0.5_100.5",
-      "note": "Real tile cell decoded from int16 with scale/offset from index.json. Stored tile slope s=-32768 is not used; the values are."
+      "note": "Real tile cell decoded from int16 with scale/offset from index.json. Stored tile slope s=159 is not used; the values are."
     },
     {
       "name": "grid_100_m10_cell_m4.5_105.5",
@@ -2872,7 +2872,7 @@
       ],
       "source_file": "data/artifacts/grid/precip/DJF/100_-10.json",
       "cell_id": "cell_-4.5_105.5",
-      "note": "Real tile cell decoded from int16 with scale/offset from index.json. Stored tile slope s=-32768 is not used; the values are."
+      "note": "Real tile cell decoded from int16 with scale/offset from index.json. Stored tile slope s=21 is not used; the values are."
     },
     {
       "name": "grid_peru_cell_masked_for_gaps",
