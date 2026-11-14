@@ -28,11 +28,13 @@ Coordinates are west, south, east, north in degrees. Use the native 0.5 degree g
 
 Compare each region's box-mask series with Giovanni's monthly area-averaged series for the same box. First compute Giovanni's monthly values, then apply the same DJF formula. Pass only if mean bias and mean absolute error are each at most 0.5% of the Giovanni series mean, maximum single-year absolute difference is at most max(1% of that mean, 0.05 mm/day), and Sen slopes differ by at most max(2% of Giovanni slope magnitude, 0.005 mm/day/decade).
 
-No Giovanni monthly CSV has been supplied in this worktree. Indonesia and Coastal Peru remain pending until the Giovanni check script passes. The other regions may be listed as unchecked-same-method after automatic checks only; that status does not claim individual validation.
+The Giovanni CSV check is recorded in docs/GIOVANNI_CHECK.md. Indonesia and Coastal Peru are validated only when it passes (validation.status passed). The other regions are listed as unchecked-same-method after automatic checks only; that status does not claim individual validation.
 
 ## Mask diagnostics and box series
 
 Cell fractions use geographic intersection; area weights are spherical cell area multiplied by the fraction (equivalent to cos(latitude) weighting on this grid).
+
+Mask rule: box regions select complete grid cells when the cell centre is inside the region bounds. The native 0.5-degree cell centre is its latitude/longitude coordinate; the 1-degree grid uses centres at the southwest corner plus 0.5 degrees, with tiles partitioning cells by their integer southwest corners. Box-cell weights are full spherical cell areas. Indonesia and coastal Peru polygon masks use fractional geographic intersection; their box comparison series use centre-selected whole cells.
 
 Featured-region values use the native 0.5 degree grid with no regridding. Only the click-any-spot global grid uses 1 degree. The box-mask series select native cell centres inside each box. Compare with Giovanni by taking its monthly area-averaged values first, then applying DJF: day-weighted first (product series), equal-month second (sensitivity).
 

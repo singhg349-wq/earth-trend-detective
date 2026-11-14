@@ -5,11 +5,11 @@ import numpy as np
 from shapely.geometry import box, mapping
 
 from backend.trend.io import read_month
-from backend.trend.regions import BOXES, REGIONS, country_geometry, fractional_mask
+from backend.trend.regions import FLAGSHIP_REGION_IDS, REGIONS, country_geometry, fractional_mask, box_mask
 from backend.trend.seasons import djf_months
 
 
-def build_series(bbox_or_region, start_year, end_year) -> dict:
+def build_series(bbox_or_region, start_year, end_year, equal_month=False) -> dict:
     """Return the DJF contract result for a preset id/spec or [W,S,E,N] box."""
     if isinstance(bbox_or_region, str):
         spec = next((r for r in REGIONS if r["id"] == bbox_or_region), None)
@@ -39,7 +39,12 @@ def build_series(bbox_or_region, start_year, end_year) -> dict:
         raise ValueError("Bounding box must be [west, south, east, north] with positive area")
 
     first, lat, lon, _ = read_month(start_year - 1, 12)
-    frac, area = fractional_mask(lat, lon, geom)
+    if rid in FLAGSHIP_REGION_IDS and isinstance(bbox_or_region, str):
+        # Indonesia and Peru use their Natural Earth polygon geometry with fractional cells.
+        frac, area = fractional_mask(lat, lon, geom)
+    else:
+        # Box presets and custom boxes use complete native cells selected by centre.
+        frac, area = box_mask(lat, lon, bbox)
     weights = frac * area
     years, values, coverage = [], [], []
     for year in range(start_year, end_year + 1):
@@ -51,9 +56,12 @@ def build_series(bbox_or_region, start_year, end_year) -> dict:
             continue
         stack = np.stack(maps)
         import calendar
-        days = np.asarray([calendar.monthrange(y, m)[1] for y, m in djf_months(year)], dtype=float)[:, None, None]
         valid_month = np.isfinite(stack)
-        seasonal = np.nansum(stack * days, axis=0) / np.sum(valid_month * days, axis=0)
+        if equal_month:
+            seasonal = np.nansum(stack, axis=0) / np.sum(valid_month, axis=0)
+        else:
+            days = np.asarray([calendar.monthrange(y, m)[1] for y, m in djf_months(year)], dtype=float)[:, None, None]
+            seasonal = np.nansum(stack * days, axis=0) / np.sum(valid_month * days, axis=0)
         valid = np.isfinite(seasonal) & (weights > 0)
         den = float(weights[valid].sum())
         if den <= 0:

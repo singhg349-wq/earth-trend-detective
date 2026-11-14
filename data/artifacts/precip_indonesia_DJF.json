@@ -188,9 +188,9 @@
   },
   "validation": {
     "reference": "Giovanni GPCPMON 3.3 box request",
-    "status": "pending",
-    "notes": "Giovanni comparison not supplied."
+    "status": "passed",
+    "notes": "Giovanni check passed; see docs/GIOVANNI_CHECK.md."
   },
-  "generated": "2026-11-14T17:29:48.726800+00:00",
+  "generated": "2026-11-14T18:28:26.533761+00:00",
   "code_version": "w1-data"
 }

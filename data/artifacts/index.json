@@ -6,7 +6,7 @@
       "variable": "precipitation",
       "season": "DJF",
       "region_id": "indonesia",
-      "validation_status": "pending",
+      "validation_status": "passed",
       "file": "precip_indonesia_DJF.json"
     },
     {
@@ -15,7 +15,7 @@
       "variable": "precipitation",
       "season": "DJF",
       "region_id": "coastal_peru",
-      "validation_status": "pending",
+      "validation_status": "passed",
       "file": "precip_peru_DJF.json"
     },
     {

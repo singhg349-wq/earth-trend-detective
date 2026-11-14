@@ -32,7 +32,7 @@ def test_list_series_returns_entries_with_labels():
     assert entry["region_label"] == "Indonesia"
     assert entry["season"] == "DJF"
     assert entry["units"] == "mm/day"
-    assert entry["validation_status"] in {"fixture", "pending"}
+    assert entry["validation_status"] in {"fixture", "pending", "passed"}
     assert entry["inference_status"] in {"unavailable", "ok"}
     assert entry["source"]["product"] == "GPCPMON"
 

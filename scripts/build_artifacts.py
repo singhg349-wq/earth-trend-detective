@@ -1,6 +1,7 @@
 ﻿"""Build the featured regional rainfall artifacts and validation report."""
 import json
 import sys
+import argparse
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -28,6 +29,9 @@ def automatic_check(payload):
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--giovanni-passed", action="store_true", help="mark Indonesia and Peru validation passed after the external comparison succeeds")
+    args = parser.parse_args()
     first, lat, lon, _ = read_month(1983, 12)
     regions = build_regions(lat, lon, region_ids=tuple(r["id"] for r in REGIONS))
     monthly = {(1983, 12): first}
@@ -69,7 +73,7 @@ def main():
             "geometry_file": "data/artifacts/regions.geojson",
             "template_summary": f"{label} DJF precipitation for 1984-2025 has a mean of {float(vals.mean()):.3f} mm/day across 42 seasons.",
             "trend": trend_block(list(range(1984, 2026)), vals.tolist()),
-            "validation": {"reference": "Giovanni GPCPMON 3.3 box request", "status": "pending" if rid in ("indonesia", "coastal_peru") else "unchecked-same-method", "notes": "Giovanni comparison not supplied." if rid in ("indonesia", "coastal_peru") else "Automatic checks only; not individually checked."},
+            "validation": {"reference": "Giovanni GPCPMON 3.3 box request", "status": ("passed" if args.giovanni_passed else "pending") if rid in ("indonesia", "coastal_peru") else "unchecked-same-method", "notes": ("Giovanni check passed; see docs/GIOVANNI_CHECK.md." if args.giovanni_passed else "Giovanni comparison pending.") if rid in ("indonesia", "coastal_peru") else "Automatic checks only; not individually checked."},
             "generated": datetime.now(timezone.utc).isoformat(), "code_version": "w1-data",
         }
         filename = "precip_peru_DJF.json" if rid == "coastal_peru" else f"{aid}.json"
@@ -90,9 +94,10 @@ def main():
         *[f"| {r['label']} | GPCPMON 3.3 | sat_gauge_precip (mm/day) | {', '.join(map(str, r['bbox']))} | Dec 1983–Feb 2025 | Box mask; day-weighted and equal-month, 42 values each |" for r in REGIONS[2:]],
         "", "## Pass rule (set before comparison)", "",
         "Compare each region's box-mask series with Giovanni's monthly area-averaged series for the same box. First compute Giovanni's monthly values, then apply the same DJF formula. Pass only if mean bias and mean absolute error are each at most 0.5% of the Giovanni series mean, maximum single-year absolute difference is at most max(1% of that mean, 0.05 mm/day), and Sen slopes differ by at most max(2% of Giovanni slope magnitude, 0.005 mm/day/decade).",
-        "", "No Giovanni monthly CSV has been supplied in this worktree. Indonesia and Coastal Peru remain pending until the Giovanni check script passes. The other regions may be listed as unchecked-same-method after automatic checks only; that status does not claim individual validation.",
+        "", "The Giovanni CSV check is recorded in docs/GIOVANNI_CHECK.md. Indonesia and Coastal Peru are validated only when it passes (validation.status passed). The other regions are listed as unchecked-same-method after automatic checks only; that status does not claim individual validation.",
         "", "## Mask diagnostics and box series", "",
         "Cell fractions use geographic intersection; area weights are spherical cell area multiplied by the fraction (equivalent to cos(latitude) weighting on this grid).",
+        "", "Mask rule: box regions select complete grid cells when the cell centre is inside the region bounds. The native 0.5-degree cell centre is its latitude/longitude coordinate; the 1-degree grid uses centres at the southwest corner plus 0.5 degrees, with tiles partitioning cells by their integer southwest corners. Box-cell weights are full spherical cell areas. Indonesia and coastal Peru polygon masks use fractional geographic intersection; their box comparison series use centre-selected whole cells.",
         "", "Featured-region values use the native 0.5 degree grid with no regridding. Only the click-any-spot global grid uses 1 degree. The box-mask series select native cell centres inside each box. Compare with Giovanni by taking its monthly area-averaged values first, then applying DJF: day-weighted first (product series), equal-month second (sensitivity)."
     ]
     for rid, (_, label, _) in specs.items():

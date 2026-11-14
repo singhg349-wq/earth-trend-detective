@@ -80,18 +80,22 @@ def build_regions(lat, lon, region_ids=FLAGSHIP_REGION_IDS):
             geoms[rid] = box(*spec["bbox"])
     out = {}
     for rid, geom in geoms.items():
-        frac, area = fractional_mask(lat, lon, geom)
+        if rid in FLAGSHIP_REGION_IDS:
+            # These two presets are Natural Earth regions, so retain fractional clipping.
+            frac, area = fractional_mask(lat, lon, geom)
+        else:
+            # The remaining presets are boxes: include whole cells by centre.
+            frac, area = box_mask(lat, lon, BOXES[rid])
         weighted = frac * area
         out[rid] = {"geometry": geom, "fraction": frac, "area_weights": weighted,
                     "cells_used": int(np.count_nonzero(frac)), "area_km2": float(weighted.sum())}
     return out
 
 def box_mask(lat, lon, bounds):
-    """Select full cells whose centres lie inside the requested box."""
-    lat = np.asarray(lat, dtype=float)
-    lon = np.asarray(lon, dtype=float)
+    """Select whole grid cells whose centres are inside a Giovanni-style box."""
+    lat, lon = np.asarray(lat, dtype=float), np.asarray(lon, dtype=float)
     west, south, east, north = bounds
-    _, areas = fractional_mask(lat, lon, box(*bounds))
-    inside = ((lon[None, :] >= west) & (lon[None, :] <= east) &
-              (lat[:, None] >= south) & (lat[:, None] <= north))
-    return inside.astype(float), areas * inside
+    frac = ((lat[:, None] >= south) & (lat[:, None] <= north) &
+            (lon[None, :] >= west) & (lon[None, :] <= east)).astype(float)
+    _, area = fractional_mask(lat, lon, box(*bounds))
+    return frac, area
