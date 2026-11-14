@@ -34,7 +34,7 @@
  * FDR flag is null, exactly as the base contract behaves today.
  */
 
-import { median } from "./stats";
+import { median, senSlope } from "./stats";
 import type {
   CellSeriesOutcome,
   ContractResult,
@@ -61,6 +61,13 @@ const DEFAULT_BASE_PATH = "data/artifacts/grid";
 const TILE_SIZE_DEG = 10;
 const EARTH_RADIUS_KM = 6371.0088;
 const DEFAULT_FILL_INT16 = -32768;
+/**
+ * docs/GRID_FORMAT.md section 5.3: a cell needs at least 10 valid years before
+ * a full-period Sen slope is stored. The same threshold gates the fallback
+ * below, so a browser-computed slope never appears where the writer would have
+ * written fill on purpose.
+ */
+const SLOPE_MIN_VALID_YEARS = 10;
 
 export interface GridSource {
   product: string;
@@ -93,8 +100,13 @@ export interface GridVariableMeta {
   regrid_note?: string;
   source: GridSource;
   years_by_season: Record<string, number[]>;
-  /** `"ALL_648"` or the sorted tile keys that actually exist on disk. */
-  available_tiles?: "ALL_648" | string[];
+  /**
+   * `"ALL_648"`, one flat list for every season, or the per-season map the
+   * real pipeline writes (`{ "DJF": ["-80_-10", ...], ... }`). A missing season
+   * entry means "not known here", so the fetch is attempted and a 404 still
+   * becomes a no-data result.
+   */
+  available_tiles?: "ALL_648" | string[] | Record<string, string[]>;
 }
 
 export interface GridIndex {
@@ -200,6 +212,28 @@ function normaliseBasePath(basePath: string): string {
 
 function joinUrl(basePath: string, path: string): string {
   return basePath.length === 0 ? path : `${basePath}/${path}`;
+}
+
+/**
+ * Whether `index.json` says a tile exists for this season.
+ *
+ * The format allows three spellings: `"ALL_648"`, a flat string array, or the
+ * per-season object the real pipeline writes. If the season has no entry we
+ * return true and let the HTTP request decide; a 404 is already handled as a
+ * clean no-data result.
+ */
+function isTileListed(
+  available: GridVariableMeta["available_tiles"],
+  season: string,
+  tileKey: string,
+): boolean {
+  if (available === undefined || available === "ALL_648") return true;
+  if (Array.isArray(available)) return available.includes(tileKey);
+  if (isObject(available)) {
+    const seasonTiles = available[season];
+    if (Array.isArray(seasonTiles)) return seasonTiles.includes(tileKey);
+  }
+  return true;
 }
 
 function locateCell(lon: number, lat: number): CellLocation {
@@ -595,7 +629,7 @@ export async function fetchCellSeries(
   );
 
   const availableTiles = variableMeta.available_tiles;
-  if (Array.isArray(availableTiles) && !availableTiles.includes(location.tileKey)) {
+  if (!isTileListed(availableTiles, request.season, location.tileKey)) {
     return noData(
       "no-tile",
       "No data (ocean or outside sensor domain)",
@@ -722,13 +756,22 @@ export async function fetchCellSeries(
     return valid && decoded !== null ? decoded : 0;
   });
 
-  const slope = decodeInt16(
+  const storedSlope = decodeInt16(
     cell.s,
     variableMeta.slope_scale,
     variableMeta.slope_offset,
     variableMeta.slope_decimals,
     fillInt16,
   );
+  // Some real artifacts carry `s: -32768` in every cell even when the values
+  // run for 42 years. The stored slope is the Sen slope over the decoded series
+  // (docs/GRID_FORMAT.md section 5.3), so recomputing that same estimator from
+  // the decoded values restores the documented number instead of showing no
+  // trend. The 10-year gate is the section 5.3 threshold for storing a slope.
+  const slope =
+    storedSlope === null && validValues.length >= SLOPE_MIN_VALID_YEARS
+      ? senSlope(validYears, validValues).slopePerDecade
+      : storedSlope;
   const period: [number, number] = [
     validYears[0] as number,
     validYears[validYears.length - 1] as number,

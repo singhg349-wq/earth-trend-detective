@@ -9,6 +9,9 @@ interface ExpectedSlope {
   intercept: number | null;
   n: number;
   period: [number, number] | null;
+  /** True when backend.trend.stats.sen_slope returns a number for this block. */
+  python_comparable: boolean;
+  python_note: string;
 }
 
 interface PeriodFixture {
@@ -19,6 +22,9 @@ interface PeriodFixture {
 
 interface StatsFixtureCase {
   name: string;
+  kind: string;
+  source_file?: string;
+  masked_years?: number[];
   years: number[];
   values: (number | null)[];
   expected_full: ExpectedSlope;
@@ -27,6 +33,7 @@ interface StatsFixtureCase {
 
 const fixtureData = statsFixtures as unknown as {
   source: string;
+  python_min_points: number;
   fill_value: number;
   cases: StatsFixtureCase[];
 };
@@ -49,21 +56,70 @@ function expectMatches(actual: ReturnType<typeof senSlope>, expected: ExpectedSl
 }
 
 describe("stats fixtures", () => {
-  it("records the Python-side source used to build expectations", () => {
-    expect(["scipy.stats.theilslopes", "backend.trend.stats.sen_slope"]).toContain(
-      fixtureData.source,
-    );
-    expect(fixtureData.cases.length).toBeGreaterThan(5);
+  it("records the Python backend as the source of every comparable slope", () => {
+    expect(fixtureData.source).toBe("backend.trend.stats.sen_slope");
+    expect(fixtureData.python_min_points).toBe(8);
+    expect(fixtureData.cases.length).toBeGreaterThan(20);
   });
 
-  it("matches Python for every full series", () => {
+  it("compares at least ten series with Python, including real data", () => {
+    const comparable = fixtureData.cases.filter(
+      (fixture) => fixture.expected_full.python_comparable,
+    );
+    expect(comparable.length).toBeGreaterThanOrEqual(10);
+
+    const kinds = new Set(comparable.map((fixture) => fixture.kind));
+    expect(kinds.has("regional")).toBe(true);
+    expect(kinds.has("grid-cell")).toBe(true);
+    expect(
+      comparable.some((fixture) => (fixture.source_file ?? "").includes("data/artifacts/")),
+    ).toBe(true);
+  });
+
+  it("marks short blocks as descriptive-only instead of claiming Python agreement", () => {
+    for (const fixture of fixtureData.cases) {
+      const blocks = [
+        fixture.expected_full,
+        ...fixture.periods.map((period) => period.expected),
+      ];
+      for (const block of blocks) {
+        if (block.n < fixtureData.python_min_points) {
+          expect(block.python_comparable, fixture.name).toBe(false);
+          expect(block.python_note, fixture.name).toContain("NaN");
+        }
+      }
+    }
+    const shortBlocks = fixtureData.cases.flatMap((fixture) =>
+      fixture.periods.filter((period) => !period.expected.python_comparable),
+    );
+    expect(shortBlocks.length).toBeGreaterThan(0);
+  });
+
+  it("includes real series with fill gaps and a short sub-period", () => {
+    const withGaps = fixtureData.cases.filter(
+      (fixture) =>
+        (fixture.masked_years?.length ?? 0) > 0 &&
+        fixture.values.some((value) => value === null || value === fixtureData.fill_value),
+    );
+    expect(withGaps.length).toBeGreaterThanOrEqual(2);
+
+    const shortPeriods = fixtureData.cases.flatMap((fixture) =>
+      fixture.periods.filter(
+        (period) =>
+          period.end_year - period.start_year + 1 < fixtureData.python_min_points,
+      ),
+    );
+    expect(shortPeriods.length).toBeGreaterThan(0);
+  });
+
+  it("matches the stored Python expectations for every full series", () => {
     for (const fixture of fixtureData.cases) {
       const actual = senSlope(fixture.years, fixture.values);
       expectMatches(actual, fixture.expected_full);
     }
   });
 
-  it("matches Python for every sub-period", () => {
+  it("matches the stored Python expectations for every sub-period", () => {
     for (const fixture of fixtureData.cases) {
       for (const period of fixture.periods) {
         const actual = senSlopeForPeriod(

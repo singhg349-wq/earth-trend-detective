@@ -226,3 +226,8 @@ frontend/dist/
 *.nc
 *.nc4
 data/raw/
+
+# The frontend keeps hand-written source under src/lib; the Python packaging
+# rule above ignores every directory named lib, so re-include this one.
+!frontend/src/lib/
+!frontend/src/lib/**
