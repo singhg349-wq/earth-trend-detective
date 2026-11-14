@@ -5,7 +5,7 @@ import numpy as np
 from shapely.geometry import box, mapping
 
 from backend.trend.io import read_month
-from backend.trend.regions import BOXES, REGIONS, country_geometry, fractional_mask
+from backend.trend.regions import FLAGSHIP_REGION_IDS, REGIONS, country_geometry, fractional_mask, box_mask
 from backend.trend.seasons import djf_months
 
 
@@ -39,7 +39,12 @@ def build_series(bbox_or_region, start_year, end_year, equal_month=False) -> dic
         raise ValueError("Bounding box must be [west, south, east, north] with positive area")
 
     first, lat, lon, _ = read_month(start_year - 1, 12)
-    frac, area = fractional_mask(lat, lon, geom)
+    if rid in FLAGSHIP_REGION_IDS and isinstance(bbox_or_region, str):
+        # Indonesia and Peru use their Natural Earth polygon geometry with fractional cells.
+        frac, area = fractional_mask(lat, lon, geom)
+    else:
+        # Box presets and custom boxes use complete native cells selected by centre.
+        frac, area = box_mask(lat, lon, bbox)
     weights = frac * area
     years, values, coverage = [], [], []
     for year in range(start_year, end_year + 1):

@@ -108,6 +108,8 @@ def write_tiles(season, years, vals, coverage):
             for lat_sw in range(tile_lat, tile_lat + 10):
                 row = 89 - lat_sw
                 for lon_sw in range(tile_lon, tile_lon + 10):
+                    # Each 1-degree cell is identified by its centre (SW corner + 0.5°).
+                    # Tiles partition those cells by their integer SW-corner coordinates.
                     col = lon_sw + 180
                     series = vals[:, row, col]
                     if not np.isfinite(series).any():

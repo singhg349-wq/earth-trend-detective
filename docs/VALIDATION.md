@@ -15,7 +15,7 @@ The Giovanni CSV check is recorded in docs/GIOVANNI_CHECK.md. Indonesia and coas
 
 ## Mask diagnostics and box series
 
-Polygon masks use fractional geographic intersection. Giovanni box masks select complete grid cells whose centres lie within the reported Data Bounding Box; area weights are spherical cell area.
+Mask rule: box regions select complete grid cells when the cell centre is inside the region bounds. The native 0.5-degree cell centre is its latitude/longitude coordinate; the 1-degree grid uses centres at the southwest corner plus 0.5 degrees, with tiles partitioning cells by their integer southwest corners. Box-cell weights are full spherical cell areas. Indonesia and coastal Peru use Natural Earth polygon masks with fractional geographic intersection, including fractional weights along polygon boundaries; their box comparison series still use centre-selected whole cells.
 
 The following box-mask comparison series use the native 0.5 degree grid. Compare with Giovanni by taking Giovanni monthly area-averaged values first, then applying DJF: day-weighted first (the product series), equal-month second (sensitivity).
 

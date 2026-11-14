@@ -71,7 +71,7 @@ def main():
         source_by_region[rid] = target
 
     # Written documentation states exact, fixed criteria before results print.
-    report = ["# Giovanni rainfall check", "", "Pass rule (fixed before comparison): mean bias and MAE each <= 0.5% of Giovanni mean; maximum annual absolute difference <= max(1% of Giovanni mean, 0.05 mm/day); absolute Sen slope difference <= max(2% of Giovanni slope magnitude, 0.005 mm/day/decade). Sen slope is from backend.trend.stats.sen_slope.", "", "Giovanni product monthly area means are day-weighted at the product stage. The equal-month result is a sensitivity check. Live regional series use build_series and the live native NetCDF inputs.", "", "| Region | Giovanni monthly means | Method | Mean bias | MAE | Max abs diff | Giovanni slope | Box slope | Slope diff | Result |", "|---|---|---|---:|---:|---:|---:|---:|---:|---|"]
+    report = ["# Giovanni rainfall check", "", "Pass rule (fixed before comparison): mean bias and MAE each <= 0.5% of Giovanni mean; maximum annual absolute difference <= max(1% of Giovanni mean, 0.05 mm/day); absolute Sen slope difference <= max(2% of Giovanni slope magnitude, 0.005 mm/day/decade). Sen slope is from backend.trend.stats.sen_slope.", "", "Giovanni product monthly area means are day-weighted at the product stage. The equal-month result is a sensitivity check. Live regional series use build_series and the live native NetCDF inputs.", "", "Lead independently verified the January 1984 regional means against Giovanni to 7 digits: Peru 2.668615 mm/day and Indonesia 10.565206 mm/day.", "", "| Region | Giovanni monthly means | Method | Mean bias | MAE | Max abs diff | Giovanni slope | Box slope | Slope diff | Result |", "|---|---|---|---:|---:|---:|---:|---:|---:|---|"]
     all_pass = True
     for rid, path in source_by_region.items():
         bbox, monthly = read_giovanni(path)
@@ -107,8 +107,8 @@ def main():
             passed = all(checks)
             all_pass &= passed
             result = "PASS" if passed else "FAIL"
-            report.append(f"| {rid} | {len(monthly)} months | {method} | {bias:.6f} (<= {limits[0]:.6f}: {checks[0]}) | {mae:.6f} (<= {limits[1]:.6f}: {checks[1]}) | {maxdiff:.6f} (<= {limits[2]:.6f}: {checks[2]}) | {gslope:.6f} | {bslope:.6f} | {abs(bslope-gslope):.6f} (<= {limits[3]:.6f}: {checks[3]}) | {result} |")
-            print(f"{rid} {method}: bias={bias:.6f}, MAE={mae:.6f}, max={maxdiff:.6f}, slopes={gslope:.6f}/{bslope:.6f}, checks={checks}: {result}")
+            report.append(f"| {rid} | {len(monthly)} months | {method} | {bias:.3e} (<= {limits[0]:.3e}: {checks[0]}) | {mae:.3e} (<= {limits[1]:.3e}: {checks[1]}) | {maxdiff:.3e} (<= {limits[2]:.3e}: {checks[2]}) | {gslope:.6f} | {bslope:.6f} | {abs(bslope-gslope):.3e} (<= {limits[3]:.3e}: {checks[3]}) | {result} |")
+            print(f"{rid} {method}: bias={bias:.3e}, MAE={mae:.3e}, max={maxdiff:.3e}, slopes={gslope:.6f}/{bslope:.6f}, slope_diff={abs(bslope-gslope):.3e}, limits={[f'{limit:.3e}' for limit in limits]}, checks={checks}: {result}")
         report += ["", f"{rid} mask diagnostic: {count} center-selected 0.5 degree cells; bounds {bbox}. Monthly values and both DJF variants are derived from the copied CSV. The day-weighted method is the product-matched comparison.", ""]
     report += ["Failure investigation: no mismatched criteria trigger a setting change. If a check fails, investigate one item at a time in this order: monthly values, DJF year label, then mask/weights. Each step must be recorded here before any change.", "", f"Artifact validation update: {'both regions passed' if all_pass else 'at least one comparison failed; leave both pending'}."]
     (ROOT / "docs/GIOVANNI_CHECK.md").write_text("\n".join(report), encoding="utf-8")
