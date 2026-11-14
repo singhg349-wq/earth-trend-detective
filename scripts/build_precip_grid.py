@@ -11,6 +11,7 @@ from PIL import Image
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from backend.trend.io import read_month
+from backend.trend.stats import fdr_bh, inference_block
 
 SEASONS = {
     "ANN": ([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], "Calendar year"),
@@ -85,7 +86,7 @@ def cell_sen(years, vals):
     if int(good.sum()) < 10:
         return None
     y, x = np.asarray(years)[good], np.asarray(vals)[good]
-    return float(_sen_slope(y.tolist(), x.tolist()))
+    return float(_sen_slope(y.tolist(), x.tolist())[0])
 
 
 def color_image(data, vmin, vmax, cmap="viridis"):
@@ -97,7 +98,7 @@ def color_image(data, vmin, vmax, cmap="viridis"):
     return Image.fromarray(rgba, "RGBA").resize((360, 180), Image.Resampling.BILINEAR).convert("P", palette=Image.Palette.ADAPTIVE, colors=256)
 
 
-def write_tiles(season, years, vals, coverage):
+def write_tiles(season, years, vals, coverage, fdr_flags, strict_flags):
     out = ROOT / "data" / "artifacts" / "grid" / "precip" / season
     out.mkdir(parents=True, exist_ok=True)
     available = []
@@ -119,7 +120,9 @@ def write_tiles(season, years, vals, coverage):
                     cs = [int(np.clip(np.rint(c * 1000), 0, 1000)) if q != FILL else 0 for c, q in zip(coverage[:, row, col], qv)]
                     compact = 1000 if all((q == FILL and c == 0) or (q != FILL and c == 1000) for q, c in zip(qv, cs)) else cs
                     cell_id = f"cell_{lat_sw + 0.5:.1f}_{lon_sw + 0.5:.1f}"
-                    cells[cell_id] = {"s": qs, "v": qv, "c": compact}
+                    cells[cell_id] = {"s": qs, "v": qv, "c": compact,
+                                      "fdr_significant": bool(fdr_flags[row, col]),
+                                      "strict_check_pass": strict_flags[row, col]}
             if cells:
                 key = f"{tile_lon}_{tile_lat}"
                 available.append(key)
@@ -140,9 +143,20 @@ def build():
     for season, (months, label) in SEASONS.items():
         years = YEARS[season]
         vals, coverage = seasonal_values(monthly, season, years)
+        pvalues = np.full((180, 360), np.nan, dtype=np.float64)
+        strict_flags = np.full((180, 360), None, dtype=object)
+        for row in range(180):
+            for col in range(360):
+                decoded = np.round(vals[:, row, col] / SCALE) * SCALE
+                inference = inference_block(years, decoded, alpha=0.05)
+                if inference["p_value"] is not None:
+                    pvalues[row, col] = inference["p_value"]
+                strict_flags[row, col] = inference["strict_check_pass"]
+        fdr_flags = fdr_bh(pvalues, q=0.10).reshape(180, 360)
         meta["seasons"][season] = {"code": season, "year_label": label, "months": months, "aggregation": "day-weighted mean of monthly rates"}
         meta["variables"]["precip"]["years_by_season"][season] = years
-        meta["variables"]["precip"]["available_tiles"][season] = write_tiles(season, years, vals, coverage)
+        meta["variables"]["precip"]["available_tiles"][season] = write_tiles(
+            season, years, vals, coverage, fdr_flags, strict_flags)
         # Fixed cross-year display scale for each season.
         vmin, vmax = 0., 20.
         frames_dir = root / "timelapse" / f"precip_{season}"
@@ -156,6 +170,32 @@ def build():
                 decoded = np.round(vals[:, row, col] / SCALE) * SCALE
                 slopes[row, col] = cell_sen(years, decoded)
         color_image(slopes, -2., 2., "coolwarm").save(root / "grid" / "precip" / f"trend_{season}.png", optimize=True)
+        # Transparent EPSG:4326 overlay: a small diagonal hatch in each FDR cell.
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+        from matplotlib.patches import Rectangle
+        fig, ax = plt.subplots(figsize=(12, 6), dpi=30)
+        ax.set_xlim(-180, 180)
+        ax.set_ylim(-90, 90)
+        ax.set_aspect("auto")
+        ax.axis("off")
+        for row, col in zip(*np.nonzero(fdr_flags)):
+            lat_sw = 89 - row
+            lon_sw = col - 180
+            ax.add_patch(Rectangle((lon_sw, lat_sw), 1, 1, fill=False,
+                                   hatch="///", edgecolor=(0, 0, 0, 0.8), linewidth=0))
+        fig.subplots_adjust(0, 0, 1, 1)
+        fig.savefig(root / "grid" / "precip" / f"trend_{season}_fdr.png",
+                    transparent=True, dpi=30, bbox_inches=None, pad_inches=0)
+        plt.close(fig)
+        # PNG world files use pixel-centre coordinates; the projection is WGS 84.
+        for stem in (f"trend_{season}", f"trend_{season}_fdr"):
+            (root / "grid" / "precip" / f"{stem}.pgw").write_text(
+                "1\n0\n0\n-1\n-179.5\n89.5\n", encoding="ascii")
+            (root / "grid" / "precip" / f"{stem}.prj").write_text(
+                'GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563]],'
+                'PRIMEM["Greenwich",0],UNIT["degree",0.0174532925199433]]', encoding="ascii")
         print(f"Built {season}: {len(years)} frames", flush=True)
     p = root / "grid" / "index.json"
     p.parent.mkdir(parents=True, exist_ok=True)
