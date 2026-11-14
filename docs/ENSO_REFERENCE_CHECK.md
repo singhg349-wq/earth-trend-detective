@@ -1,0 +1,17 @@
+# Independent correlation reference check
+
+## SciPy cross-check
+
+Using the same 42 rainfall values and January ONI values as the artifacts, SciPy independently reproduces the primary Sen-detrended Spearman values: Indonesia `rs = -0.2293979418`; coastal Peru `rs = -0.2204845636`. SciPy's Pearson correlation after ordinary least-squares (OLS) linear detrending gives Indonesia `r = -0.2584216997` and coastal Peru `r = -0.1550912046`. The raw, undetrended Pearson comparisons are `-0.2356911764` and `-0.1588248639`, respectively. OLS/Pearson is the number to compare with a Pearson/OLS Climate Explorer result; it is not the primary result. Differences can remain if the selected index data or preprocessing differs.
+
+## Reproduce a matching Pearson/OLS comparison in KNMI Climate Explorer
+
+The site interface and available index catalog can change. The essential alignment is to use one annual value per January-year: each rainfall entry is already a day-weighted DJF mean, and each ONI entry is the January ONI value for that same year. Do not ask the site to average December, January, and February ONI rows again.
+
+1. Open [KNMI Climate Explorer](https://climexp.knmi.nl/) and go to its user-defined time-series upload or paste option.
+2. Prepare two year/value series with exactly 42 rows, years `1984` through `2025`: rainfall from `data/artifacts/precip_indonesia_DJF.json` or `precip_peru_DJF.json` (choose one region), and the matching `oni_january_c` column from `data/reference/enso/oni_jan_1984_2025.csv`. Values are paired by the year column. The rainfall values are in mm/day and the ONI values are in °C anomaly. Upload/paste the rainfall series as a user-defined series. Select CPC ONI if the catalog provides it; if only Niño 3.4 is listed, that is a different index and should be recorded as such. For exact index alignment, upload/paste the January ONI series from the project CSV.
+3. Select the rainfall series and choose **correlate with another time series**. Select CPC ONI (or the uploaded January ONI series) as the comparison index. Restrict both series to 1984–2025. The rainfall is already a DJF seasonal value, labeled by January year. Set its time base to annual/yearly values. If KNMI asks for the index month or season, use the January-centered DJF value with one ONI value (one-month averaging); do not average the December, January, and February ONI entries again. Use lag zero.
+4. Leave rank correlation unchecked so the reported statistic is Pearson. Turn on the site's linear detrending option for both paired series, if it offers detrending of both. The matching reference uses OLS straight-line detrending independently on each series. Do not use a lag or running correlation.
+5. Record the actual years retained, the reported Pearson correlation, and any missing-data or detrending settings. Compare the correlation with the OLS/Pearson values above (Indonesia `-0.2584`; coastal Peru `-0.1551`). Do not compare this Pearson/OLS number directly with the primary Sen-detrended Spearman result.
+
+The rainfall time series supplied here is the project artifact's box-mask product: GPCPMON 3.3, day-weighted DJF, 0.5° grid, with the region boxes documented in the artifact metadata. A Climate Explorer region or gridded precipitation selection may use different spatial cells, product, and weighting; use the pasted series for the closest numeric comparison. Even a close match is a method check, not independent confirmation of causation or uncertainty calibration.

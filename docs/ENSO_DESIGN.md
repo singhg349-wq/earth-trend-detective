@@ -34,7 +34,7 @@ For each region, report a table of mean day-weighted DJF rainfall in El Niño ye
 
 Report for each region: matched n and years, excluded years and reasons, `rs`, both lag-1 autocorrelations, `N_eff`, approximate two-sided p-value, block-bootstrap interval and settings, and both threshold comparison rows with counts. If fewer than 20 matched years remain, label inference exploratory and explain the limitation. Report signs regardless of whether they match expectations.
 
-Use only the safe wording templates in `docs/ENSO_CRITIQUE.md` (method; clear association; weak/uncertain association; trend versus year-to-year). Do not write “proves,” “causes,” “drives the 42-year trend,” or “confirms.” Do not display ENSO in the app until independent validation is complete.
+Use only the safe wording templates in `docs/ENSO_CRITIQUE.md` (method; clear association; weak/uncertain association; trend versus year-to-year). Avoid causal or confirmatory language. Do not display ENSO in the app until independent validation is complete.
 
 ## Independent reference check
 
