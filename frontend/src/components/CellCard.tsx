@@ -1,4 +1,5 @@
 import type { CellSeriesOutcome } from '../lib/tiles';
+import { validationLabel } from '../data/validation';
 import Chart from './Chart';
 import InferenceBlock from './InferenceBlock';
 import PeriodCompare from './PeriodCompare';
@@ -85,6 +86,14 @@ export default function CellCard({
   const minCoverage = coverage.length ? Math.min(...coverage) : null;
   const slope = doc.trend.sen_slope_per_decade;
   const period = doc.trend.period;
+  const validation = doc.validation.status;
+  const validationText = validationLabel(validation) ?? validation;
+  const validationDetail =
+    validation === 'passed'
+      ? 'This cell has been checked against Giovanni.'
+      : validation === 'pending'
+        ? 'A Giovanni check for this cell is still pending.'
+        : 'Only the featured regions get the independent reference check; this clicked cell uses the same processing and estimator.';
 
   return (
     <article className="card cell-card">
@@ -97,15 +106,13 @@ export default function CellCard({
           </p>
         </div>
         <div className="tag-column">
-          <span className="tag tag-unchecked">unchecked-same-method</span>
+          <span className={`tag tag-${validation}`}>{validationText}</span>
           {fixture && <span className="tag tag-fixture">fixture</span>}
         </div>
       </header>
 
       <p className="cell-label">
-        <strong>Same method, not individually checked.</strong> Only the featured
-        regions get the independent reference check; this clicked cell uses the same
-        processing and estimator.
+        <strong>{validationText}.</strong> {validationDetail}
       </p>
 
       <Chart years={doc.years} values={doc.values} units={doc.units} />

@@ -105,6 +105,7 @@ async function prepareGrid() {
 const FDR_CELL_FIELDS = [
   'passes_fdr',
   'fdr_pass',
+  'fdr_significant',
   'significant',
   'sig',
   'hatch',
@@ -198,7 +199,8 @@ async function importGridTrendMaps(destination, realFiles) {
   // The data worker writes full-period trend maps as
   // grid/<variable>/trend_<SEASON>.png. Copy them into the trend-map folder so
   // the app can show them, and pair an optional significance hatch mask named
-  // trend_<SEASON>_hatch.png (or fdr_<SEASON>.png) next to the slope image.
+  // trend_<SEASON>_fdr.png, trend_<SEASON>_hatch.png or fdr_<SEASON>.png next
+  // to the slope image. A missing hatch is normal and is not reported.
   const gridRoot = path.join(artifactsDir, 'grid');
   if (!(await exists(gridRoot))) return;
 
@@ -222,7 +224,9 @@ async function importGridTrendMaps(destination, realFiles) {
       if (!file.endsWith('.png')) continue;
       const slope = /^trend_(ANN|DJF|MAM|JJA|SON)\.png$/.exec(file);
       const hatch = /^trend_(ANN|DJF|MAM|JJA|SON)_hatch\.png$/.exec(file);
-      const fdr = /^fdr_(ANN|DJF|MAM|JJA|SON)\.png$/.exec(file);
+      const fdr =
+        /^trend_(ANN|DJF|MAM|JJA|SON)_fdr\.png$/.exec(file) ??
+        /^fdr_(ANN|DJF|MAM|JJA|SON)\.png$/.exec(file);
       if (!slope && !hatch && !fdr) continue;
       const season = (slope ?? hatch ?? fdr)[1];
       const targetName = slope ? `${season}.png` : `${season}_hatch.png`;
@@ -279,7 +283,7 @@ async function prepareTrendMaps() {
   return entries;
 }
 
-function summarize(doc, fixture) {
+function summarize(doc, fixture, indexEntry) {
   const region = doc.region ?? {};
   const season = doc.season ?? {};
   const source = doc.source ?? {};
@@ -294,7 +298,8 @@ function summarize(doc, fixture) {
     region_id: region.id ?? '',
     region_label: regionLabel,
     season: season.code ?? '',
-    validation_status: validation.status ?? 'unknown',
+    validation_status:
+      validation.status ?? indexEntry?.validation_status ?? 'unknown',
     inference_status: inference.status ?? 'unknown',
     fixture,
     source: {
@@ -309,17 +314,51 @@ await mkdir(path.join(outDir, 'series'), { recursive: true });
 
 // Fixtures first so that real artifacts replace them when both exist.
 const collected = new Map();
-for (const [directory, fixture] of [
-  [fixturesDir, true],
-  [artifactsDir, false],
-]) {
-  for (const name of await listNames(directory)) {
+for (const name of await listNames(fixturesDir)) {
+  if (!name.endsWith('.json')) continue;
+  if (name === 'index.json' || name === 'regions.json') continue;
+  const doc = await readJson(path.join(fixturesDir, name));
+  if (!doc || !Array.isArray(doc.years) || !doc.region) continue;
+  const id = doc.id ?? name.replace(/\.json$/, '');
+  collected.set(id, { doc, fixture: true, directory: fixturesDir, name });
+}
+
+// The real artifact list is data/artifacts/index.json when it carries entries.
+// Its `file` field points at the series document; ids not listed are left out.
+// An empty or missing list falls back to scanning the artifact folder so the
+// build still works before the index is generated.
+const artifactIndex = await readJson(path.join(artifactsDir, 'index.json'));
+const indexed = Array.isArray(artifactIndex?.artifacts)
+  ? artifactIndex.artifacts
+  : [];
+if (indexed.length > 0) {
+  for (const entry of indexed) {
+    if (!entry || typeof entry.id !== 'string') continue;
+    const fileName =
+      typeof entry.file === 'string' && path.basename(entry.file) === entry.file
+        ? entry.file
+        : `${entry.id}.json`;
+    const doc = await readJson(path.join(artifactsDir, fileName));
+    if (!doc || !Array.isArray(doc.years) || !doc.region) continue;
+    // The copied document must keep the id its own file declares, because the
+    // client rejects a series whose id does not match the request.
+    const id = typeof doc.id === 'string' && doc.id ? doc.id : entry.id;
+    collected.set(id, {
+      doc,
+      fixture: false,
+      directory: artifactsDir,
+      name: fileName,
+      indexEntry: entry,
+    });
+  }
+} else {
+  for (const name of await listNames(artifactsDir)) {
     if (!name.endsWith('.json')) continue;
     if (name === 'index.json' || name === 'regions.json') continue;
-    const doc = await readJson(path.join(directory, name));
+    const doc = await readJson(path.join(artifactsDir, name));
     if (!doc || !Array.isArray(doc.years) || !doc.region) continue;
     const id = doc.id ?? name.replace(/\.json$/, '');
-    collected.set(id, { doc, fixture, directory, name });
+    collected.set(id, { doc, fixture: false, directory: artifactsDir, name });
   }
 }
 
@@ -371,7 +410,7 @@ const grid = await prepareGrid();
 const trendMaps = await prepareTrendMaps();
 
 const series = [...collected.values()]
-  .map((entry) => summarize(entry.doc, entry.fixture))
+  .map((entry) => summarize(entry.doc, entry.fixture, entry.indexEntry))
   .sort(
     (a, b) =>
       a.region_label.localeCompare(b.region_label) ||

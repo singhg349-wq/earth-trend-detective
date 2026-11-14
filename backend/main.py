@@ -84,7 +84,11 @@ def _scan(directory: Path, fixture: bool) -> Dict[str, Dict[str, Any]]:
 
 
 def _index_overrides() -> Dict[str, Dict[str, Any]]:
-    """Read an optional data/artifacts/index.json with a series list."""
+    """Read an optional data/artifacts/index.json entry list.
+
+    The builder writes an ``artifacts`` list; older hand-written files may use
+    ``series``. When either list is present, only those ids are listed.
+    """
     path = ARTIFACTS_DIR / "index.json"
     if not path.is_file():
         return {}
@@ -92,7 +96,11 @@ def _index_overrides() -> Dict[str, Dict[str, Any]]:
         doc = _read_json(path)
     except (OSError, json.JSONDecodeError):
         return {}
-    items = doc.get("series") if isinstance(doc, dict) else None
+    if not isinstance(doc, dict):
+        return {}
+    items = doc.get("artifacts")
+    if not isinstance(items, list):
+        items = doc.get("series")
     if not isinstance(items, list):
         return {}
     allowed = {
@@ -102,7 +110,6 @@ def _index_overrides() -> Dict[str, Dict[str, Any]]:
         "region_id",
         "region_label",
         "season",
-        "validation_status",
         "inference_status",
         "fixture",
     }
@@ -117,10 +124,20 @@ def _index_overrides() -> Dict[str, Dict[str, Any]]:
 def _series_entries() -> List[Dict[str, Any]]:
     # Fixtures first, artifacts second so real results replace placeholders.
     entries = _scan(FIXTURES_DIR, fixture=True)
-    entries.update(_scan(ARTIFACTS_DIR, fixture=False))
-    for series_id, fields in _index_overrides().items():
-        if series_id in entries:
-            entries[series_id].update(fields)
+    artifacts = _scan(ARTIFACTS_DIR, fixture=False)
+    overrides = _index_overrides()
+    # When the real index carries entries, an artifact missing from it is not
+    # listed. An empty or missing index keeps the folder scan for early builds.
+    if overrides:
+        artifacts = {
+            series_id: entry
+            for series_id, entry in artifacts.items()
+            if series_id in overrides
+        }
+        for series_id, fields in overrides.items():
+            if series_id in artifacts:
+                artifacts[series_id].update(fields)
+    entries.update(artifacts)
     return sorted(
         entries.values(),
         key=lambda entry: (

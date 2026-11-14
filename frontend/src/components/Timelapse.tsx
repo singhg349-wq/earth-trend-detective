@@ -6,6 +6,8 @@ interface TimelapseProps {
   year: number | null;
   playing: boolean;
   showOnMap: boolean;
+  season: string;
+  variableLabel: string;
   onChangeYear: (year: number) => void;
   onTogglePlay: () => void;
   onToggleMap: (show: boolean) => void;
@@ -16,6 +18,8 @@ export default function Timelapse({
   year,
   playing,
   showOnMap,
+  season,
+  variableLabel,
   onChangeYear,
   onTogglePlay,
   onToggleMap,
@@ -23,8 +27,12 @@ export default function Timelapse({
   if (!index) {
     return (
       <section className="panel timelapse">
-        <h2>DJF rainfall time lapse</h2>
-        <p className="muted">No time-lapse frames found.</p>
+        <h2>
+          {season} {variableLabel.toLowerCase()} time lapse
+        </h2>
+        <p className="muted">
+          No time-lapse frames for this variable and season yet.
+        </p>
       </section>
     );
   }
@@ -36,7 +44,9 @@ export default function Timelapse({
     <section className="panel timelapse">
       <div className="timelapse-head">
         <div>
-          <h2>DJF rainfall time lapse</h2>
+          <h2>
+            {season} {variableLabel.toLowerCase()} time lapse
+          </h2>
           <p className="muted">{index.source}</p>
         </div>
         <label className="check">
@@ -60,7 +70,7 @@ export default function Timelapse({
           step={1}
           value={activeIndex}
           onChange={(event) => onChangeYear(index.years[Number(event.target.value)])}
-          aria-label="Select DJF year"
+          aria-label={`Select ${season} year`}
         />
         <output className="year">{activeYear}</output>
       </div>

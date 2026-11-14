@@ -74,6 +74,62 @@ def test_fixture_file_on_disk_matches_contract():
     assert doc["region"]["bbox"] == [95, -11, 141, 6]
 
 
+def test_artifact_index_limits_listed_series(tmp_path, monkeypatch):
+    artifacts = tmp_path / "artifacts"
+    fixtures = tmp_path / "fixtures"
+    artifacts.mkdir()
+    fixtures.mkdir()
+
+    def series(series_id, region_label, status):
+        return {
+            "id": series_id,
+            "variable": "precipitation",
+            "units": "mm/day",
+            "source": {"product": "GPCPMON", "version": "3.3"},
+            "region": {"id": series_id, "label": region_label},
+            "season": {"code": "DJF"},
+            "years": [1984, 1985, 1986],
+            "values": [8.0, 8.1, 7.9],
+            "coverage": [1.0, 1.0, 1.0],
+            "trend": {"inference": {"status": "unavailable"}},
+            "validation": {"status": status},
+        }
+
+    (artifacts / "precip_listed_DJF.json").write_text(
+        json.dumps(series("precip_listed_DJF", "Listed region", "passed")),
+        encoding="utf-8",
+    )
+    (artifacts / "precip_unlisted_DJF.json").write_text(
+        json.dumps(series("precip_unlisted_DJF", "Unlisted region", "pending")),
+        encoding="utf-8",
+    )
+    (artifacts / "index.json").write_text(
+        json.dumps(
+            {
+                "artifacts": [
+                    {
+                        "id": "precip_listed_DJF",
+                        "label": "Listed label",
+                        "file": "precip_listed_DJF.json",
+                        # The document's own validation status must win.
+                        "validation_status": "failed",
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(main, "ARTIFACTS_DIR", artifacts)
+    monkeypatch.setattr(main, "FIXTURES_DIR", fixtures)
+
+    listed = client.get("/api/series")
+    assert listed.status_code == 200
+    items = listed.json()["series"]
+    assert [item["id"] for item in items] == ["precip_listed_DJF"]
+    assert items[0]["label"] == "Listed label"
+    assert items[0]["validation_status"] == "passed"
+
+
 def test_new_inference_fields_pass_through(tmp_path, monkeypatch):
     artifacts = tmp_path / "artifacts"
     fixtures = tmp_path / "fixtures"
