@@ -50,7 +50,10 @@ def build_series(bbox_or_region, start_year, end_year) -> dict:
         if len(maps) != 3:
             continue
         stack = np.stack(maps)
-        seasonal = np.mean(stack, axis=0)
+        import calendar
+        days = np.asarray([calendar.monthrange(y, m)[1] for y, m in djf_months(year)], dtype=float)[:, None, None]
+        valid_month = np.isfinite(stack)
+        seasonal = np.nansum(stack * days, axis=0) / np.sum(valid_month * days, axis=0)
         valid = np.isfinite(seasonal) & (weights > 0)
         den = float(weights[valid].sum())
         if den <= 0:
@@ -73,7 +76,7 @@ def build_series(bbox_or_region, start_year, end_year) -> dict:
         "source": {"product": "GPCPMON", "version": "3.3", "var": "sat_gauge_precip", "doi_or_url": "https://doi.org/10.5067/MEASURES/GPCP/DATA304"},
         "region": {"id": rid, "label": label, "geometry": geometry_label, "bbox": list(bbox),
                    "cells_used": int(np.count_nonzero(weights)), "area_km2": round(float(weights.sum()), 2)},
-        "season": {"code": "DJF", "year_label": "January year", "months": [12, 1, 2], "aggregation": "mean of 3 monthly rates"},
+        "season": {"code": "DJF", "year_label": "January year", "months": [12, 1, 2], "aggregation": "day-weighted mean of 3 monthly rates"},
         "years": years, "values": vals, "coverage": [float(c) for c in coverage], "anomaly_baseline": None,
         "geometry_file": "data/artifacts/regions.geojson",
         "template_summary": f"{label} DJF precipitation series for {start_year}-{end_year} has {len(years)} seasons.",
