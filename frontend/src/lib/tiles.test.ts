@@ -463,6 +463,10 @@ describe("fetchCellSeries inference and FDR pass-through", () => {
       n: 42,
     });
     expect(result.template_summary).toContain("inference status: ok");
+    expect(result.template_summary).not.toMatch(/proves|chance this is luck/i);
+    expect(result.trend.inference.ci_note).not.toMatch(
+      /proves|chance this is luck/i,
+    );
   });
 
   it("carries a failed strict check, the caution flag and a false FDR flag", async () => {
