@@ -87,4 +87,10 @@ def build_regions(lat, lon, region_ids=FLAGSHIP_REGION_IDS):
     return out
 
 def box_mask(lat, lon, bounds):
-    return fractional_mask(lat, lon, box(*bounds))
+    """Select whole grid cells whose centres are inside a Giovanni-style box."""
+    lat, lon = np.asarray(lat, dtype=float), np.asarray(lon, dtype=float)
+    west, south, east, north = bounds
+    frac = ((lat[:, None] >= south) & (lat[:, None] <= north) &
+            (lon[None, :] >= west) & (lon[None, :] <= east)).astype(float)
+    _, area = fractional_mask(lat, lon, box(*bounds))
+    return frac, area

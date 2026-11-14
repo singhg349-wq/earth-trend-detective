@@ -1,3 +1,18 @@
 {
-  "artifacts": []
+  "artifacts": [
+    {
+      "id": "precip_indonesia_DJF",
+      "label": "Indonesia",
+      "variable": "precipitation",
+      "season": "DJF",
+      "region_id": "indonesia"
+    },
+    {
+      "id": "precip_coastal_peru_DJF",
+      "label": "Coastal Peru",
+      "variable": "precipitation",
+      "season": "DJF",
+      "region_id": "coastal_peru"
+    }
+  ]
 }

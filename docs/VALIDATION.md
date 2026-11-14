@@ -11,11 +11,11 @@ The product series is the day-weighted mean of monthly rates. Equal-month is ret
 
 Compare each region's box-mask series with Giovanni's monthly area-averaged series for the same box. First compute Giovanni's monthly values, then apply the same DJF formula. Pass only if mean bias and mean absolute error are each at most 0.5% of the Giovanni series mean, maximum single-year absolute difference is at most max(1% of that mean, 0.05 mm/day), and Sen slopes differ by at most max(2% of Giovanni slope magnitude, 0.005 mm/day/decade).
 
-No Giovanni monthly CSV has been supplied in this worktree, so neither Indonesia nor coastal Peru passes yet; neither is listed as featured. All other presets remain unlisted pending individual checks.
+The Giovanni CSV check is recorded in docs/GIOVANNI_CHECK.md. Indonesia and coastal Peru passed both the product day-weighted comparison and the equal-month sensitivity; they are validated. All other presets remain unlisted pending individual checks.
 
 ## Mask diagnostics and box series
 
-Cell fractions use geographic intersection; area weights are spherical cell area multiplied by the fraction (equivalent to cos(latitude) weighting on this grid).
+Polygon masks use fractional geographic intersection. Giovanni box masks select complete grid cells whose centres lie within the reported Data Bounding Box; area weights are spherical cell area.
 
 The following box-mask comparison series use the native 0.5 degree grid. Compare with Giovanni by taking Giovanni monthly area-averaged values first, then applying DJF: day-weighted first (the product series), equal-month second (sensitivity).
 

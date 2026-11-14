@@ -9,7 +9,7 @@ from backend.trend.regions import BOXES, REGIONS, country_geometry, fractional_m
 from backend.trend.seasons import djf_months
 
 
-def build_series(bbox_or_region, start_year, end_year) -> dict:
+def build_series(bbox_or_region, start_year, end_year, equal_month=False) -> dict:
     """Return the DJF contract result for a preset id/spec or [W,S,E,N] box."""
     if isinstance(bbox_or_region, str):
         spec = next((r for r in REGIONS if r["id"] == bbox_or_region), None)
@@ -51,9 +51,12 @@ def build_series(bbox_or_region, start_year, end_year) -> dict:
             continue
         stack = np.stack(maps)
         import calendar
-        days = np.asarray([calendar.monthrange(y, m)[1] for y, m in djf_months(year)], dtype=float)[:, None, None]
         valid_month = np.isfinite(stack)
-        seasonal = np.nansum(stack * days, axis=0) / np.sum(valid_month * days, axis=0)
+        if equal_month:
+            seasonal = np.nansum(stack, axis=0) / np.sum(valid_month, axis=0)
+        else:
+            days = np.asarray([calendar.monthrange(y, m)[1] for y, m in djf_months(year)], dtype=float)[:, None, None]
+            seasonal = np.nansum(stack * days, axis=0) / np.sum(valid_month * days, axis=0)
         valid = np.isfinite(seasonal) & (weights > 0)
         den = float(weights[valid].sum())
         if den <= 0:
