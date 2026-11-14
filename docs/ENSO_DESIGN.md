@@ -1,44 +1,41 @@
-﻿# Predeclared ENSO–rainfall association design
+# Predeclared ENSO–rainfall association design
 
-**Status:** Design frozen before computing or inspecting any rainfall–ENSO association. No correlation, fitted association, or relationship result has been calculated for this design.
+**Status:** Frozen before calculating any rainfall–ENSO association. The thresholds, preprocessing, and reporting rules below will not be changed after results are seen.
 
 ## Question and target
 
-For each region separately, estimate the association between CPC Oceanic Niño Index (ONI) and the day-weighted DJF rainfall-rate series for Indonesia and coastal Peru. The rainfall target is the regional seasonal mean rate in mm/day, with DJF seasons labeled by January year, for 1984–2025. This is a common calendar-season comparison; it does not assert that DJF has the same local climate meaning in both places.
+For Indonesia and coastal Peru, estimate whether year-to-year changes in DJF rainfall tend to move with the Oceanic Niño Index (ONI). Rainfall is the **day-weighted DJF mean rate (mm/day)** for January-year seasons 1984–2025 from the existing `backend.trend` artifacts: the GPCP 0.5-degree box-mask products in `data/artifacts/precip_indonesia_DJF.json` and `data/artifacts/precip_peru_DJF.json`. Use the `values` and `years` in those artifacts; do not recompute rainfall from grids or substitute the polygon masks.
 
-Use the saved `oni.data` as recommended in `ENSO_SOURCE.md`, not the unresolved monthly `nina34.anom.data`. ONI is a three-month running mean with overlapping windows, reported in degrees Celsius anomaly. This association describes co-variation; it does not establish that ENSO caused a rainfall change.
+Use CPC ONI, a three-month running mean of Niño 3.4 sea-surface temperature anomalies. Pair each DJF rainfall season labeled year Y with the **single January ONI value for Y**. That value already represents December–February; do not average multiple ONI entries. No lead, lag, or lag search will be analyzed.
 
-## Time alignment, season, and lag
+The expected signs, declared before calculation, are negative for Indonesia (drier in El Niño) and positive for coastal Peru (wetter in strong El Niño). Report the observed sign and estimate even if unexpected. These are expectations, not guaranteed outcomes.
 
-The primary ENSO predictor is ONI for the DJF season centered on January of the rainfall January-year label: average the three ONI entries labeled December of the prior year, January, and February of the label year. Thus rainfall DJF 1984 is paired with ONI centered on January 1984, using ONI labels Dec 1983–Feb 1984. This is the predeclared contemporaneous DJF alignment; it captures the seasonal peak convention that DJF ENSO is commonly represented by the NDJ/DJF peak period, without searching across lags.
+## Preprocessing and primary association
 
-No lag search will be performed. A one-season lead or lag may be reported only as a clearly labeled secondary sensitivity if later authorized, never selected as the primary result based on its observed strength.
+For each region, pair by year over 1984–2025 and keep only years with a valid rainfall artifact value and valid January ONI. Treat ONI missing sentinels, including `-99.9` and `-99.90`, as missing. Never interpolate or fill. List excluded years and reasons. The target span remains 1984–2025 even if some pairs are unavailable.
 
-## Preprocessing
+Detrend **both** matched series using Sen's slope from `backend.trend.stats`: subtract the fitted Sen trend from each series, then calculate Spearman rank correlation (`rs`) between the two residual series. The trend is fitted against calendar year. This detrended correlation answers **“do year-to-year swings line up?”**, NOT **“does ENSO explain the long-term trend?”** It does not remove every slow climate fluctuation.
 
-For each region, retain the rainfall values and matched ONI season only where all three rainfall months are present and valid and all three required ONI entries are present and not a missing sentinel. Use the same matched years for both variables in that region. Do not interpolate or fill missing values.
+## Dependence and uncertainty
 
-Remove a separate ordinary least-squares straight-line time trend from each series over the matched years, then calculate the primary association between the two residual series. Detrending both rainfall and ONI makes the primary question about year-to-year co-variation after removing linear long-term change in each; it does not remove all slow climate variability. Also retain and report the raw-series association as a labeled descriptive sensitivity so the effect of detrending is visible. Do not change the detrending rule after seeing results.
+Report the effective sample size and a two-sided p-value using the lag-1 autocorrelation of each detrended series. With n matched years and lag-1 autocorrelations r₁x and r₁y, use:
 
-## Association and dependence-aware uncertainty
+`N_eff = n * (1 - r₁x * r₁y) / (1 + r₁x * r₁y)`
 
-The primary effect size is Spearman's rank correlation between the paired, linearly detrended rainfall and ONI series. It summarizes whether higher ENSO conditions tend to coincide with higher or lower rainfall, without requiring a straight-line relationship. Report the estimate and a two-sided 95% uncertainty interval from a moving-block bootstrap of the paired annual residuals, using fixed contiguous blocks of 3 years, circular wraparound, and 10,000 resamples. Resampling pairs in blocks retains short-range serial structure and the same-year pairing better than treating years as independent; the interval is approximate, especially with only about four decades of data.
+Clamp `N_eff` to `[3, n]`. For the p-value, use the usual correlation t approximation with `df = N_eff - 2`: `t = rs * sqrt(df / (1 - rs²))`, two-sided Student-t tail probability. State that this is an approximate correction: it uses only lag 1, assumes the residual dependence is reasonably represented by each series' lag-1 autocorrelation, and the t approximation is not exact for rank correlation or short records. It does not establish causation.
 
-Do not use the ordinary Pearson correlation p-value or an independent-year bootstrap. For a dependence-aware null check, use a circular-shift test on the detrended ONI residual sequence relative to the detrended rainfall residual sequence: evaluate every non-zero circular offset, recompute Spearman correlation, and calculate a two-sided randomization p-value as `(1 + number of offsets with |r| >= |observed r|) / (1 + number of tested offsets)`. This preserves each series' ordering and autocorrelation while breaking their observed alignment, but assumes the residual sequences are sufficiently stationary and can miss dependencies tied to nonstationary regimes. Label this assumption and the coarse resolution of the p-value. If fewer than 20 matched years remain, do not report the test or interval as reliable; show the estimate as exploratory with the actual matched count and explain the limitation.
+Also report a two-sided 95% moving-block bootstrap interval from 10,000 resamples of paired detrended yearly values, using contiguous circular blocks of 3 years and fixed seed `20261114`. Do not bridge missing calendar years when forming blocks: if the matched years are not contiguous, use the longest contiguous run and report the omitted years and resulting n; if no run has at least 20 years, label the interval exploratory/unavailable. To handle duplicate sampled years, add independent tiny random jitter (seeded, scale 1e-10 times each series' nonzero standard deviation) before ranking each bootstrap sample. The interval is approximate with only 42 target seasons and reflects this block and tie-breaking scheme.
 
-Report matched year count, actual first and last matched years, association estimate, bootstrap interval, null-check p-value when eligible, and preprocessing/alignment in plain language. Do not translate a p-value into proof, causation, or a claim that there is “no relationship.” Report the observed sign and magnitude whether or not it matches the hypothesis.
+## Predeclared El Niño rainfall comparison
 
-## Missing data and eligibility
+For each region, report a table of mean day-weighted DJF rainfall in El Niño years versus all other valid years, plus the count in each group. Define the primary El Niño group as January ONI **≥ +0.5 °C**; this is the fixed threshold selected before results. Add a second descriptive row using the stricter **≥ +1.0 °C** threshold. “Other” means valid years below the applicable threshold. These are descriptive group means, not a separate causal test.
 
-Treat ONI missing codes (including `-99.9`) as missing; never as numeric values. Require complete DJF rainfall months and all three ONI center-season months. Do not bridge missing years for block construction or silently shorten the stated 1984–2025 target. Any excluded seasons and their reason must be listed. If the matched span or count differs by region, report it separately. If fewer than 20 matched annual pairs remain, label inference unavailable/exploratory under this design.
+## Reporting and eligibility
 
-## Expected signs, declared before results
+Report for each region: matched n and years, excluded years and reasons, `rs`, both lag-1 autocorrelations, `N_eff`, approximate two-sided p-value, block-bootstrap interval and settings, and both threshold comparison rows with counts. If fewer than 20 matched years remain, label inference exploratory and explain the limitation. Report signs regardless of whether they match expectations.
 
-- Indonesia: expect El Niño conditions (higher ONI) to be associated with lower DJF rainfall; expected association sign is negative.
-- Coastal Peru: expect higher ONI, particularly strong El Niño conditions, to be associated with higher DJF rainfall; expected sign is positive. This is a cautious hypothesis for the project's specific coastal region, not a guaranteed local effect.
+Use only the safe wording templates in `docs/ENSO_CRITIQUE.md` (method; clear association; weak/uncertain association; trend versus year-to-year). Do not write “proves,” “causes,” “drives the 42-year trend,” or “confirms.” Do not display ENSO in the app until independent validation is complete.
 
-These are hypotheses only. Report the observed sign and estimate even if either is opposite to expectation, and do not revise the hypotheses after looking at results.
+## Independent reference check
 
-## External reference check
-
-A user can independently check the broad association in KNMI Climate Explorer: select the same exact CPC ONI index/definition and the same GPCP rainfall field, restrict the rainfall field to the project's Indonesia or coastal Peru geometry and DJF 1984–2025, and request the field/index correlation for the matched DJF season. Record the selected index version, dataset/version, spatial selection, seasonal labels, missing-data overlap, and any detrending setting. KNMI's output is a reference comparison, not guaranteed to use the same masks, weighting, detrending, or dependence-aware uncertainty method. Compare estimates only after those settings and support are documented; do not treat agreement as independent validation of causation or uncertainty calibration.
+Document exact numbered steps for a user to reproduce a correlation in KNMI Climate Explorer (`climexp.knmi.nl`): select CPC ONI / Niño 3.4 as available; upload or paste the 42-year rainfall series; select DJF and the same years; specify detrending; and state what statistic to compare. KNMI may use Pearson correlation and OLS detrending, so compare against our separately calculated Pearson/OLS matched-setting number rather than the primary Sen-detrended Spearman result. Record limitations; the reference comparison does not validate causality or uncertainty calibration.
