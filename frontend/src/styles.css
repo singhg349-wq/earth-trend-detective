@@ -596,6 +596,252 @@ button {
   background: #fbfdff;
 }
 
+.controls-panel {
+  padding: 14px 16px;
+}
+
+.control-groups {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px 22px;
+}
+
+.control-group h2 {
+  margin: 0 0 7px;
+  font-size: 12px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: left;
+}
+
+.chip:hover:not(:disabled) {
+  border-color: #a9bfe5;
+}
+
+.chip.active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: #123f8f;
+}
+
+.chip:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.chip-sub {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.season-chips .chip {
+  flex: 0 0 auto;
+  min-width: 52px;
+  align-items: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.layer-group {
+  min-width: 0;
+}
+
+.trend-legend {
+  margin-top: 8px;
+}
+
+.trend-legend-bar {
+  display: block;
+  height: 10px;
+  border: 1px solid #d3dbe5;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #2166ac, #f7f7f7, #b2182b);
+}
+
+.trend-legend-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.control-note {
+  margin: 6px 0 0;
+}
+
+.grid-note {
+  margin: 10px 0 0;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+
+.cell-panel {
+  padding-bottom: 14px;
+}
+
+.cell-status {
+  padding: 12px 0 2px;
+}
+
+.cell-status p {
+  margin: 0 0 4px;
+}
+
+.cell-card {
+  border-top: 3px solid #b45309;
+}
+
+.tag-column {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.tag-unchecked {
+  background: var(--amber-bg);
+  color: var(--amber);
+}
+
+.cell-label {
+  margin: 0;
+  padding: 8px 10px;
+  border-left: 3px solid #f0c36d;
+  background: #fffaf0;
+  color: #5c3d0e;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.period-compare {
+  margin-top: 4px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfcfe;
+}
+
+.period-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.period-head h3 {
+  margin: 0;
+  font-size: 13px;
+}
+
+.period-intro {
+  margin: 4px 0 8px;
+}
+
+.period-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.period-inputs fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: #ffffff;
+}
+
+.period-inputs legend {
+  padding: 0 4px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.period-inputs label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.period-inputs input {
+  width: 66px;
+  padding: 3px 5px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  font-size: 12px;
+}
+
+.period-estimates {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.period-estimates > div {
+  padding: 7px 8px;
+  border-radius: 7px;
+  background: #ffffff;
+}
+
+.period-name {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.period-slope {
+  margin: 2px 0;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.period-estimates .muted {
+  margin: 0;
+  font-size: 11px;
+}
+
+.period-labels {
+  margin: 6px 0 0;
+  padding-left: 18px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
 .footer {
   margin-top: 26px;
   padding-top: 12px;
@@ -623,6 +869,15 @@ button {
 
   .region-list {
     max-height: none;
+  }
+
+  .control-groups {
+    grid-template-columns: 1fr;
+  }
+
+  .period-inputs,
+  .period-estimates {
+    grid-template-columns: 1fr;
   }
 
   .map {

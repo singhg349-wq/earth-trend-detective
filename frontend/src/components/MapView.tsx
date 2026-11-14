@@ -10,6 +10,7 @@ import type {
   GeoJSONSource,
   ImageSource,
   MapLayerMouseEvent,
+  MapMouseEvent,
   StyleSpecification,
 } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -22,7 +23,11 @@ interface MapViewProps {
   timelapseUrl: string | null;
   timelapseExtent: [number, number, number, number];
   showTimelapse: boolean;
+  trendMapUrl: string | null;
+  trendMapExtent: [number, number, number, number];
+  pickedCellBbox: [number, number, number, number] | null;
   onSelectRegion: (regionId: string) => void;
+  onPickCell: (lon: number, lat: number) => void;
 }
 
 setWorkerUrl(workerUrl);
@@ -48,13 +53,19 @@ export default function MapView({
   timelapseUrl,
   timelapseExtent,
   showTimelapse,
+  trendMapUrl,
+  trendMapExtent,
+  pickedCellBbox,
   onSelectRegion,
+  onPickCell,
 }: MapViewProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
   const markersRef = useRef<MapLibreMarker[]>([]);
   const selectRef = useRef(onSelectRegion);
   selectRef.current = onSelectRegion;
+  const pickRef = useRef(onPickCell);
+  pickRef.current = onPickCell;
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -88,6 +99,28 @@ export default function MapView({
         paint: { 'line-color': '#1f6feb', 'line-width': 1.6 },
       });
 
+      map.addSource('picked-cell', {
+        type: 'geojson',
+        data: EMPTY_REGIONS as never,
+      });
+      map.addLayer({
+        id: 'picked-cell-fill',
+        type: 'fill',
+        source: 'picked-cell',
+        paint: { 'fill-color': 'rgba(180, 83, 9, 0.16)' },
+      });
+      map.addLayer({
+        id: 'picked-cell-line',
+        type: 'line',
+        source: 'picked-cell',
+        paint: { 'line-color': '#b45309', 'line-width': 2 },
+      });
+
+      // Any click loads that 1 degree cell. A click on a region outline also
+      // selects the region through the layer handler below.
+      map.on('click', (event: MapMouseEvent) => {
+        pickRef.current(event.lngLat.lng, event.lngLat.lat);
+      });
       map.on('click', 'regions-fill', (event: MapLayerMouseEvent) => {
         const id = event.features?.[0]?.properties?.id;
         if (typeof id === 'string') selectRef.current(id);
@@ -169,6 +202,97 @@ export default function MapView({
     );
   }, [ready, focusWest, focusSouth, focusEast, focusNorth]);
 
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready) return;
+    const source = map.getSource('picked-cell') as GeoJSONSource | undefined;
+    if (!source) return;
+
+    if (!pickedCellBbox) {
+      source.setData({ type: 'FeatureCollection', features: [] } as never);
+      return;
+    }
+
+    const [cellWest, cellSouth, cellEast, cellNorth] = pickedCellBbox;
+    source.setData({
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: 'Polygon',
+            coordinates: [
+              [
+                [cellWest, cellSouth],
+                [cellEast, cellSouth],
+                [cellEast, cellNorth],
+                [cellWest, cellNorth],
+                [cellWest, cellSouth],
+              ],
+            ],
+          },
+        },
+      ],
+    } as never);
+  }, [pickedCellBbox, ready]);
+
+  const [trendWest, trendSouth, trendEast, trendNorth] = trendMapExtent;
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready) return;
+
+    const existingSource = map.getSource('trendmap') as ImageSource | undefined;
+
+    if (!trendMapUrl) {
+      if (map.getLayer('trendmap-layer')) map.removeLayer('trendmap-layer');
+      if (existingSource) map.removeSource('trendmap');
+      return;
+    }
+
+    // The trend PNG is written in EPSG:4326 (plate carree). MapLibre uses Web
+    // Mercator, so clamp the image corners to its latitude limit.
+    const mercatorLimit = 85.051129;
+    const clampLat = (value: number) =>
+      Math.max(-mercatorLimit, Math.min(mercatorLimit, value));
+    const coordinates: [
+      [number, number],
+      [number, number],
+      [number, number],
+      [number, number],
+    ] = [
+      [trendWest, clampLat(trendNorth)],
+      [trendEast, clampLat(trendNorth)],
+      [trendEast, clampLat(trendSouth)],
+      [trendWest, clampLat(trendSouth)],
+    ];
+
+    if (existingSource) {
+      existingSource.updateImage({ url: trendMapUrl, coordinates });
+      return;
+    }
+
+    map.addSource('trendmap', {
+      type: 'image',
+      url: trendMapUrl,
+      coordinates,
+    });
+    const beforeId = map.getLayer('timelapse-layer')
+      ? 'timelapse-layer'
+      : map.getLayer('regions-fill')
+        ? 'regions-fill'
+        : undefined;
+    map.addLayer(
+      {
+        id: 'trendmap-layer',
+        type: 'raster',
+        source: 'trendmap',
+        paint: { 'raster-opacity': 0.55, 'raster-fade-duration': 0 },
+      },
+      beforeId,
+    );
+  }, [ready, trendMapUrl, trendWest, trendSouth, trendEast, trendNorth]);
+
   const [west, south, east, north] = timelapseExtent;
   useEffect(() => {
     const map = mapRef.current;
@@ -213,7 +337,10 @@ export default function MapView({
   return (
     <div className="map-wrap">
       <div ref={containerRef} className="map" />
-      <p className="map-note">Local region outlines. No online base map is used.</p>
+      <p className="map-note">
+        Local region outlines. Click anywhere for that 1&deg; cell; click an outline to
+        add the region to A or B. No online base map is used.
+      </p>
     </div>
   );
 }

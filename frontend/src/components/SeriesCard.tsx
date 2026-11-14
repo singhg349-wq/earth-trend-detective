@@ -1,5 +1,6 @@
 import type { SeriesDoc } from '../types';
 import Chart from './Chart';
+import PeriodCompare from './PeriodCompare';
 
 interface SeriesCardProps {
   slot: 'A' | 'B';
@@ -118,6 +119,14 @@ export default function SeriesCard({
       </dl>
 
       {doc.template_summary && <p className="summary">{doc.template_summary}</p>}
+
+      <PeriodCompare
+        key={`${doc.id}-period`}
+        years={doc.years}
+        values={doc.values}
+        units={doc.units}
+        label={`${doc.region.label} ${doc.season.code}`}
+      />
 
       <footer className="card-actions">
         <button

@@ -1,14 +1,21 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import CellCard from './components/CellCard';
 import MapView from './components/MapView';
 import SeriesCard from './components/SeriesCard';
 import Timelapse from './components/Timelapse';
 import {
+  getCellSeries,
+  getGridCatalog,
   getRegionsGeoJson,
   getSeries,
   getTimelapseIndex,
+  getTrendMapCatalog,
   listSeries,
   timelapseFrameUrl,
+  trendMapUrl,
 } from './data/seriesSource';
+import type { GridCatalog, TrendMapEntry } from './data/seriesSource';
+import type { CellSeriesOutcome } from './lib/tiles';
 import type {
   RegionsGeoJson,
   SeriesDoc,
@@ -20,6 +27,14 @@ type Slot = 'A' | 'B';
 type Bbox = [number, number, number, number];
 
 const FALLBACK_EXTENT: Bbox = [-180, -90, 180, 90];
+const SEASONS = ['ANN', 'DJF', 'MAM', 'JJA', 'SON'] as const;
+
+const VARIABLES = [
+  { slug: 'precip', label: 'Rainfall', source: 'GPCP 3.3' },
+  { slug: 't2m', label: '2 m air temperature', source: 'MERRA-2' },
+  { slug: 'aod', label: 'Aerosol optical depth', source: 'MERRA-2' },
+  { slug: 'soil', label: 'Soil moisture', source: 'GLDAS 2.1' },
+] as const;
 
 function bboxOf(doc: SeriesDoc | null): Bbox | null {
   const bbox = doc?.region.bbox;
@@ -43,6 +58,14 @@ function mergeBoxes(boxes: Bbox[]): Bbox | null {
   ];
 }
 
+function cellBbox(lon: number, lat: number): Bbox {
+  const lonNorm = ((((lon + 180) % 360) + 360) % 360) - 180;
+  const latClamped = Math.min(89.999999, Math.max(-90, lat));
+  const west = Math.floor(lonNorm);
+  const south = Math.floor(latClamped);
+  return [west, south, west + 1, south + 1];
+}
+
 function errorText(error: unknown): string {
   return error instanceof Error ? error.message : 'Unknown error.';
 }
@@ -51,6 +74,8 @@ export default function App() {
   const [seriesList, setSeriesList] = useState<SeriesSummary[] | null>(null);
   const [regions, setRegions] = useState<RegionsGeoJson | null>(null);
   const [timelapse, setTimelapse] = useState<TimelapseIndex | null>(null);
+  const [gridCatalog, setGridCatalog] = useState<GridCatalog | null>(null);
+  const [trendMaps, setTrendMaps] = useState<TrendMapEntry[]>([]);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [pickError, setPickError] = useState<string | null>(null);
   const [loadingId, setLoadingId] = useState<string | null>(null);
@@ -63,21 +88,34 @@ export default function App() {
   const [playing, setPlaying] = useState(false);
   const [showTimelapseOnMap, setShowTimelapseOnMap] = useState(true);
 
+  const [variable, setVariable] = useState('precip');
+  const [season, setSeason] = useState('DJF');
+  const [trendMapOn, setTrendMapOn] = useState(false);
+  const [cellOutcome, setCellOutcome] = useState<CellSeriesOutcome | null>(null);
+  const [cellLoading, setCellLoading] = useState(false);
+  const [cellError, setCellError] = useState<string | null>(null);
+  const [pickedPoint, setPickedPoint] = useState<[number, number] | null>(null);
+
   const requestRef = useRef(0);
+  const cellRequestRef = useRef(0);
 
   useEffect(() => {
     let alive = true;
     (async () => {
       try {
-        const [list, regionData, timelapseIndex] = await Promise.all([
+        const [list, regionData, timelapseIndex, catalog, maps] = await Promise.all([
           listSeries(),
           getRegionsGeoJson(),
           getTimelapseIndex(),
+          getGridCatalog(),
+          getTrendMapCatalog(),
         ]);
         if (!alive) return;
         setSeriesList(list);
         setRegions(regionData);
         setTimelapse(timelapseIndex);
+        setGridCatalog(catalog);
+        setTrendMaps(maps);
         if (timelapseIndex) setYear(timelapseIndex.years[timelapseIndex.years.length - 1]);
       } catch (error) {
         if (alive) setLoadError(errorText(error));
@@ -99,6 +137,56 @@ export default function App() {
     }, 900);
     return () => window.clearInterval(timer);
   }, [playing, timelapse]);
+
+  const variableMeta = gridCatalog?.index.variables[variable] ?? null;
+  const variableSelection = VARIABLES.find((item) => item.slug === variable);
+  const selectedTrendMap =
+    trendMaps.find((entry) => entry.variable === variable && entry.season === season) ??
+    null;
+  const trendUrl = selectedTrendMap ? trendMapUrl(selectedTrendMap) : null;
+
+  useEffect(() => {
+    if (!trendUrl && trendMapOn) setTrendMapOn(false);
+  }, [trendUrl, trendMapOn]);
+
+  useEffect(() => {
+    // A variable or season change invalidates the clicked cell and any request
+    // still in flight.
+    cellRequestRef.current += 1;
+    setCellOutcome(null);
+    setCellError(null);
+    setCellLoading(false);
+    setPickedPoint(null);
+  }, [variable, season]);
+
+  function chooseVariable(slug: string) {
+    setVariable(slug);
+    const meta = gridCatalog?.index.variables[slug];
+    if (!meta) return;
+    if (!meta.years_by_season?.[season]?.length) {
+      const next = SEASONS.find(
+        (code) => (meta.years_by_season?.[code]?.length ?? 0) > 0,
+      );
+      if (next) setSeason(next);
+    }
+  }
+
+  async function pickCell(lon: number, lat: number) {
+    const token = cellRequestRef.current + 1;
+    cellRequestRef.current = token;
+    setPickedPoint([lon, lat]);
+    setCellLoading(true);
+    setCellError(null);
+    try {
+      const outcome = await getCellSeries({ lon, lat, variable, season });
+      if (cellRequestRef.current !== token) return;
+      setCellOutcome(outcome);
+    } catch (error) {
+      if (cellRequestRef.current === token) setCellError(errorText(error));
+    } finally {
+      if (cellRequestRef.current === token) setCellLoading(false);
+    }
+  }
 
   async function chooseSeries(summary: SeriesSummary) {
     const token = requestRef.current + 1;
@@ -146,14 +234,33 @@ export default function App() {
     if (summary) void chooseSeries(summary);
   }
 
+  function clearCell() {
+    cellRequestRef.current += 1;
+    setCellOutcome(null);
+    setCellError(null);
+    setCellLoading(false);
+    setPickedPoint(null);
+  }
+
+  const pickedCellBbox = useMemo<Bbox | null>(
+    () => (pickedPoint ? cellBbox(pickedPoint[0], pickedPoint[1]) : null),
+    [pickedPoint],
+  );
+
+  const gridFixture =
+    Boolean(gridCatalog?.fixture) || Boolean(selectedTrendMap?.fixture);
   const fixtureData =
     [slotA, slotB].some((doc) => doc?.validation.status === 'fixture') ||
     Boolean(
       timelapse && (timelapse.fixture || /fixture/i.test(timelapse.source)),
-    );
-  const inferenceUnavailable = [slotA, slotB].some(
-    (doc) => doc?.trend.inference.status === 'unavailable',
-  );
+    ) ||
+    gridFixture;
+  const inferenceUnavailable =
+    [slotA, slotB].some(
+      (doc) => doc?.trend.inference.status === 'unavailable',
+    ) ||
+    (cellOutcome?.status === 'ok' &&
+      cellOutcome.result.trend.inference.status === 'unavailable');
   const validationFailed = [slotA, slotB].some(
     (doc) => doc?.validation.status === 'failed',
   );
@@ -171,8 +278,9 @@ export default function App() {
         <p className="eyebrow">Seasonal climate comparison</p>
         <h1>Earth System Trend Detective</h1>
         <p className="lede">
-          Compare DJF rainfall for regions of the world. DJF is December, January and
-          February, labelled by the January year.
+          Compare seasonal trends for regions of the world, or click any spot for one
+          1 degree cell. DJF is December, January and February, labelled by the
+          January year.
         </p>
       </header>
 
@@ -180,8 +288,8 @@ export default function App() {
         <div className="banner banner-fixture">
           <strong>FIXTURE DATA</strong>
           <span>
-            The values and time-lapse frames shown are placeholders for interface testing.
-            They are not climate results.
+            Grid cells, trend maps and series shown are placeholders for interface
+            testing. They are not climate results.
           </span>
         </div>
       )}
@@ -237,10 +345,12 @@ export default function App() {
           </div>
 
           {pickError && <p className="error">{pickError}</p>}
-          {loadingId && <p className="muted">Loading {loadingId}…</p>}
+          {loadingId && <p className="muted">Loading {loadingId}&hellip;</p>}
 
           <div className="region-list">
-            {seriesList === null && !loadError && <p className="muted">Loading regions…</p>}
+            {seriesList === null && !loadError && (
+              <p className="muted">Loading regions&hellip;</p>
+            )}
             {seriesList?.length === 0 && (
               <p className="muted">No series were found. Add JSON files to data/artifacts.</p>
             )}
@@ -268,7 +378,7 @@ export default function App() {
                     {pinned && <span className="pin-mark">{pinned}</span>}
                   </span>
                   <span className="region-meta">
-                    {summary.season} · {summary.variable} · {summary.units}
+                    {summary.season} &middot; {summary.variable} &middot; {summary.units}
                   </span>
                   {(summary.fixture || summary.validation_status !== 'passed') && (
                     <span className={`tag tag-${summary.validation_status}`}>
@@ -282,10 +392,98 @@ export default function App() {
         </aside>
 
         <main className="content">
+          <section className="panel controls-panel" aria-label="Variable, season and map layers">
+            <div className="control-groups">
+              <div className="control-group">
+                <h2>Variable</h2>
+                <div className="chips">
+                  {VARIABLES.map((option) => {
+                    const ready = Boolean(gridCatalog?.index.variables[option.slug]);
+                    return (
+                      <button
+                        key={option.slug}
+                        type="button"
+                        className={variable === option.slug ? 'chip active' : 'chip'}
+                        onClick={() => chooseVariable(option.slug)}
+                        disabled={!ready}
+                        aria-pressed={variable === option.slug}
+                        title={ready ? option.source : `${option.label}: not ready`}
+                      >
+                        <span>{option.label}</span>
+                        <span className="chip-sub">
+                          {ready ? option.source : 'not ready'}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="control-group">
+                <h2>Season</h2>
+                <div className="chips season-chips">
+                  {SEASONS.map((code) => {
+                    const ready = Boolean(
+                      variableMeta?.years_by_season?.[code]?.length,
+                    );
+                    return (
+                      <button
+                        key={code}
+                        type="button"
+                        className={season === code ? 'chip active' : 'chip'}
+                        onClick={() => setSeason(code)}
+                        disabled={!ready}
+                        aria-pressed={season === code}
+                        title={ready ? `${code} available` : `${code}: not ready`}
+                      >
+                        {code}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="control-group layer-group">
+                <h2>Trend map</h2>
+                <label className="check">
+                  <input
+                    type="checkbox"
+                    checked={trendMapOn}
+                    disabled={!trendUrl}
+                    onChange={(event) => setTrendMapOn(event.target.checked)}
+                  />
+                  Show Sen slope layer
+                </label>
+                <div className="trend-legend">
+                  <span className="trend-legend-bar" />
+                  <span className="trend-legend-labels">
+                    <span>negative</span>
+                    <span>zero</span>
+                    <span>positive</span>
+                  </span>
+                </div>
+                <p className="muted control-note">
+                  {trendUrl
+                    ? selectedTrendMap?.fixture
+                      ? 'Fixture PNG in EPSG:4326. The real precomputed layer replaces it.'
+                      : 'Precomputed Sen slope PNG in EPSG:4326.'
+                    : 'No trend map for this variable and season yet.'}
+                </p>
+              </div>
+            </div>
+            <p className="muted grid-note">
+              {gridCatalog
+                ? `Grid catalog format v${gridCatalog.index.format_version}; ${
+                    Object.keys(gridCatalog.index.variables).length
+                  } variable(s) ready.`
+                : 'Global grid artifacts are not present; clicked-cell results are unavailable.'}
+            </p>
+          </section>
+
           <section className="panel map-panel">
             <div className="panel-head">
               <h2>Map</h2>
-              <p className="muted">Region outlines come from local GeoJSON.</p>
+              <p className="muted">Local outlines and local raster layers.</p>
             </div>
             <MapView
               regions={regions}
@@ -294,7 +492,31 @@ export default function App() {
               timelapseUrl={timelapse && year !== null ? timelapseFrameUrl(year) : null}
               timelapseExtent={timelapse?.extent ?? FALLBACK_EXTENT}
               showTimelapse={showTimelapseOnMap}
+              trendMapUrl={trendMapOn ? trendUrl : null}
+              trendMapExtent={FALLBACK_EXTENT}
+              pickedCellBbox={pickedCellBbox}
               onSelectRegion={selectFromMap}
+              onPickCell={(lon, lat) => void pickCell(lon, lat)}
+            />
+          </section>
+
+          <section className="panel cell-panel" aria-label="Clicked cell result">
+            <div className="panel-head">
+              <div>
+                <h2>Clicked cell</h2>
+                <p className="muted">
+                  {variableSelection?.label ?? variable} &middot; {season}. One 10 x 10
+                  degree tile is fetched per click.
+                </p>
+              </div>
+              {gridFixture && <span className="tag tag-fixture">fixture grid</span>}
+            </div>
+            <CellCard
+              outcome={cellOutcome}
+              loading={cellLoading}
+              error={cellError}
+              fixture={gridFixture}
+              onClear={clearCell}
             />
           </section>
 
@@ -356,9 +578,9 @@ export default function App() {
 
       <footer className="footer">
         <p>
-          Time-lapse year {year ?? '–'}
-          {timelapse ? ` of ${timelapse.years.length} frames` : ''}. Values are seasonal
-          means in the units shown on each result.
+          Time-lapse year {year ?? '--'}
+          {timelapse ? ` of ${timelapse.years.length} frames` : ''}. Cell results use
+          the same method as the featured regions and are not individually checked.
         </p>
       </footer>
     </div>

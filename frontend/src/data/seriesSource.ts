@@ -1,3 +1,9 @@
+import { fetchCellSeries } from '../lib/tiles';
+import type {
+  CellSeriesOutcome,
+  CellSeriesRequest,
+  GridIndex,
+} from '../lib/tiles';
 import type { RegionsGeoJson, SeriesDoc, SeriesSummary, TimelapseIndex } from '../types';
 
 // The only module that fetches series or map data.
@@ -12,10 +18,24 @@ const MODE: 'auto' | 'api' | 'static' = 'auto';
 
 const API_BASE = 'http://localhost:8000';
 const DATA_ROOT = `${import.meta.env.BASE_URL}data/`;
+const GRID_ROOT = `${DATA_ROOT}grid`;
+const TRENDMAP_ROOT = `${DATA_ROOT}trendmap`;
 const SERIES_ID = /^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/;
 const TIMELAPSE_KEY = 'precip_DJF';
 
 let apiReady: Promise<boolean> | null = null;
+let gridCatalog: Promise<GridCatalog | null> | null = null;
+
+export interface GridCatalog {
+  index: GridIndex;
+  fixture: boolean;
+}
+
+export interface TrendMapEntry {
+  variable: string;
+  season: string;
+  fixture: boolean;
+}
 
 function probeApi(): Promise<boolean> {
   const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
@@ -129,4 +149,68 @@ export async function getTimelapseIndex(): Promise<TimelapseIndex | null> {
 
 export function timelapseFrameUrl(year: number): string {
   return `${DATA_ROOT}timelapse/${TIMELAPSE_KEY}/${year}.png`;
+}
+
+// Global grid metadata: variable slugs, seasons, year vectors and int16
+// scaling. Loaded once; a missing index simply means the grid is not ready.
+export function getGridCatalog(): Promise<GridCatalog | null> {
+  if (!gridCatalog) {
+    gridCatalog = (async () => {
+      try {
+        const raw = await readJson<GridIndex & { fixture?: boolean }>(
+          `${GRID_ROOT}/index.json`,
+        );
+        if (
+          !raw ||
+          typeof raw !== 'object' ||
+          typeof raw.fill_int16 !== 'number' ||
+          typeof raw.variables !== 'object' ||
+          typeof raw.seasons !== 'object'
+        ) {
+          return null;
+        }
+        return { index: raw, fixture: Boolean(raw.fixture) };
+      } catch {
+        return null;
+      }
+    })();
+  }
+  return gridCatalog;
+}
+
+// The only path from the interface to a grid tile. The click lookup, tile
+// fetch and int16 decoding live in the W7 tile helper; this wrapper supplies
+// the static data root and the already loaded index.
+export async function getCellSeries(
+  request: CellSeriesRequest,
+): Promise<CellSeriesOutcome> {
+  const catalog = await getGridCatalog();
+  return fetchCellSeries(request, {
+    basePath: GRID_ROOT,
+    ...(catalog ? { index: catalog.index } : {}),
+  });
+}
+
+export async function getTrendMapCatalog(): Promise<TrendMapEntry[]> {
+  try {
+    const body = await readJson<{ entries?: Array<Record<string, unknown>> }>(
+      `${TRENDMAP_ROOT}/index.json`,
+    );
+    return (body.entries ?? [])
+      .filter(
+        (entry) =>
+          typeof entry.variable === 'string' && typeof entry.season === 'string',
+      )
+      .map((entry) => ({
+        variable: String(entry.variable),
+        season: String(entry.season),
+        fixture: Boolean(entry.fixture),
+      }));
+  } catch {
+    return [];
+  }
+}
+
+export function trendMapUrl(entry: TrendMapEntry): string {
+  return `${TRENDMAP_ROOT}/${encodeURIComponent(entry.variable)}/${encodeURIComponent(entry.season)}.png`;
 }
