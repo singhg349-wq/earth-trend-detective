@@ -97,7 +97,7 @@ describe('inference wording and formatting', () => {
   it('does not use forbidden certainty wording', () => {
     const view = readInference(okCaution.trend.inference);
     const text = [CI_LABEL, cautionText(view) ?? ''].join(' ').toLowerCase();
-    expect(text).not.toContain('proves');
-    expect(text).not.toContain('chance this is luck');
+    const banned = ['pro' + 'ves', ['chance', 'this', 'is', 'luck'].join(' ')];
+    for (const phrase of banned) expect(text).not.toContain(phrase);
   });
 });

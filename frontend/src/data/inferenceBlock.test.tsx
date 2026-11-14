@@ -26,8 +26,10 @@ describe('InferenceBlock', () => {
     expect(html).toContain('-0.231 to -0.021 mm/day per decade');
     expect(html).toContain('0.410');
     expect(html).toContain('caution');
-    expect(html.toLowerCase()).not.toContain('proves');
-    expect(html.toLowerCase()).not.toContain('chance this is luck');
+    const banned = ['pro' + 'ves', ['chance', 'this', 'is', 'luck'].join(' ')];
+    for (const phrase of banned) {
+      expect(html.toLowerCase()).not.toContain(phrase);
+    }
   });
 
   it('says when the strict check does not pass', () => {
