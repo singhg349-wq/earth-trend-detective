@@ -1,7 +1,18 @@
-"""Candidate trend estimators for yearly seasonal series.
+"""Trend estimators for yearly seasonal series, plus the product inference path.
 
-Everything in this module is a *candidate* for the science review. Nothing here
-chooses a method, and ``docs/STATS_CANDIDATES.md`` records what was measured.
+The individual estimators are the candidates described in
+``docs/STATS_CANDIDATES.md``; they are kept so the measured comparison can be
+re-run. The user's decision of 14 November 2026 selects the product path that
+:func:`inference_block` wires in:
+
+* main test: Mann-Kendall with the Hamed-Rao variance correction, ``max_lag=3``;
+* strict check: Yue-Wang classic prewhitening (``trend_preserving=False``);
+* the Sen slope interval is always reported, with a note that it assumes
+  independent years;
+* the detrended lag-1 autocorrelation is reported and flags a caution at 0.3.
+
+All-lag Hamed-Rao and trend-preserving prewhitening stay in the module for the
+candidates table but are not used by the product path.
 
 Conventions
 -----------
@@ -287,8 +298,8 @@ def mann_kendall_hamed_rao(years, values, alpha=0.05, max_lag=None):
         if abs(rho[k]) > band:
             total += (n - k) * (n - k - 1) * (n - k - 2) * rho[k]
 
-    inflation = 1.0 + 2.0 * total / (n * (n - 1) * (n - 2))
-    var_corrected = var_s * inflation
+    inflation = float(1.0 + 2.0 * total / (n * (n - 1) * (n - 2)))
+    var_corrected = float(var_s * inflation)
     z = _z_score(s, var_corrected)
     return {
         "method": "mann_kendall_hamed_rao",
@@ -297,7 +308,7 @@ def mann_kendall_hamed_rao(years, values, alpha=0.05, max_lag=None):
         "s": s,
         "var_s": var_corrected,
         "var_s_uncorrected": var_s,
-        "var_inflation": float(inflation),
+        "var_inflation": inflation,
         "max_lag": last_lag,
         "z": z,
         "p": _p_value(z),
@@ -370,3 +381,188 @@ def mann_kendall_yue_wang(years, values, alpha=0.05, trend_preserving=True):
         "alpha": float(alpha),
         "note": "",
     }
+
+
+#: Label written into ``trend.inference.method`` for the main test.
+INFERENCE_METHOD = "MK + Hamed-Rao (3 lags)"
+
+#: Label written into ``trend.inference.ci_note``.
+CI_NOTE = (
+    "95% slope interval assumes independent years; "
+    "narrower than true uncertainty when years correlate"
+)
+
+#: Detrended lag-1 autocorrelation at or above this value raises ``caution``.
+CAUTION_LAG1 = 0.3
+
+#: Number of lags used by the main Hamed-Rao test.
+MAIN_MAX_LAG = 3
+
+
+def _number_or_none(value):
+    """Return a plain float, or None when the value is not finite.
+
+    Result files are JSON, which has no NaN, so every field that can be
+    undefined has to become ``null`` at this boundary.
+    """
+    value = float(value)
+    return value if np.isfinite(value) else None
+
+
+def _detrended_lag1(years, values):
+    """Lag-1 autocorrelation of the series after removing the Sen trend.
+
+    The trend is removed with the Sen slope evaluated at the actual years, so
+    the result does not depend on how the year axis is shifted. The
+    autocorrelation is the usual biased (divide by n) estimator, the same one
+    used by the Hamed-Rao and Yue-Wang tests. Returns NaN when there are fewer
+    than ``MIN_POINTS`` valid pairs; a constant detrended series returns 0.0
+    because :func:`_acf` cannot form a ratio there.
+    """
+    y, v, _ = _prepare(years, values)
+    n = int(v.size)
+    if n < MIN_POINTS:
+        return float("nan")
+    slope, _ = sen_slope(y, v)
+    detrended = v - slope * (y - y[0])
+    return float(_acf(detrended, 1)[1])
+
+
+def inference_block(years, values, alpha=0.05):
+    """The ``trend.inference`` object for one seasonal series.
+
+    This is the product path chosen by the user: a Mann-Kendall test with the
+    Hamed-Rao variance correction limited to three lags, plus the Yue-Wang
+    classic prewhitening test as a strict secondary check. The Sen slope
+    interval is always included.
+
+    Returns exactly these keys, ready to be written to JSON:
+
+    ``status``
+        ``"ok"`` when the main test produced a finite p-value from a positive
+        variance with at least ``MIN_POINTS`` valid pairs, otherwise
+        ``"unavailable"``.
+    ``p_value``
+        Two-sided p-value of the 3-lag Hamed-Rao test, or None.
+    ``ci``
+        ``[low, high]`` Sen slope interval per decade, or None when shorter
+        than ``MIN_POINTS``. The interval assumes independent years.
+    ``method``
+        Fixed label ``"MK + Hamed-Rao (3 lags)"``.
+    ``strict_check_pass``
+        True when the classic prewhitening test also gives ``p < alpha`` with
+        the same direction of the Mann-Kendall statistic; False when it does
+        not; None when either p-value is undefined (for example a short
+        series).
+    ``strict_check_p``
+        Two-sided p-value of the classic prewhitening test, or None.
+    ``lag1``
+        Detrended lag-1 autocorrelation of the series, or None.
+    ``caution``
+        True when ``lag1 >= 0.3``. False when lag1 is None. The threshold is
+        not a significance test; it is a display warning.
+    ``ci_note``
+        Fixed sentence explaining the independence assumption of the interval.
+    ``n``
+        Number of valid (year, value) pairs used by the main test.
+
+    ``alpha`` only affects the test comparisons and the interval width; the
+    fixed labels do not change.
+    """
+    _check_alpha(alpha)
+    y, v, _ = _prepare(years, values)
+    n = int(v.size)
+
+    main = mann_kendall_hamed_rao(y, v, alpha=alpha, max_lag=MAIN_MAX_LAG)
+    strict = mann_kendall_yue_wang(y, v, alpha=alpha, trend_preserving=False)
+    interval = sen_slope_ci(y, v, alpha=alpha)
+    lag1 = _detrended_lag1(y, v)
+
+    p_main = float(main["p"])
+    p_strict = float(strict["p"])
+    var_main = float(main["var_s"])
+    available = (
+        n >= MIN_POINTS
+        and np.isfinite(p_main)
+        and np.isfinite(var_main)
+        and var_main > 0.0
+    )
+
+    if np.isfinite(p_main) and np.isfinite(p_strict):
+        same_direction = np.sign(main["s"]) == np.sign(strict["s"])
+        strict_pass = bool(p_strict < alpha and same_direction)
+    else:
+        strict_pass = None
+
+    if np.isfinite(interval["low"]) and np.isfinite(interval["high"]):
+        ci = [float(interval["low"] * 10.0), float(interval["high"] * 10.0)]
+    else:
+        ci = None
+
+    return {
+        "status": "ok" if available else "unavailable",
+        "p_value": _number_or_none(p_main),
+        "ci": ci,
+        "method": INFERENCE_METHOD,
+        "strict_check_pass": strict_pass,
+        "strict_check_p": _number_or_none(p_strict),
+        "lag1": _number_or_none(lag1),
+        "caution": bool(np.isfinite(lag1) and lag1 >= CAUTION_LAG1),
+        "ci_note": CI_NOTE,
+        "n": n,
+    }
+
+
+def trend_block(years, values, alpha=0.05):
+    """The ``trend`` object for one seasonal series, ready for JSON.
+
+    Puts the Sen slope per decade and its intercept together with the product
+    inference block, matching the ``trend`` shape in ``docs/CONTRACT.md``.
+    Non-finite numbers become None so the object can be serialised directly.
+    """
+    slope_per_decade = sen_slope_per_decade(years, values)
+    _, intercept = sen_slope(years, values)
+    return {
+        "sen_slope_per_decade": _number_or_none(slope_per_decade),
+        "intercept": _number_or_none(intercept),
+        "method": "Sen",
+        "inference": inference_block(years, values, alpha=alpha),
+    }
+
+
+def fdr_bh(pvalues, q=0.10):
+    """Benjamini-Hochberg false-discovery-rate mask.
+
+    Returns a boolean array in the input order (flattened if the input is
+    multi-dimensional): True means the null hypothesis is rejected at
+    false-discovery rate ``q``. NaN entries are
+    ignored when counting tests and always come back False. With ``m`` finite
+    p-values sorted ascending, the largest ``k`` satisfying
+    ``p_(k) <= q * k / m`` is found and every p-value at or below ``p_(k)`` is
+    rejected; that step-up rule is what keeps the expected share of false
+    discoveries among rejected tests at or below ``q`` when the tests are
+    independent or positively dependent.
+
+    Raises ``ValueError`` for a ``q`` outside (0, 1) or a p-value outside
+    [0, 1]. Empty input returns an empty boolean array.
+    """
+    if not 0.0 < q < 1.0:
+        raise ValueError("q must be between 0 and 1")
+    p = np.asarray(pvalues, dtype=float).ravel()
+    mask = np.zeros(p.size, dtype=bool)
+    valid = np.isfinite(p)
+    if np.any(p[valid] < 0.0) or np.any(p[valid] > 1.0):
+        raise ValueError("p-values must lie between 0 and 1")
+    m = int(valid.sum())
+    if m == 0:
+        return mask
+
+    observed = p[valid]
+    order = np.argsort(observed, kind="mergesort")
+    ranked = observed[order]
+    thresholds = q * np.arange(1, m + 1, dtype=float) / m
+    passing = np.nonzero(ranked <= thresholds)[0]
+    if passing.size:
+        cutoff = ranked[passing[-1]]
+        mask[valid] = observed <= cutoff
+    return mask

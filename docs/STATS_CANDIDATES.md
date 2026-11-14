@@ -1,12 +1,15 @@
-# Trend estimator candidates
+# Trend estimator candidates and the chosen inference path
 
-**Status: no method is chosen.** This page lists candidate estimators with measured
-behaviour so the science review and the user can choose. It does not select one, and
-`trend.inference.status` in the result files stays `unavailable` until that choice is
-made and wired in.
+**Status: the user chose the product path on 14 November 2026.** The main test is
+Mann-Kendall with the Hamed-Rao variance correction limited to three lags; the strict
+secondary check is Yue-Wang classic prewhitening (`trend_preserving=False`). The Sen
+slope and its interval are always reported. All-lag Hamed-Rao and trend-preserving
+prewhitening are dropped from the product path but stay in the candidates table below
+so the measurements behind the decision can still be checked.
 
-All candidates live in `backend/trend/stats.py` and share one input path, so switching
-method later is a configuration change rather than a rewrite.
+`backend/trend/stats.py` also exposes `inference_block`, `trend_block` and `fdr_bh`,
+which implement that decision. The candidates share one input path, so the measured
+comparison is reproducible rather than a rewrite.
 
 ## What is implemented
 
@@ -18,11 +21,46 @@ method later is a configuration change rather than a rewrite.
 | `mann_kendall(years, values, alpha)` | `s`, `var_s`, `z`, `p`, `n` | Plain Mann-Kendall test with tie correction |
 | `mann_kendall_hamed_rao(years, values, alpha, max_lag)` | the same fields plus `var_inflation` | Hamed-Rao autocorrelation variance correction |
 | `mann_kendall_yue_wang(years, values, alpha, trend_preserving)` | the same fields plus `rho1` | Prewhitening test; trend-preserving (TFPW) by default, classic prewhitening with `trend_preserving=False` |
+| `inference_block(years, values, alpha)` | the `trend.inference` dict | Product path: 3-lag Hamed-Rao p-value, classic prewhitening strict check, Sen interval, detrended lag-1, caution flag |
+| `trend_block(years, values, alpha)` | the `trend` dict | Sen slope per decade, intercept and the inference block |
+| `fdr_bh(pvalues, q)` | boolean mask | Benjamini-Hochberg step-up for the map; NaN entries are ignored and return False |
 
 Input handling is common to all of them: pairs with a NaN in either array are dropped
 and counted in `n_dropped`; fewer than 8 valid pairs returns NaN for every statistic
 instead of raising; years must be unique and a repeated year raises `ValueError`.
 Only numpy and scipy are imported by `stats.py` itself.
+
+## Product path (decided 14 November 2026)
+
+`inference_block` writes exactly these fields, ready for the result JSON:
+
+| Field | Meaning |
+|---|---|
+| `status` | `ok` when the main test gave a finite p-value from a positive variance with `n >= 8`; otherwise `unavailable` |
+| `p_value` | Two-sided p-value of Mann-Kendall with the 3-lag Hamed-Rao variance correction, or `null` |
+| `ci` | `[low, high]` Sen slope interval per decade, or `null` when shorter than 8 valid pairs |
+| `method` | Fixed text `MK + Hamed-Rao (3 lags)` |
+| `strict_check_pass` | `true` when the classic prewhitening test also gives `p < alpha` with the same direction of the Mann-Kendall statistic, `false` when it does not, `null` when either p-value is undefined |
+| `strict_check_p` | Two-sided p-value of the classic prewhitening test, or `null` |
+| `lag1` | Lag-1 autocorrelation after removing the Sen trend, or `null` |
+| `caution` | `true` when `lag1 >= 0.3`; `false` when `lag1` is `null` or below the threshold |
+| `ci_note` | `95% slope interval assumes independent years; narrower than true uncertainty when years correlate` |
+| `n` | Number of valid year-value pairs used by the main test |
+
+Numbers that cannot be computed are written as JSON `null`, never as NaN.
+`trend_block` adds `sen_slope_per_decade`, `intercept` and `method: "Sen"` around the
+same inference block.
+
+The interval is always shown, with the note above, even when the p-value is
+significant. The caution threshold is a display warning, not a test: it says the
+42 years carry less independent information than 42 unrelated values. For the map,
+every valid cell is coloured by the Sen slope and only cells that pass
+`fdr_bh(..., q=0.10)` are hatched; the note on spatial clustering still applies
+because neighbouring cells are not independent.
+
+`status` is `unavailable` when the p-value is NaN, the corrected variance is not
+positive, or `n < 8`. A `null` strict check is not an `unavailable` main result: the
+main test can stand on its own while the secondary check cannot be evaluated.
 
 ## Simulation setup
 
@@ -62,6 +100,28 @@ of 0.3, so differences below roughly 0.01-0.02 in the table are noise.
 | Mann-Kendall + Yue-Wang classic PW | 0.6 | 0.052 | 0.087 |
 
 These are real outputs of `python tests/sim_stats.py` (see reproduce section).
+The table keeps the two dropped variants on purpose: they are the evidence for the
+decision, not part of the product path.
+
+## The three real series through the product path
+
+The same three DJF series used for the outside-code comparison, with the chosen
+inference path. Values are mm/day; the interval and slope are per decade. Produced by
+`python tests/sim_stats.py --real` from the frozen copy in
+`tests/real_series_fixture.py`.
+
+| Series | n | Sen slope per decade | 95% slope interval (per decade) | p (3-lag Hamed-Rao) | strict p (classic PW) | strict passes | detrended lag-1 | caution |
+|---|---|---|---|---|---|---|---|---|
+| indonesia_polygon | 42 | 0.1163 | [-0.049, 0.277] | 0.1654 | 0.0857 | False | 0.005 | False |
+| coastal_peru_polygon | 42 | -0.0982 | [-0.329, 0.162] | 0.5016 | 0.6452 | False | 0.136 | False |
+| indonesia_box_equal_month | 42 | 0.1904 | [-0.080, 0.461] | 0.1526 | 0.0607 | False | -0.109 | False |
+
+Read the table as arithmetic on these series, not as a physical conclusion. None of
+the three main tests reaches 0.05, the intervals include zero, and no series triggers
+the persistence caution. The Indonesia polygon and box series are two masks over the
+same region, which is why their numbers are close but not identical. The strict check
+does not confirm any of them because none of the main tests is significant to begin
+with.
 
 ## What the numbers show
 
@@ -94,7 +154,9 @@ Read these as measurements under the stated model, not as a recommendation.
 * Classic prewhitening is the only variant that stays near 0.05 at every `phi`
   (0.043-0.059), but its power collapses as persistence rises (0.087 at `phi = 0.6`)
   because estimating the lag-1 coefficient from the trending series removes part of
-  the trend itself. Well calibrated and almost powerless is not useful here.
+  the trend itself. That trade-off is why it is the strict *secondary* check and not
+  the main test: passing it is meaningful, while failing it is expected when the
+  trend is weak. It is never the only test shown.
 * Power is reported for one trend size. A different trend size would move every power
   entry, and the prewhitening variants are the ones most likely to reorder, because
   their power depends on how much of the trend survives whitening. The single
@@ -124,17 +186,25 @@ Two practical points:
 ## Verification against outside code
 
 `tests/test_stats.py` compares every implemented statistic with another implementation,
-on three different 42-value series (one trending, one flat, one with rounded ties):
+on six different 42-value series: three synthetic (one trending, one flat, one with
+rounded ties) and three real DJF series frozen in `tests/real_series_fixture.py`
+(Indonesia polygon, coastal Peru polygon, Indonesia box). The artifact files are not
+read by the tests.
 
 * `sen_slope` against `pymannkendall.sens_slope`, slope and intercept (the intercept is
   converted from unit index steps to year units first).
 * `mann_kendall` against `pymannkendall.original_test`.
-* `mann_kendall_hamed_rao` against `pymannkendall.hamed_rao_modification_test`.
+* `mann_kendall_hamed_rao` against `pymannkendall.hamed_rao_modification_test`, both
+  with every lag and with `lag=3` (the product main test).
 * `mann_kendall_yue_wang` against `pymannkendall.trend_free_pre_whitening_modification_test`
   and, with `trend_preserving=False`, `pymannkendall.pre_whitening_modification_test`.
 * `sen_slope_ci` against `scipy.stats.theilslopes` at `alpha = 0.05` and `0.10`.
 
 All fields (`s`, `var_s`, `z`, `p`, and the interval bounds) agree to 1e-10 relative.
+The same tests also check that `inference_block` is built from exactly those pieces,
+that it round-trips through JSON without NaN, and that the unavailable states
+(`n < 8`, constant series, negative corrected variance, NaN gaps) return `null`
+instead of a number.
 
 The whole simulation, not just single series, was also run through pymannkendall:
 
@@ -155,8 +225,11 @@ autocorrelation sum moves a little. They are not a disagreement about the method
 
 * AR(1) is a crude stand-in for DJF rainfall. Real regional series can carry
   ENSO-driven multi-year structure, negative lag-1 correlation, or a few very wet
-  seasons. The point estimate of `phi` for the two real series has not been computed
-  yet, so we do not know which row of the table is closest to reality.
+  seasons. The three frozen real series have detrended lag-1 correlations of 0.005
+  (Indonesia polygon), 0.136 (coastal Peru polygon) and -0.109 (Indonesia box), so
+  they sit closest to the `phi = 0` row, with coastal Peru nearest `phi = 0.3`. One
+  estimate from 42 values is itself uncertain, and the three series are not
+  independent of each other.
 * Power is reported for one trend size (0.02 sd/yr). Power depends on the trend, the
   record length and the persistence, so the ranking can change at other trend sizes.
 * Missing years are not simulated. NaN handling is tested separately, but no
@@ -170,7 +243,8 @@ autocorrelation sum moves a little. They are not a disagreement about the method
 
 ```
 python -m pytest tests/test_stats.py -q     # agreement and guard tests, a few seconds
-python tests/sim_stats.py                   # the table above, about 40 s
+python tests/sim_stats.py --real            # the real-series table above, a second
+python tests/sim_stats.py                   # the simulation table, about 40 s
 python tests/sim_stats.py --verify          # plus the pymannkendall cross-check, about 70 s
 ```
 

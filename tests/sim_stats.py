@@ -4,12 +4,15 @@ This is a script, not a pytest module, because the full run is deliberately
 slow-ish (~2000 replicates x 3 dependence levels). Run it from the repository
 root:
 
-    python tests/sim_stats.py
+    python tests/sim_stats.py          # the AR(1) table
+    python tests/sim_stats.py --real   # product-path numbers for real series
 
 It prints a Markdown table of measured false-positive rates and power. The
 numbers are copied into ``docs/STATS_CANDIDATES.md``; nothing is written to
 disk. ``tests/test_stats.py`` reuses the same helpers for a much smaller quick
 check, so the fast tests and the full table share one simulation definition.
+The ``--real`` mode reads the frozen numbers in ``tests/real_series_fixture.py``
+only, so it does not need the w1-data worktree.
 
 Design
 ------
@@ -179,8 +182,50 @@ def tfpw_amplitude_ratio(phi, runs):
     return float(np.median(ratios))
 
 
+def real_series_diagnostics():
+    """Product-path numbers for the three frozen real DJF series.
+
+    Returns one dict per series with the trend block and inference block, so the
+    table in ``docs/STATS_CANDIDATES.md`` can be reproduced without the raw
+    GPCP files.
+    """
+    from tests.real_series_fixture import REAL_SERIES, YEARS
+
+    years = np.asarray(YEARS, dtype=float)
+    rows = []
+    for name, values in REAL_SERIES:
+        block = stats.trend_block(years, np.asarray(values, dtype=float))
+        rows.append({"name": name, **block})
+    return rows
+
+
+def print_real_series_diagnostics():
+    """Print the real-series table used in docs/STATS_CANDIDATES.md."""
+    print(
+        "| Series | n | Sen slope per decade | 95% slope interval "
+        "(per decade) | p (3-lag Hamed-Rao) | strict p (classic PW) "
+        "| strict passes | detrended lag-1 | caution |"
+    )
+    print("|---|---|---|---|---|---|---|---|---|")
+    for row in real_series_diagnostics():
+        inference = row["inference"]
+        ci = inference["ci"]
+        ci_text = "unavailable" if ci is None else f"[{ci[0]:.3f}, {ci[1]:.3f}]"
+        print(
+            f"| {row['name']} | {inference['n']} "
+            f"| {row['sen_slope_per_decade']:.4f} | {ci_text} "
+            f"| {inference['p_value']:.4f} "
+            f"| {inference['strict_check_p']:.4f} "
+            f"| {inference['strict_check_pass']} "
+            f"| {inference['lag1']:.3f} | {inference['caution']} |"
+        )
+
+
 def main(argv=None):
     argv = sys.argv[1:] if argv is None else argv
+    if "--real" in argv:
+        print_real_series_diagnostics()
+        return
     runs = 2000
     print(
         f"n=42, {runs} replicates per cell, alpha={ALPHA}, "
