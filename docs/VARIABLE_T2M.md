@@ -137,7 +137,7 @@ Measured after the build with `scripts/build_t2m.py grid`:
 | Tile files | 3,240 (648 per season) |
 | Total tile size | 89,449,502 bytes (89.4 MB) |
 | Largest tile | 32,922 bytes (32.2 KB) |
-| Smallest tile | 21,734 bytes (21.2 KB) |
+| Smallest tile | 20,385 bytes (19.9 KB) |
 
 The hard limits are 300 KB per tile and 150 MB per variable; both pass with
 room to spare. For the four-variable budget: the committed `precip` grid in this
