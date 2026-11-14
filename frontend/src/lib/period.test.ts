@@ -99,6 +99,21 @@ describe("comparePeriods", () => {
     expect(comparison.note).toContain("No slope difference");
   });
 
+  it("gives sub-period estimates no p-value, interval or inference block", () => {
+    const comparison = comparePeriods(years, values, { startYear: 1984, endYear: 2000 }, {
+      startYear: 2001,
+      endYear: 2020,
+    });
+
+    for (const estimate of [comparison.a.estimate, comparison.b.estimate]) {
+      expect(estimate).not.toHaveProperty("inference");
+      expect(estimate).not.toHaveProperty("p_value");
+      expect(estimate).not.toHaveProperty("ci");
+      expect(estimate).not.toHaveProperty("strict_check_pass");
+      expect(estimate).not.toHaveProperty("caution");
+    }
+  });
+
   it("rejects reversed or non-integer period bounds", () => {
     expect(() =>
       comparePeriods(years, values, { startYear: 2000, endYear: 1990 }, {

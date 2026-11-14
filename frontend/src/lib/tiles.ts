@@ -9,15 +9,53 @@
  *   2. checks `available_tiles` in index.json,
  *   3. fetches `data/artifacts/grid/<variable>/<season>/<tile_lon>_<tile_lat>.json`,
  *   4. decodes int16 values/coverage/slope,
- *   5. returns a CONTRACT.md-shaped result with
+ *   5. copies the optional per-cell inference block and FDR flag when the tile
+ *      carries them,
+ *   6. returns a CONTRACT.md-shaped result with
  *      `validation.status = "unchecked-same-method"`.
  *
  * Expected no-data cases (missing tile, ocean/land-only gap, cell absent from a
  * partial tile) are returned as `{ status: "no-data", reason, message }` and do
  * not throw.
+ *
+ * Tile cells may optionally carry two forward-compatible fields (W3 owns the
+ * final schema proposal):
+ *
+ * - `inference`: an object with the same field names as `trend.inference`
+ *   (status, p_value, ci, method, strict_check_pass, strict_check_p, lag1,
+ *   caution, ci_note, n). Values are already in display units (slope per
+ *   decade), not int16-scaled. A block that is malformed, claims `ok` below
+ *   n = 8, or carries a p-value outside [0, 1] or a reversed interval is
+ *   replaced by the unavailable shape instead of showing untrustworthy numbers.
+ * - `fdr_significant`: boolean Benjamini-Hochberg flag at q = 0.10, copied to
+ *   `trend.fdr_significant`; any other type becomes null.
+ *
+ * Neither field is required. When absent, inference is `unavailable` and the
+ * FDR flag is null, exactly as the base contract behaves today.
  */
 
 import { median } from "./stats";
+import type {
+  CellSeriesOutcome,
+  ContractResult,
+  NoDataReason,
+  TrendInference,
+} from "./types";
+
+export type {
+  CellResult,
+  CellSeriesOutcome,
+  ContractInference,
+  ContractRegion,
+  ContractResult,
+  ContractSeason,
+  ContractSource,
+  ContractTrend,
+  ContractValidation,
+  InferenceStatus,
+  NoDataReason,
+  TrendInference,
+} from "./types";
 
 const DEFAULT_BASE_PATH = "data/artifacts/grid";
 const TILE_SIZE_DEG = 10;
@@ -72,6 +110,10 @@ interface RawTileCell {
   s?: unknown;
   v: unknown[];
   c?: unknown;
+  /** Optional contract-shaped inference block; see the module comment. */
+  inference?: unknown;
+  /** Optional Benjamini-Hochberg q = 0.10 flag for map hatching. */
+  fdr_significant?: unknown;
 }
 
 interface RawTile {
@@ -79,71 +121,6 @@ interface RawTile {
   season: string;
   tile: [number, number];
   cells: Record<string, unknown>;
-}
-
-export interface ContractSource extends GridSource {}
-
-export interface ContractRegion {
-  id: string;
-  label: string;
-  geometry: "BBOX";
-  bbox: [number, number, number, number];
-  cells_used: number;
-  area_km2: number;
-}
-
-export interface ContractSeason {
-  code: string;
-  year_label: string;
-  months: number[];
-  aggregation: string;
-}
-
-export interface ContractInference {
-  status: "unavailable";
-  p_value: null;
-  ci: null;
-  method: null;
-}
-
-export interface ContractTrend {
-  /** Full-period Sen slope per decade from the tile's precomputed `s`. */
-  sen_slope_per_decade: number | null;
-  /**
-   * Median-based intercept at calendar year 0
-   * (`median(y) - slopePerYear * median(x)`, scipy convention), or null.
-   */
-  intercept: number | null;
-  method: string;
-  slope_units: string;
-  n_valid: number;
-  period: [number, number] | null;
-  inference: ContractInference;
-}
-
-export interface ContractValidation {
-  reference: string;
-  status: "unchecked-same-method";
-  notes: string;
-}
-
-export interface ContractResult {
-  id: string;
-  variable: string;
-  units: string;
-  source: ContractSource;
-  region: ContractRegion;
-  season: ContractSeason;
-  years: number[];
-  values: (number | null)[];
-  coverage: number[];
-  anomaly_baseline: null;
-  geometry_file: string | null;
-  template_summary: string;
-  trend: ContractTrend;
-  validation: ContractValidation;
-  generated: string;
-  code_version: string;
 }
 
 export interface CellSeriesRequest {
@@ -176,35 +153,18 @@ export interface CellSeriesOptions {
   now?: () => string;
 }
 
-export type NoDataReason =
-  | "fetch-unavailable"
-  | "index-unavailable"
-  | "index-invalid"
-  | "unknown-variable"
-  | "unknown-season"
-  | "no-years"
-  | "no-tile"
-  | "no-cell"
-  | "all-fill"
-  | "fetch-failed"
-  | "bad-tile";
+/** Fixed label for the Sen slope interval; assumptions are in the wording. */
+export const SLOPE_CI_NOTE =
+  "95% slope interval (assumes independent years; narrower than true uncertainty when years correlate)";
 
-export type CellSeriesOutcome =
-  | {
-      status: "ok";
-      result: ContractResult;
-      cellId: string;
-      tileKey: string;
-      tileUrl: string;
-    }
-  | {
-      status: "no-data";
-      reason: NoDataReason;
-      message: string;
-      cellId: string;
-      tileKey: string;
-      tileUrl: string | null;
-    };
+/** Main inference test description used when a tile does not name one. */
+export const INFERENCE_METHOD = "MK + Hamed-Rao (3 lags)";
+
+/** Show the caution badge when the detrended lag-1 correlation reaches this. */
+export const INFERENCE_CAUTION_LAG1 = 0.3;
+
+/** Below this many valid years the agreed science rule reports unavailable. */
+export const INFERENCE_MIN_OBSERVATIONS = 8;
 
 interface CellLocation {
   lonNorm: number;
@@ -317,6 +277,86 @@ function parseCell(value: unknown): RawTileCell | null {
     s: value.s,
     v: value.v,
     c: value.c,
+    inference: value.inference,
+    fdr_significant: value.fdr_significant,
+  };
+}
+
+function unavailableInference(): TrendInference {
+  return {
+    status: "unavailable",
+    p_value: null,
+    ci: null,
+    method: null,
+    strict_check_pass: null,
+    strict_check_p: null,
+    lag1: null,
+    caution: false,
+    ci_note: SLOPE_CI_NOTE,
+    n: null,
+  };
+}
+
+function isFiniteNumber(value: unknown): value is number {
+  return typeof value === "number" && Number.isFinite(value);
+}
+
+function isProbability(value: unknown): value is number {
+  return isFiniteNumber(value) && value >= 0 && value <= 1;
+}
+
+/**
+ * Copy one optional tile inference block into the contract shape.
+ *
+ * A block is only accepted with `status: "ok"` when every displayed number is
+ * usable: a p-value in [0, 1], an ordered finite `ci` pair, a finite lag-1
+ * value, and at least `INFERENCE_MIN_OBSERVATIONS` valid years. Anything else
+ * becomes `unavailable`, so the UI never shows half-valid inference.
+ *
+ * `caution` is always derived from `lag1` (>= 0.3) and never trusted from the
+ * file, so it cannot disagree with the number shown beside the badge.
+ */
+function parseInference(raw: unknown, nValid: number): TrendInference {
+  if (!isObject(raw) || raw.status !== "ok") return unavailableInference();
+  if (!isProbability(raw.p_value)) return unavailableInference();
+
+  const ci = raw.ci;
+  if (!Array.isArray(ci) || ci.length !== 2) return unavailableInference();
+  const low = ci[0];
+  const high = ci[1];
+  if (!isFiniteNumber(low) || !isFiniteNumber(high) || low > high) {
+    return unavailableInference();
+  }
+  if (!isFiniteNumber(raw.lag1)) return unavailableInference();
+
+  const n = isFiniteNumber(raw.n) ? Math.round(raw.n) : nValid;
+  if (n < INFERENCE_MIN_OBSERVATIONS) return unavailableInference();
+
+  const method =
+    typeof raw.method === "string" && raw.method.trim() !== ""
+      ? raw.method
+      : INFERENCE_METHOD;
+  const ciNote =
+    typeof raw.ci_note === "string" && raw.ci_note.trim() !== ""
+      ? raw.ci_note
+      : SLOPE_CI_NOTE;
+
+  return {
+    status: "ok",
+    p_value: raw.p_value,
+    ci: [low, high],
+    method,
+    strict_check_pass:
+      typeof raw.strict_check_pass === "boolean"
+        ? raw.strict_check_pass
+        : null,
+    strict_check_p: isProbability(raw.strict_check_p)
+      ? raw.strict_check_p
+      : null,
+    lag1: raw.lag1,
+    caution: raw.lag1 >= INFERENCE_CAUTION_LAG1,
+    ci_note: ciNote,
+    n,
   };
 }
 
@@ -430,6 +470,7 @@ function buildTemplateSummary(
   slopeDecimals: number,
   period: [number, number] | null,
   nValid: number,
+  inference: TrendInference,
 ): string {
   const periodText =
     period === null ? "no valid years" : `${period[0]}-${period[1]}, n=${nValid}`;
@@ -440,7 +481,7 @@ function buildTemplateSummary(
   return (
     `For ${cellId} (${label}) in ${season} (${periodText}), ` +
     `${variableName} has ${slopeText} ` +
-    `(inference status: unavailable; validation: unchecked-same-method).`
+    `(inference status: ${inference.status}; validation: unchecked-same-method).`
   );
 }
 
@@ -704,6 +745,10 @@ export async function fetchCellSeries(
     "W",
   )} (1\u00b0 cell)`;
 
+  const inference = parseInference(cell.inference, validValues.length);
+  const fdrSignificant =
+    typeof cell.fdr_significant === "boolean" ? cell.fdr_significant : null;
+
   const result: ContractResult = {
     id: `${slug}_${location.cellId}_${request.season}`,
     variable: variableMeta.variable,
@@ -743,6 +788,7 @@ export async function fetchCellSeries(
       variableMeta.slope_decimals,
       period,
       validValues.length,
+      inference,
     ),
     trend: {
       sen_slope_per_decade: slope,
@@ -751,12 +797,8 @@ export async function fetchCellSeries(
       slope_units: variableMeta.slope_units,
       n_valid: validValues.length,
       period,
-      inference: {
-        status: "unavailable",
-        p_value: null,
-        ci: null,
-        method: null,
-      },
+      inference,
+      fdr_significant: fdrSignificant,
     },
     validation: {
       reference: "none",

@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  INFERENCE_METHOD,
+  SLOPE_CI_NOTE,
   fetchCellSeries,
   type CellSeriesOutcome,
   type FetchResponseLike,
@@ -9,8 +11,11 @@ import {
 } from "./tiles";
 import gridIndexFixture from "./__fixtures__/grid/index.json";
 import workedTile from "./__fixtures__/grid/precip/DJF/-80_-10.json";
+import inferenceIndexFixture from "./__fixtures__/grid/inference_index.json";
+import inferenceTile from "./__fixtures__/grid/inference_tile.json";
 
 const baseIndex = gridIndexFixture as unknown as GridIndex;
+const inferenceBaseIndex = inferenceIndexFixture as unknown as GridIndex;
 
 function makeIndex(
   variableOverrides: Partial<GridVariableMeta> = {},
@@ -62,6 +67,54 @@ function dynamicTileFetch(calls: string[]): (url: string) => Promise<FetchRespon
     });
   };
 }
+
+function okInference(
+  overrides: Record<string, unknown> = {},
+): Record<string, unknown> {
+  return {
+    status: "ok",
+    p_value: 0.012,
+    ci: [0.119048, 0.248485],
+    method: INFERENCE_METHOD,
+    strict_check_pass: true,
+    strict_check_p: 0.028,
+    lag1: 0.11,
+    caution: false,
+    ci_note: SLOPE_CI_NOTE,
+    n: 42,
+    ...overrides,
+  };
+}
+
+function tileWithInference(inference: unknown, fdr: unknown = null): unknown {
+  return {
+    v_slug: "precip",
+    season: "DJF",
+    tile: [-80, -10],
+    cells: {
+      "cell_-4.5_-79.5": {
+        s: 187,
+        v: Array.from({ length: 42 }, (_, index) => 400 + index),
+        c: 1000,
+        inference,
+        fdr_significant: fdr,
+      },
+    },
+  };
+}
+
+const unavailableInference = {
+  status: "unavailable",
+  p_value: null,
+  ci: null,
+  method: null,
+  strict_check_pass: null,
+  strict_check_p: null,
+  lag1: null,
+  caution: false,
+  ci_note: SLOPE_CI_NOTE,
+  n: null,
+};
 
 describe("fetchCellSeries worked example", () => {
   it("reproduces docs/GRID_FORMAT.md section 9 end to end", async () => {
@@ -122,7 +175,14 @@ describe("fetchCellSeries worked example", () => {
       p_value: null,
       ci: null,
       method: null,
+      strict_check_pass: null,
+      strict_check_p: null,
+      lag1: null,
+      caution: false,
+      ci_note: SLOPE_CI_NOTE,
+      n: null,
     });
+    expect(result.trend.fdr_significant).toBeNull();
 
     expect(result.validation.status).toBe("unchecked-same-method");
     expect(result.generated).toBe("2026-11-14T00:00:00.000Z");
@@ -372,6 +432,132 @@ describe("fetchCellSeries coordinate lookup", () => {
         { index: baseIndex, fetchImpl: async () => jsonResponse(workedTile) },
       ),
     ).rejects.toThrow(RangeError);
+  });
+});
+
+describe("fetchCellSeries inference and FDR pass-through", () => {
+  it("copies a valid tile inference block into the contract result", async () => {
+    const outcome = await fetchCellSeries(
+      { lon: -79.23, lat: -4.61, variable: "precip", season: "DJF" },
+      {
+        index: inferenceBaseIndex,
+        fetchImpl: async () => jsonResponse(inferenceTile),
+      },
+    );
+
+    const { result } = expectOk(outcome);
+    expect(result.years).toHaveLength(42);
+    expect(result.trend.n_valid).toBe(42);
+    expect(result.trend.sen_slope_per_decade).toBeCloseTo(0.187, 3);
+    expect(result.trend.fdr_significant).toBe(true);
+    expect(result.trend.inference).toEqual({
+      status: "ok",
+      p_value: 0.012,
+      ci: [0.119048, 0.248485],
+      method: INFERENCE_METHOD,
+      strict_check_pass: true,
+      strict_check_p: 0.028,
+      lag1: 0.11,
+      caution: false,
+      ci_note: SLOPE_CI_NOTE,
+      n: 42,
+    });
+    expect(result.template_summary).toContain("inference status: ok");
+  });
+
+  it("carries a failed strict check, the caution flag and a false FDR flag", async () => {
+    const outcome = await fetchCellSeries(
+      { lon: -79.23, lat: -5.61, variable: "precip", season: "DJF" },
+      {
+        index: inferenceBaseIndex,
+        fetchImpl: async () => jsonResponse(inferenceTile),
+      },
+    );
+
+    const { result } = expectOk(outcome);
+    expect(result.region.id).toBe("cell_-5.5_-79.5");
+    expect(result.trend.fdr_significant).toBe(false);
+    expect(result.trend.inference.status).toBe("ok");
+    expect(result.trend.inference.strict_check_pass).toBe(false);
+    expect(result.trend.inference.strict_check_p).toBe(0.19);
+    expect(result.trend.inference.lag1).toBe(0.34);
+    expect(result.trend.inference.caution).toBe(true);
+  });
+
+  it("falls back to unavailable inference when the tile has no optional fields", async () => {
+    const outcome = await fetchCellSeries(
+      { lon: -79.23, lat: -6.61, variable: "precip", season: "DJF" },
+      {
+        index: inferenceBaseIndex,
+        fetchImpl: async () => jsonResponse(inferenceTile),
+      },
+    );
+
+    const { result } = expectOk(outcome);
+    expect(result.region.id).toBe("cell_-6.5_-79.5");
+    expect(result.trend.inference).toEqual(unavailableInference);
+    expect(result.trend.fdr_significant).toBeNull();
+    expect(result.template_summary).toContain("inference status: unavailable");
+  });
+
+  it("derives caution from lag1 and ignores a non-boolean FDR flag", async () => {
+    const outcome = await fetchCellSeries(
+      { lon: -79.23, lat: -4.61, variable: "precip", season: "DJF" },
+      {
+        index: inferenceBaseIndex,
+        fetchImpl: async () =>
+          jsonResponse(tileWithInference(okInference({ lag1: 0.5 }), "yes")),
+      },
+    );
+
+    const { result } = expectOk(outcome);
+    expect(result.trend.inference.status).toBe("ok");
+    expect(result.trend.inference.lag1).toBe(0.5);
+    expect(result.trend.inference.caution).toBe(true);
+    expect(result.trend.fdr_significant).toBeNull();
+  });
+
+  it("keeps a valid ok block when the strict check was not computed", async () => {
+    const inference = okInference();
+    delete inference.strict_check_pass;
+    delete inference.strict_check_p;
+
+    const outcome = await fetchCellSeries(
+      { lon: -79.23, lat: -4.61, variable: "precip", season: "DJF" },
+      {
+        index: inferenceBaseIndex,
+        fetchImpl: async () => jsonResponse(tileWithInference(inference)),
+      },
+    );
+
+    const { result } = expectOk(outcome);
+    expect(result.trend.inference.status).toBe("ok");
+    expect(result.trend.inference.strict_check_pass).toBeNull();
+    expect(result.trend.inference.strict_check_p).toBeNull();
+  });
+
+  it("refuses ok blocks whose displayed numbers are unusable", async () => {
+    const variants: Array<[string, unknown]> = [
+      ["null p-value", okInference({ p_value: null })],
+      ["p-value above one", okInference({ p_value: 1.2 })],
+      ["reversed interval", okInference({ ci: [0.3, 0.1] })],
+      ["missing lag1", okInference({ lag1: null })],
+      ["too few observations", okInference({ n: 3 })],
+      ["unknown status", okInference({ status: "maybe" })],
+      ["not an object", "ok"],
+    ];
+
+    for (const [label, inference] of variants) {
+      const outcome = await fetchCellSeries(
+        { lon: -79.23, lat: -4.61, variable: "precip", season: "DJF" },
+        {
+          index: inferenceBaseIndex,
+          fetchImpl: async () => jsonResponse(tileWithInference(inference)),
+        },
+      );
+      const { result } = expectOk(outcome);
+      expect(result.trend.inference, label).toEqual(unavailableInference);
+    }
   });
 });
 
