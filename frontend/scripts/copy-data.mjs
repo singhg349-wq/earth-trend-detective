@@ -102,6 +102,141 @@ async function prepareGrid() {
   return { available: true, fixture };
 }
 
+const FDR_CELL_FIELDS = [
+  'passes_fdr',
+  'fdr_pass',
+  'significant',
+  'sig',
+  'hatch',
+];
+
+function cellMarksFdr(cell) {
+  if (!cell || typeof cell !== 'object' || Array.isArray(cell)) return false;
+  return FDR_CELL_FIELDS.some((field) => cell[field] === true);
+}
+
+function cellHasFdrBoolean(cell) {
+  if (!cell || typeof cell !== 'object' || Array.isArray(cell)) return false;
+  return FDR_CELL_FIELDS.some((field) => typeof cell[field] === 'boolean');
+}
+
+function cellPolygon(cellId) {
+  // Grid cell ids are `cell_<centre lat>_<centre lon>`, e.g. cell_-4.5_-79.5.
+  const match = /^cell_(-?\d+(?:\.\d+)?)_(-?\d+(?:\.\d+)?)$/.exec(cellId);
+  if (!match) return null;
+  const lat = Number(match[1]);
+  const lon = Number(match[2]);
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
+  const west = lon - 0.5;
+  const east = lon + 0.5;
+  const south = lat - 0.5;
+  const north = lat + 0.5;
+  return {
+    type: 'Polygon',
+    coordinates: [
+      [
+        [west, south],
+        [east, south],
+        [east, north],
+        [west, north],
+        [west, south],
+      ],
+    ],
+  };
+}
+
+async function buildFdrGeoJson(gridRoot, variable, season, destination) {
+  // The optional per-cell boolean is named by the grid builder. When it is
+  // present, write a small GeoJSON of passing cells so the map can hatch only
+  // those cells. The first tile decides whether a scan is worth doing.
+  const tileDir = path.join(gridRoot, variable, season);
+  if (!(await exists(tileDir))) return null;
+
+  let names = [];
+  try {
+    names = (await readdir(tileDir)).filter((name) => name.endsWith('.json'));
+  } catch {
+    return null;
+  }
+  if (names.length === 0) return null;
+
+  const firstTile = await readJson(path.join(tileDir, names[0]));
+  const firstCells = firstTile?.cells;
+  if (!firstCells || typeof firstCells !== 'object') return null;
+  const hasBoolean = Object.values(firstCells).some((cell) => cellHasFdrBoolean(cell));
+  if (!hasBoolean) return null;
+
+  const features = [];
+  for (const name of names) {
+    const tile = await readJson(path.join(tileDir, name));
+    const cells = tile?.cells;
+    if (!cells || typeof cells !== 'object') continue;
+    for (const [cellId, cell] of Object.entries(cells)) {
+      if (!cellMarksFdr(cell)) continue;
+      const geometry = cellPolygon(cellId);
+      if (!geometry) continue;
+      features.push({
+        type: 'Feature',
+        properties: { cell_id: cellId, fdr_pass: true },
+        geometry,
+      });
+    }
+  }
+  if (features.length === 0) return null;
+
+  const fileName = `${season}_hatch.geojson`;
+  const target = path.join(destination, variable, fileName);
+  await mkdir(path.dirname(target), { recursive: true });
+  await writeFile(
+    target,
+    JSON.stringify({ type: 'FeatureCollection', features }),
+  );
+  return fileName;
+}
+
+async function importGridTrendMaps(destination, realFiles) {
+  // The data worker writes full-period trend maps as
+  // grid/<variable>/trend_<SEASON>.png. Copy them into the trend-map folder so
+  // the app can show them, and pair an optional significance hatch mask named
+  // trend_<SEASON>_hatch.png (or fdr_<SEASON>.png) next to the slope image.
+  const gridRoot = path.join(artifactsDir, 'grid');
+  if (!(await exists(gridRoot))) return;
+
+  let variables = [];
+  try {
+    variables = await readdir(gridRoot, { withFileTypes: true });
+  } catch {
+    return;
+  }
+
+  for (const variableEntry of variables) {
+    if (!variableEntry.isDirectory()) continue;
+    const variable = variableEntry.name;
+    let files = [];
+    try {
+      files = await readdir(path.join(gridRoot, variable));
+    } catch {
+      continue;
+    }
+    for (const file of files) {
+      if (!file.endsWith('.png')) continue;
+      const slope = /^trend_(ANN|DJF|MAM|JJA|SON)\.png$/.exec(file);
+      const hatch = /^trend_(ANN|DJF|MAM|JJA|SON)_hatch\.png$/.exec(file);
+      const fdr = /^fdr_(ANN|DJF|MAM|JJA|SON)\.png$/.exec(file);
+      if (!slope && !hatch && !fdr) continue;
+      const season = (slope ?? hatch ?? fdr)[1];
+      const targetName = slope ? `${season}.png` : `${season}_hatch.png`;
+      const target = path.join(destination, variable, targetName);
+      await mkdir(path.dirname(target), { recursive: true });
+      await copyFile(path.join(gridRoot, variable, file), target);
+      realFiles.add(`${variable}/${targetName}`);
+      if (slope) {
+        await buildFdrGeoJson(gridRoot, variable, season, destination);
+      }
+    }
+  }
+}
+
 async function prepareTrendMaps() {
   const fixtureMaps = path.join(fixturesDir, 'trendmap');
   const artifactMaps = path.join(artifactsDir, 'trendmap');
@@ -110,14 +245,28 @@ async function prepareTrendMaps() {
   const realFiles = await listPngFiles(artifactMaps);
   if (await exists(fixtureMaps)) await copyDirectory(fixtureMaps, destination);
   if (await exists(artifactMaps)) await copyDirectory(artifactMaps, destination);
+  await importGridTrendMaps(destination, realFiles);
   if (!(await exists(destination))) return [];
 
   const entries = [];
   for (const relative of await listPngFiles(destination)) {
     const [variable, file] = relative.split('/');
     if (!variable || !file) continue;
+    if (/_hatch\.png$/i.test(file)) continue;
     const season = file.replace(/\.png$/, '');
-    entries.push({ variable, season, fixture: !realFiles.has(relative) });
+    const hatchName = `${season}_hatch.png`;
+    const hatchPath = path.join(destination, variable, hatchName);
+    const hasHatch = await exists(hatchPath);
+    const hatchGeoName = `${season}_hatch.geojson`;
+    const hatchGeoPath = path.join(destination, variable, hatchGeoName);
+    const hasHatchGeo = await exists(hatchGeoPath);
+    entries.push({
+      variable,
+      season,
+      fixture: !realFiles.has(relative),
+      ...(hasHatch ? { hatch: hatchName, fdr_q: 0.1 } : {}),
+      ...(hasHatchGeo ? { hatch_geojson: hatchGeoName, fdr_q: 0.1 } : {}),
+    });
   }
   entries.sort(
     (a, b) =>
@@ -135,6 +284,7 @@ function summarize(doc, fixture) {
   const season = doc.season ?? {};
   const source = doc.source ?? {};
   const validation = doc.validation ?? {};
+  const inference = doc.trend?.inference ?? {};
   const regionLabel = region.label ?? region.id ?? 'Unknown region';
   return {
     id: doc.id,
@@ -145,6 +295,7 @@ function summarize(doc, fixture) {
     region_label: regionLabel,
     season: season.code ?? '',
     validation_status: validation.status ?? 'unknown',
+    inference_status: inference.status ?? 'unknown',
     fixture,
     source: {
       product: source.product ?? '',

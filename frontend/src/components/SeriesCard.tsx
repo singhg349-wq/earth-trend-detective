@@ -1,5 +1,6 @@
 import type { SeriesDoc } from '../types';
 import Chart from './Chart';
+import InferenceBlock from './InferenceBlock';
 import PeriodCompare from './PeriodCompare';
 
 interface SeriesCardProps {
@@ -42,7 +43,7 @@ export default function SeriesCard({
         ? `${Math.round(meanCoverage * 100)}% mean, ${Math.round(minCoverage * 100)}% lowest`
         : `${Math.round(meanCoverage * 100)}%`;
 
-  const inference = doc.trend?.inference?.status ?? 'unknown';
+  const inference = doc.trend?.inference;
   const validation = doc.validation?.status ?? 'unknown';
   const slope = doc.trend?.sen_slope_per_decade;
   const firstYear = doc.years[0];
@@ -74,7 +75,7 @@ export default function SeriesCard({
           <dd>{mean === null ? 'not available' : `${formatNumber(mean)} ${doc.units}`}</dd>
         </div>
         <div>
-          <dt>Sen slope</dt>
+          <dt>Sen slope (full period)</dt>
           <dd>
             {slope === null || slope === undefined
               ? 'not available'
@@ -106,17 +107,12 @@ export default function SeriesCard({
           <dt>Area</dt>
           <dd>{doc.region.area_km2.toLocaleString()} km²</dd>
         </div>
-        <div>
-          <dt>Inference</dt>
-          <dd>{inference}</dd>
-        </div>
-        {inference === 'available' && typeof doc.trend.inference.p_value === 'number' && (
-          <div>
-            <dt>p value</dt>
-            <dd>{doc.trend.inference.p_value.toFixed(3)}</dd>
-          </div>
-        )}
       </dl>
+
+      <InferenceBlock
+        inference={inference}
+        slopeUnits={`${doc.units} per decade`}
+      />
 
       {doc.template_summary && <p className="summary">{doc.template_summary}</p>}
 

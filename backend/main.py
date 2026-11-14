@@ -40,6 +40,8 @@ def _summary(doc: Dict[str, Any], fixture: bool) -> Dict[str, Any]:
     season = doc.get("season") or {}
     source = doc.get("source") or {}
     validation = doc.get("validation") or {}
+    trend = doc.get("trend") or {}
+    inference = trend.get("inference") or {}
     region_label = region.get("label") or region.get("id") or "Unknown region"
     season_code = season.get("code") or ""
     variable = doc.get("variable") or "series"
@@ -52,6 +54,7 @@ def _summary(doc: Dict[str, Any], fixture: bool) -> Dict[str, Any]:
         "region_label": region_label,
         "season": season_code,
         "validation_status": validation.get("status") or "unknown",
+        "inference_status": inference.get("status") or "unknown",
         "fixture": bool(fixture),
         "source": {
             "product": source.get("product") or "",
@@ -100,6 +103,7 @@ def _index_overrides() -> Dict[str, Dict[str, Any]]:
         "region_label",
         "season",
         "validation_status",
+        "inference_status",
         "fixture",
     }
     overrides: Dict[str, Dict[str, Any]] = {}

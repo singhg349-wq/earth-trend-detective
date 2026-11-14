@@ -84,12 +84,6 @@ button {
   color: var(--amber);
 }
 
-.banner-info {
-  border-color: #b8cdf5;
-  background: var(--accent-soft);
-  color: #123f8f;
-}
-
 .banner-error {
   border-color: #f3b6b0;
   background: var(--red-bg);
@@ -538,6 +532,112 @@ button {
   line-height: 1.45;
 }
 
+.inference {
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfcfe;
+}
+
+.inference h3 {
+  margin: 0;
+  font-size: 13px;
+}
+
+.inference p {
+  margin: 6px 0 0;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.inference-unavailable {
+  border-color: #e4d3b4;
+  background: #fffaf0;
+}
+
+.inference-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.inference-facts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 14px;
+  margin: 8px 0 0;
+}
+
+.inference-facts div {
+  min-width: 0;
+}
+
+.inference-facts dt {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.inference-facts dd {
+  margin: 1px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.inference-interval {
+  margin-top: 10px;
+  padding: 8px 10px;
+  border-left: 3px solid #8fa9d6;
+  background: #eef3fb;
+}
+
+.inference-interval p {
+  margin: 0;
+}
+
+.inference-interval-label {
+  color: #2c4670;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.inference-interval-value {
+  margin-top: 2px !important;
+  color: #172033;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.inference-note {
+  margin-top: 6px !important;
+  font-size: 11px !important;
+}
+
+.caution-note {
+  margin-top: 8px !important;
+  padding: 8px 10px;
+  border-left: 3px solid #d08a1e;
+  background: #fff8e8;
+  color: #5c3d0e;
+  font-size: 12px !important;
+}
+
+.tag-inference-ok {
+  background: #ecfdf3;
+  color: var(--green);
+}
+
+.tag-caution {
+  margin-left: 6px;
+  background: var(--amber-bg);
+  color: var(--amber);
+}
+
 .card-actions {
   display: flex;
   flex-wrap: wrap;
@@ -685,6 +785,28 @@ button {
   margin-top: 3px;
   color: var(--muted);
   font-size: 10px;
+}
+
+.trend-hatch-legend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.trend-hatch-swatch {
+  display: inline-block;
+  width: 22px;
+  height: 10px;
+  border: 1px solid #d3dbe5;
+  border-radius: 3px;
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(23, 32, 51, 0.75) 0 1px,
+    transparent 1px 4px
+  );
 }
 
 .control-note {
@@ -877,6 +999,10 @@ button {
 
   .period-inputs,
   .period-estimates {
+    grid-template-columns: 1fr;
+  }
+
+  .inference-facts {
     grid-template-columns: 1fr;
   }
 

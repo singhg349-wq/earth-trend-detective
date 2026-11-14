@@ -21,16 +21,27 @@ export interface SeriesSeason {
   aggregation?: string;
 }
 
+export interface SeriesInference {
+  status: string;
+  p_value?: number | null;
+  /** Slope interval per decade, `[low, high]`. */
+  ci?: [number, number] | null;
+  method?: string | null;
+  strict_check_pass?: boolean | null;
+  strict_check_p?: number | null;
+  /** Detrended lag-1 correlation. */
+  lag1?: number | null;
+  caution?: boolean;
+  ci_note?: string | null;
+  n?: number | null;
+}
+
 export interface SeriesTrend {
   sen_slope_per_decade: number | null;
   intercept: number | null;
   method?: string;
-  inference: {
-    status: string;
-    p_value?: number | null;
-    ci?: unknown;
-    method?: string | null;
-  };
+  slope_units?: string;
+  inference: SeriesInference;
 }
 
 export interface SeriesValidation {
@@ -67,6 +78,7 @@ export interface SeriesSummary {
   region_label: string;
   season: string;
   validation_status: string;
+  inference_status?: string;
   fixture: boolean;
   source: {
     product: string;

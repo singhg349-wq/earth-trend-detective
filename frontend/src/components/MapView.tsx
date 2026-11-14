@@ -24,6 +24,8 @@ interface MapViewProps {
   timelapseExtent: [number, number, number, number];
   showTimelapse: boolean;
   trendMapUrl: string | null;
+  trendMapHatchUrl: string | null;
+  trendMapHatchGeoJsonUrl: string | null;
   trendMapExtent: [number, number, number, number];
   pickedCellBbox: [number, number, number, number] | null;
   onSelectRegion: (regionId: string) => void;
@@ -54,6 +56,8 @@ export default function MapView({
   timelapseExtent,
   showTimelapse,
   trendMapUrl,
+  trendMapHatchUrl,
+  trendMapHatchGeoJsonUrl,
   trendMapExtent,
   pickedCellBbox,
   onSelectRegion,
@@ -115,6 +119,42 @@ export default function MapView({
         source: 'picked-cell',
         paint: { 'line-color': '#b45309', 'line-width': 2 },
       });
+
+      // A small diagonal pattern used only for cells that pass the FDR test.
+      // The cell list comes from the trend-map catalog as GeoJSON.
+      const hatchCanvas = document.createElement('canvas');
+      hatchCanvas.width = 8;
+      hatchCanvas.height = 8;
+      const hatchContext = hatchCanvas.getContext('2d');
+      if (hatchContext) {
+        hatchContext.strokeStyle = 'rgba(23, 32, 51, 0.85)';
+        hatchContext.lineWidth = 1.2;
+        for (let offset = -8; offset < 16; offset += 5) {
+          hatchContext.beginPath();
+          hatchContext.moveTo(offset, 0);
+          hatchContext.lineTo(offset + 8, 8);
+          hatchContext.stroke();
+        }
+        map.addImage('fdr-hatch', hatchContext.getImageData(0, 0, 8, 8), {
+          pixelRatio: 1,
+        });
+        map.addSource('trendmap-hatch-cells', {
+          type: 'geojson',
+          data: EMPTY_REGIONS as never,
+        });
+        map.addLayer(
+          {
+            id: 'trendmap-hatch-cells-layer',
+            type: 'fill',
+            source: 'trendmap-hatch-cells',
+            paint: {
+              'fill-pattern': 'fdr-hatch',
+              'fill-opacity': 0.95,
+            },
+          },
+          'regions-fill',
+        );
+      }
 
       // Any click loads that 1 degree cell. A click on a region outline also
       // selects the region through the layer handler below.
@@ -293,6 +333,110 @@ export default function MapView({
     );
   }, [ready, trendMapUrl, trendWest, trendSouth, trendEast, trendNorth]);
 
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready) return;
+
+    const existingSource = map.getSource('trendmap-hatch') as
+      | ImageSource
+      | undefined;
+
+    if (!trendMapHatchUrl) {
+      if (map.getLayer('trendmap-hatch-layer')) {
+        map.removeLayer('trendmap-hatch-layer');
+      }
+      if (existingSource) map.removeSource('trendmap-hatch');
+      return;
+    }
+
+    // The hatch mask is also EPSG:4326 and uses the same extent as the slope
+    // PNG. MapLibre needs its corners clamped to the Web Mercator limit.
+    const mercatorLimit = 85.051129;
+    const clampLat = (value: number) =>
+      Math.max(-mercatorLimit, Math.min(mercatorLimit, value));
+    const coordinates: [
+      [number, number],
+      [number, number],
+      [number, number],
+      [number, number],
+    ] = [
+      [trendWest, clampLat(trendNorth)],
+      [trendEast, clampLat(trendNorth)],
+      [trendEast, clampLat(trendSouth)],
+      [trendWest, clampLat(trendSouth)],
+    ];
+
+    if (existingSource) {
+      existingSource.updateImage({ url: trendMapHatchUrl, coordinates });
+      return;
+    }
+
+    map.addSource('trendmap-hatch', {
+      type: 'image',
+      url: trendMapHatchUrl,
+      coordinates,
+    });
+    const beforeId = map.getLayer('regions-fill') ? 'regions-fill' : undefined;
+    map.addLayer(
+      {
+        id: 'trendmap-hatch-layer',
+        type: 'raster',
+        source: 'trendmap-hatch',
+        paint: {
+          'raster-opacity': 1,
+          'raster-fade-duration': 0,
+          'raster-resampling': 'nearest',
+        },
+      },
+      beforeId,
+    );
+  }, [ready, trendMapHatchUrl, trendWest, trendSouth, trendEast, trendNorth]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready) return;
+    const source = map.getSource('trendmap-hatch-cells') as
+      | GeoJSONSource
+      | undefined;
+    if (!source) return;
+
+    const empty = { type: 'FeatureCollection', features: [] } as never;
+    if (!trendMapHatchGeoJsonUrl) {
+      source.setData(empty);
+      return;
+    }
+
+    let cancelled = false;
+    (async () => {
+      try {
+        const response = await fetch(trendMapHatchGeoJsonUrl);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const body = await response.json();
+        if (cancelled || mapRef.current !== map) return;
+        if (
+          body &&
+          body.type === 'FeatureCollection' &&
+          Array.isArray(body.features)
+        ) {
+          source.setData(body as never);
+        } else {
+          source.setData(empty);
+        }
+      } catch {
+        if (cancelled || mapRef.current !== map) return;
+        try {
+          source.setData(empty);
+        } catch {
+          // The map was removed between the response and this update.
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [ready, trendMapHatchGeoJsonUrl]);
+
   const [west, south, east, north] = timelapseExtent;
   useEffect(() => {
     const map = mapRef.current;
@@ -339,7 +483,9 @@ export default function MapView({
       <div ref={containerRef} className="map" />
       <p className="map-note">
         Local region outlines. Click anywhere for that 1&deg; cell; click an outline to
-        add the region to A or B. No online base map is used.
+        add the region to A or B. Trend cells are coloured by Sen slope; hatched cells
+        pass the FDR test at q = 0.10 and can cluster in space. No online base map is
+        used.
       </p>
     </div>
   );

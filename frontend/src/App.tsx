@@ -4,6 +4,7 @@ import MapView from './components/MapView';
 import SeriesCard from './components/SeriesCard';
 import Timelapse from './components/Timelapse';
 import {
+  FDR_Q,
   getCellSeries,
   getGridCatalog,
   getRegionsGeoJson,
@@ -12,6 +13,8 @@ import {
   getTrendMapCatalog,
   listSeries,
   timelapseFrameUrl,
+  trendMapHatchGeoJsonUrl,
+  trendMapHatchUrl,
   trendMapUrl,
 } from './data/seriesSource';
 import type { GridCatalog, TrendMapEntry } from './data/seriesSource';
@@ -144,6 +147,12 @@ export default function App() {
     trendMaps.find((entry) => entry.variable === variable && entry.season === season) ??
     null;
   const trendUrl = selectedTrendMap ? trendMapUrl(selectedTrendMap) : null;
+  const trendHatchUrl = selectedTrendMap ? trendMapHatchUrl(selectedTrendMap) : null;
+  const trendHatchGeoJsonUrl = selectedTrendMap
+    ? trendMapHatchGeoJsonUrl(selectedTrendMap)
+    : null;
+  const trendFdrQ = selectedTrendMap?.fdr_q ?? FDR_Q;
+  const hasTrendHatch = Boolean(trendHatchUrl || trendHatchGeoJsonUrl);
 
   useEffect(() => {
     if (!trendUrl && trendMapOn) setTrendMapOn(false);
@@ -255,12 +264,6 @@ export default function App() {
       timelapse && (timelapse.fixture || /fixture/i.test(timelapse.source)),
     ) ||
     gridFixture;
-  const inferenceUnavailable =
-    [slotA, slotB].some(
-      (doc) => doc?.trend.inference.status === 'unavailable',
-    ) ||
-    (cellOutcome?.status === 'ok' &&
-      cellOutcome.result.trend.inference.status === 'unavailable');
   const validationFailed = [slotA, slotB].some(
     (doc) => doc?.validation.status === 'failed',
   );
@@ -290,15 +293,6 @@ export default function App() {
           <span>
             Grid cells, trend maps and series shown are placeholders for interface
             testing. They are not climate results.
-          </span>
-        </div>
-      )}
-      {inferenceUnavailable && (
-        <div className="banner banner-info">
-          <strong>Inference unavailable</strong>
-          <span>
-            A descriptive Sen slope is shown. No p-value, significance verdict or
-            confidence interval is displayed until the inference method is validated.
           </span>
         </div>
       )}
@@ -462,11 +456,21 @@ export default function App() {
                     <span>positive</span>
                   </span>
                 </div>
+                {hasTrendHatch && (
+                  <div className="trend-hatch-legend">
+                    <span className="trend-hatch-swatch" aria-hidden="true" />
+                    <span>
+                      hatched = passes FDR q = {trendFdrQ.toFixed(2)}
+                    </span>
+                  </div>
+                )}
                 <p className="muted control-note">
                   {trendUrl
-                    ? selectedTrendMap?.fixture
-                      ? 'Fixture PNG in EPSG:4326. The real precomputed layer replaces it.'
-                      : 'Precomputed Sen slope PNG in EPSG:4326.'
+                    ? 'Every valid cell is coloured by its full-period Sen slope. ' +
+                      (hasTrendHatch
+                        ? `Hatched cells pass the false-discovery-rate test at q = ${trendFdrQ.toFixed(2)}. Significant cells can cluster in space, so a cluster is not independent confirmation.`
+                        : 'No FDR hatch mask is available for this layer.') +
+                      (selectedTrendMap?.fixture ? ' Fixture layer.' : '')
                     : 'No trend map for this variable and season yet.'}
                 </p>
               </div>
@@ -493,6 +497,10 @@ export default function App() {
               timelapseExtent={timelapse?.extent ?? FALLBACK_EXTENT}
               showTimelapse={showTimelapseOnMap}
               trendMapUrl={trendMapOn ? trendUrl : null}
+              trendMapHatchUrl={
+                trendMapOn && !trendHatchGeoJsonUrl ? trendHatchUrl : null
+              }
+              trendMapHatchGeoJsonUrl={trendMapOn ? trendHatchGeoJsonUrl : null}
               trendMapExtent={FALLBACK_EXTENT}
               pickedCellBbox={pickedCellBbox}
               onSelectRegion={selectFromMap}

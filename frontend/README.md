@@ -42,7 +42,18 @@ needs the repository around the frontend folder. Deploy only `dist/` (Vercel set
   tiles of 1 degree cells, following `docs/GRID_FORMAT.md`.
 - `data/trendmap/<variable>/<season>.png`: Sen slope map in EPSG:4326 plus a generated
   `index.json` listing available layers.
+- `data/trendmap/<variable>/<season>_hatch.png` or `<season>_hatch.geojson`: optional
+  false-discovery-rate mask. The catalog entry carries `hatch` or `hatch_geojson` and
+  `fdr_q` (default 0.10). A PNG hatch is drawn by the map builder; a GeoJSON hatch is
+  built from a per-cell boolean (`passes_fdr`, `fdr_pass`, `significant`, `sig` or
+  `hatch`) when the grid tiles provide one.
 - `regions.geojson`: fallback outlines used by the fixture series.
+
+Result cards read `trend.inference` (`status`, `p_value`, `ci`, `method`,
+`strict_check_pass`, `strict_check_p`, `lag1`, `caution`, `ci_note`, `n`). The main
+test is Mann-Kendall with the Hamed-Rao correction at 3 lags; the strict check is
+Yue-Wang prewhitening. Sub-period slopes computed from the stored series never get a
+p-value.
 
 All data access goes through `src/data/seriesSource.ts`. Switch its `MODE` constant to `static` or
 `api` to pin the series source. Grid tile access also goes through `seriesSource` (the tile lookup

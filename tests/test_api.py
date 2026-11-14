@@ -3,6 +3,7 @@ from pathlib import Path
 
 from fastapi.testclient import TestClient
 
+import backend.main as main
 from backend.main import app
 
 client = TestClient(app)
@@ -32,6 +33,7 @@ def test_list_series_returns_entries_with_labels():
     assert entry["season"] == "DJF"
     assert entry["units"] == "mm/day"
     assert entry["validation_status"] == "fixture"
+    assert entry["inference_status"] == "unavailable"
     assert entry["source"]["product"] == "GPCPMON"
 
 
@@ -70,3 +72,66 @@ def test_fixture_file_on_disk_matches_contract():
     assert target.is_file()
     doc = json.loads(target.read_text(encoding="utf-8"))
     assert doc["region"]["bbox"] == [95, -11, 141, 6]
+
+
+def test_new_inference_fields_pass_through(tmp_path, monkeypatch):
+    artifacts = tmp_path / "artifacts"
+    fixtures = tmp_path / "fixtures"
+    artifacts.mkdir()
+    fixtures.mkdir()
+
+    doc = {
+        "id": "precip_inference_fixture_DJF",
+        "variable": "precipitation",
+        "units": "mm/day",
+        "source": {"product": "GPCPMON", "version": "3.3"},
+        "region": {"id": "inference_fixture", "label": "Inference fixture"},
+        "season": {"code": "DJF"},
+        "years": [1984, 1985, 1986, 1987, 1988, 1989, 1990, 1991],
+        "values": [8.0, 8.1, 7.9, 8.2, 8.0, 8.1, 7.95, 8.05],
+        "coverage": [1.0] * 8,
+        "trend": {
+            "sen_slope_per_decade": -0.126,
+            "intercept": 8.1,
+            "method": "Sen",
+            "inference": {
+                "status": "ok",
+                "p_value": 0.042,
+                "ci": [-0.231, -0.021],
+                "method": "MK + Hamed-Rao (3 lags)",
+                "strict_check_pass": True,
+                "strict_check_p": 0.031,
+                "lag1": 0.41,
+                "caution": True,
+                "ci_note": "Assumes independent years.",
+                "n": 8,
+            },
+        },
+        "validation": {"reference": "none", "status": "fixture"},
+    }
+    (artifacts / "precip_inference_fixture_DJF.json").write_text(
+        json.dumps(doc), encoding="utf-8"
+    )
+    monkeypatch.setattr(main, "ARTIFACTS_DIR", artifacts)
+    monkeypatch.setattr(main, "FIXTURES_DIR", fixtures)
+
+    listed = client.get("/api/series")
+    assert listed.status_code == 200
+    entry = next(
+        item
+        for item in listed.json()["series"]
+        if item["id"] == "precip_inference_fixture_DJF"
+    )
+    assert entry["inference_status"] == "ok"
+
+    response = client.get("/api/series/precip_inference_fixture_DJF")
+    assert response.status_code == 200
+    inference = response.json()["trend"]["inference"]
+    assert inference["status"] == "ok"
+    assert inference["p_value"] == 0.042
+    assert inference["ci"] == [-0.231, -0.021]
+    assert inference["strict_check_pass"] is True
+    assert inference["strict_check_p"] == 0.031
+    assert inference["lag1"] == 0.41
+    assert inference["caution"] is True
+    assert inference["n"] == 8

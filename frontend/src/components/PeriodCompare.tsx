@@ -66,8 +66,8 @@ export default function PeriodCompare({
       </div>
       <p className="muted period-intro">
         Descriptive Sen slopes for two sub-periods, computed in the browser from the
-        stored series. No p-value, interval, slope difference or significance claim is
-        produced.
+        stored series. Sub-periods get no p-value, slope interval, slope difference or
+        other significance claim.
       </p>
 
       <div className="period-inputs">

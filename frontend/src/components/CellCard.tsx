@@ -1,5 +1,6 @@
 import type { CellSeriesOutcome } from '../lib/tiles';
 import Chart from './Chart';
+import InferenceBlock from './InferenceBlock';
 import PeriodCompare from './PeriodCompare';
 
 interface CellCardProps {
@@ -111,7 +112,7 @@ export default function CellCard({
 
       <dl className="facts">
         <div>
-          <dt>Sen slope</dt>
+          <dt>Sen slope (full period)</dt>
           <dd>
             {slope === null ? 'not available' : `${numberText(slope, 3)} ${doc.trend.slope_units}`}
           </dd>
@@ -150,11 +151,12 @@ export default function CellCard({
             {doc.source.var ? ` · ${doc.source.var}` : ''}
           </dd>
         </div>
-        <div>
-          <dt>Inference</dt>
-          <dd>{doc.trend.inference.status}</dd>
-        </div>
       </dl>
+
+      <InferenceBlock
+        inference={doc.trend.inference}
+        slopeUnits={doc.trend.slope_units ?? `${doc.units} per decade`}
+      />
 
       <p className="summary">{doc.template_summary}</p>
 

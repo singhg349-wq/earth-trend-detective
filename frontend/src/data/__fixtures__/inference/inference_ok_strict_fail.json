@@ -1,0 +1,55 @@
+{
+  "id": "fixture_coastal_peru_DJF",
+  "variable": "precipitation",
+  "units": "mm/day",
+  "source": {
+    "product": "GPCPMON",
+    "version": "3.3",
+    "var": "sat_gauge_precip",
+    "doi_or_url": "https://doi.org/10.5067/MEASURES/GPCP/DATA304"
+  },
+  "region": {
+    "id": "coastal_peru",
+    "label": "Coastal Peru (fixture)",
+    "geometry": "FIXTURE",
+    "bbox": [-82, -10, -76, -3],
+    "cells_used": 240,
+    "area_km2": 311000.0
+  },
+  "season": {
+    "code": "DJF",
+    "year_label": "January year",
+    "months": [12, 1, 2],
+    "aggregation": "day-weighted mean of 3 monthly values"
+  },
+  "years": [1984, 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993],
+  "values": [0.9, 0.92, 0.91, 0.95, 0.96, 0.94, 0.98, 0.99, 1.0, 1.02],
+  "coverage": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+  "anomaly_baseline": null,
+  "geometry_file": "data/artifacts/regions.geojson",
+  "template_summary": "FIXTURE DATA. Inference shape only, not a climate result.",
+  "trend": {
+    "sen_slope_per_decade": 0.061,
+    "intercept": 0.8,
+    "method": "Sen",
+    "inference": {
+      "status": "ok",
+      "p_value": 0.018,
+      "ci": [0.004, 0.118],
+      "method": "MK + Hamed-Rao (3 lags)",
+      "strict_check_pass": false,
+      "strict_check_p": 0.11,
+      "lag1": 0.12,
+      "caution": false,
+      "ci_note": "Assumes independent years after the selected correction.",
+      "n": 10
+    }
+  },
+  "validation": {
+    "reference": "none",
+    "status": "fixture",
+    "notes": "Fake values for interface testing."
+  },
+  "generated": "2026-11-14T00:00:00-07:00",
+  "code_version": "fixture"
+}

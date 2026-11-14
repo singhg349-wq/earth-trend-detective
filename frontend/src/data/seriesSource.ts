@@ -5,6 +5,16 @@ import type {
   GridIndex,
 } from '../lib/tiles';
 import type { RegionsGeoJson, SeriesDoc, SeriesSummary, TimelapseIndex } from '../types';
+import {
+  normalizeTrendMapEntry,
+  trendMapHatchGeoJsonUrl as trendMapHatchGeoJsonUrlFrom,
+  trendMapHatchUrl as trendMapHatchUrlFrom,
+  trendMapUrl as trendMapUrlFrom,
+} from './trendmap';
+import type { TrendMapEntry } from './trendmap';
+
+export { FDR_Q } from './trendmap';
+export type { TrendMapEntry } from './trendmap';
 
 // The only module that fetches series or map data.
 //
@@ -28,12 +38,6 @@ let gridCatalog: Promise<GridCatalog | null> | null = null;
 
 export interface GridCatalog {
   index: GridIndex;
-  fixture: boolean;
-}
-
-export interface TrendMapEntry {
-  variable: string;
-  season: string;
   fixture: boolean;
 }
 
@@ -78,6 +82,7 @@ function normalizeSummary(raw: Record<string, unknown>): SeriesSummary {
     region_label: String(raw.region_label ?? raw.region_id ?? 'Unknown region'),
     season: String(raw.season ?? ''),
     validation_status: String(raw.validation_status ?? 'unknown'),
+    inference_status: String(raw.inference_status ?? 'unknown'),
     fixture: Boolean(raw.fixture),
     source: {
       product: String(source.product ?? ''),
@@ -193,24 +198,25 @@ export async function getCellSeries(
 
 export async function getTrendMapCatalog(): Promise<TrendMapEntry[]> {
   try {
-    const body = await readJson<{ entries?: Array<Record<string, unknown>> }>(
+    const body = await readJson<{ entries?: unknown[] }>(
       `${TRENDMAP_ROOT}/index.json`,
     );
     return (body.entries ?? [])
-      .filter(
-        (entry) =>
-          typeof entry.variable === 'string' && typeof entry.season === 'string',
-      )
-      .map((entry) => ({
-        variable: String(entry.variable),
-        season: String(entry.season),
-        fixture: Boolean(entry.fixture),
-      }));
+      .map((entry) => normalizeTrendMapEntry(entry))
+      .filter((entry): entry is TrendMapEntry => entry !== null);
   } catch {
     return [];
   }
 }
 
 export function trendMapUrl(entry: TrendMapEntry): string {
-  return `${TRENDMAP_ROOT}/${encodeURIComponent(entry.variable)}/${encodeURIComponent(entry.season)}.png`;
+  return trendMapUrlFrom(TRENDMAP_ROOT, entry);
+}
+
+export function trendMapHatchUrl(entry: TrendMapEntry): string | null {
+  return trendMapHatchUrlFrom(TRENDMAP_ROOT, entry);
+}
+
+export function trendMapHatchGeoJsonUrl(entry: TrendMapEntry): string | null {
+  return trendMapHatchGeoJsonUrlFrom(TRENDMAP_ROOT, entry);
 }
