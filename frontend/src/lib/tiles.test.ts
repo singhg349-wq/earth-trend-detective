@@ -227,6 +227,68 @@ describe("fetchCellSeries no-data handling", () => {
     expect(noData.tileUrl).toBe("data/artifacts/grid/precip/DJF/-80_-10.json");
   });
 
+  it("reads the per-season available_tiles map the real index writes", async () => {
+    let called = 0;
+    const outcome = await fetchCellSeries(
+      { lon: -79.23, lat: -4.61, variable: "precip", season: "DJF" },
+      {
+        index: makeIndex({
+          available_tiles: {
+            DJF: ["-80_-10"],
+            JJA: ["100_0"],
+            MAM: [],
+          },
+        }),
+        fetchImpl: async () => {
+          called += 1;
+          return jsonResponse(workedTile);
+        },
+      },
+    );
+
+    expectOk(outcome);
+    expect(called).toBe(1);
+  });
+
+  it("skips a tile missing from the real per-season map without a request", async () => {
+    let called = 0;
+    const outcome = await fetchCellSeries(
+      { lon: -79.23, lat: -4.61, variable: "precip", season: "DJF" },
+      {
+        index: makeIndex({
+          available_tiles: {
+            DJF: ["0_0"],
+            JJA: ["-80_-10"],
+          },
+        }),
+        fetchImpl: async () => {
+          called += 1;
+          return jsonResponse(workedTile);
+        },
+      },
+    );
+
+    expectNoData(outcome, "no-tile");
+    expect(called).toBe(0);
+  });
+
+  it("fetches when the requested season is absent from the map", async () => {
+    let called = 0;
+    const outcome = await fetchCellSeries(
+      { lon: -79.23, lat: -4.61, variable: "precip", season: "DJF" },
+      {
+        index: makeIndex({ available_tiles: { JJA: [] } }),
+        fetchImpl: async () => {
+          called += 1;
+          return jsonResponse(workedTile);
+        },
+      },
+    );
+
+    expectOk(outcome);
+    expect(called).toBe(1);
+  });
+
   it("treats an HTTP 404 as a missing tile", async () => {
     const outcome = await fetchCellSeries(
       { lon: -79.23, lat: -4.61, variable: "precip", season: "DJF" },
@@ -361,6 +423,62 @@ describe("fetchCellSeries int16 decoding", () => {
     expect(result.trend.intercept).toBeNull();
     expect(result.trend.n_valid).toBe(2);
     expect(result.trend.period).toEqual([1984, 1986]);
+    expect(result.template_summary).toContain("has no descriptive Theil-Sen slope available");
+  });
+
+  it("recomputes the full-period Sen slope when s is fill but the series is long enough", async () => {
+    // Real artifacts currently store s = -32768 in every cell. With 12 valid
+    // years (the section 5.3 threshold is 10) the same estimator is recovered
+    // from the decoded values, so the cell still shows its documented slope.
+    const years = Array.from({ length: 12 }, (_, index) => 2000 + index);
+    const encoded = years.map((_, index) => 100 + index); // 1.00, 1.01, ... mm/day
+    const outcome = await fetchCellSeries(
+      { lon: -79.23, lat: -4.61, variable: "precip", season: "DJF" },
+      {
+        index: makeIndex({ available_tiles: "ALL_648" }, years),
+        fetchImpl: async () =>
+          jsonResponse({
+            v_slug: "precip",
+            season: "DJF",
+            tile: [-80, -10],
+            cells: {
+              "cell_-4.5_-79.5": { s: -32768, v: encoded, c: 1000 },
+            },
+          }),
+      },
+    );
+
+    const { result } = expectOk(outcome);
+    expect(result.values[0]).toBe(1);
+    expect(result.trend.n_valid).toBe(12);
+    expect(result.trend.sen_slope_per_decade).toBeCloseTo(0.1, 12);
+    expect(result.trend.slope_units).toBe("mm/day/decade");
+    expect(result.trend.intercept).toBeCloseTo(-19, 6);
+    expect(result.template_summary).toContain("+0.100");
+  });
+
+  it("keeps the slope null below the 10-valid-year rule even when s is fill", async () => {
+    const years = Array.from({ length: 9 }, (_, index) => 2000 + index);
+    const encoded = years.map((_, index) => 100 + index);
+    const outcome = await fetchCellSeries(
+      { lon: -79.23, lat: -4.61, variable: "precip", season: "DJF" },
+      {
+        index: makeIndex({ available_tiles: "ALL_648" }, years),
+        fetchImpl: async () =>
+          jsonResponse({
+            v_slug: "precip",
+            season: "DJF",
+            tile: [-80, -10],
+            cells: {
+              "cell_-4.5_-79.5": { s: -32768, v: encoded, c: 1000 },
+            },
+          }),
+      },
+    );
+
+    const { result } = expectOk(outcome);
+    expect(result.trend.sen_slope_per_decade).toBeNull();
+    expect(result.trend.intercept).toBeNull();
     expect(result.template_summary).toContain("has no descriptive Theil-Sen slope available");
   });
 

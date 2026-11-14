@@ -1,27 +1,39 @@
 #!/usr/bin/env python3
 """Generate the TypeScript test fixtures in frontend/src/lib/__fixtures__/.
 
-Expected statistical values:
-    This branch does NOT contain backend/trend/stats.py, so the expected Sen
-    slopes in this run were computed with scipy.stats.theilslopes (the script
-    records the actual source in the `source` field). If a later branch adds
-    `backend/trend/stats.py` with a callable `sen_slope(years, values)`, the
-    script uses it first and falls back to scipy with a warning if the call
-    fails or its return shape is not understood.
+What this script proves
+-----------------------
+The expected Sen slopes come from :func:`backend.trend.stats.sen_slope`, the
+same function the Python backend uses. ``frontend/src/lib/stats.test.ts`` runs
+the browser implementation against those numbers, and
+``tests/test_js_python_slope.py`` recomputes them from the source data, so a
+drift in either language fails a test.
 
-Method:
-    Slope is the median of all pairwise slopes (y_j - y_i) / (x_j - x_i) in
-    calendar years, then multiplied by 10 for the per-decade value. Intercept
-    follows the scipy convention: median(y) - slope_per_year * median(x).
-    Missing values (None/NaN and the int16 fill -32768) are skipped.
+Series included
+---------------
+* all ten real regional DJF files in ``data/artifacts/`` (42 years each),
+* real 1-degree cells decoded from two (or more) real tile files under
+  ``data/artifacts/grid/precip/DJF/``,
+* derived copies of a real regional series and a real cell with years masked to
+  the int16 fill value, so gap handling is checked on real values,
+* one short sub-period (fewer than 8 valid years) to record the one place the
+  two languages deliberately differ (see below),
+* the original synthetic cases used by the earlier tests.
 
-Also writes the tiny worked-example tile from docs/GRID_FORMAT.md section 9.4,
+The n < 8 difference
+--------------------
+``backend.trend.stats.sen_slope`` returns NaN below its ``MIN_POINTS`` of 8,
+because a trend is not reported for such a short series. The descriptive
+browser helper ``senSlope`` still returns the median pairwise slope for any
+n >= 2, because it is used only for the descriptive full-series number. Fixture
+blocks therefore carry ``python_comparable``: true means both languages must
+agree; false means Python returns NaN by design and the stored number is the
+descriptive value the browser shows.
+
+Also written: the tiny worked-example tile from docs/GRID_FORMAT.md section 9.4,
 the minimal index.json needed to exercise it, a 42-year inference tile, and the
-inference cases file used by the TypeScript tests.
-
-The inference cases are illustrative placeholders in the agreed shape, not
-computed science. The notes in that file say so; do not copy those numbers into
-results.
+inference cases file used by the TypeScript tests. The inference cases are
+illustrative placeholders in the agreed shape, not computed science.
 
 Run from the repository root:
     python scripts/make_stats_fixtures.py
@@ -29,6 +41,7 @@ Run from the repository root:
 
 from __future__ import annotations
 
+import itertools
 import json
 import math
 import sys
@@ -39,6 +52,11 @@ import numpy as np
 from scipy.stats import theilslopes
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+DATA_DIR = ROOT / "data" / "artifacts"
+GRID_DIR = DATA_DIR / "grid"
 OUT_DIR = ROOT / "frontend" / "src" / "lib" / "__fixtures__"
 GRID_OUT_DIR = OUT_DIR / "grid"
 FILL = -32768
@@ -49,22 +67,18 @@ SLOPE_CI_NOTE = (
     "uncertainty when years correlate)"
 )
 
-
-def _load_backend_sen_slope():
-    """Return backend.trend.stats.sen_slope when it exists in this branch."""
-    try:
-        sys.path.insert(0, str(ROOT))
-        from backend.trend.stats import sen_slope  # type: ignore
-
-        return sen_slope
-    except Exception:
-        return None
-
-
-BACKEND_SEN_SLOPE = _load_backend_sen_slope()
+try:
+    from backend.trend.stats import MIN_POINTS as PYTHON_MIN_POINTS
+    from backend.trend.stats import sen_slope as BACKEND_SEN_SLOPE
+except Exception as error:  # pragma: no cover - a broken checkout should fail loudly
+    raise SystemExit(
+        "cannot import backend.trend.stats.sen_slope from the repository root: "
+        f"{error}"
+    ) from error
 
 
 def _is_valid(value: Any) -> bool:
+    """True for a real measurement, False for null, NaN or the int16 fill."""
     if value is None:
         return False
     if not isinstance(value, (int, float)):
@@ -74,40 +88,14 @@ def _is_valid(value: Any) -> bool:
     return float(value) != FILL
 
 
-def _backend_slope_per_year(years: list[int], values: list[float]) -> float | None:
-    """Adapt the optional backend result to a per-year slope.
-
-    Accepted shapes: a number, a (slope, intercept) sequence, or a dict with
-    slope_per_year / slope / slope_per_decade / sen_slope_per_decade.
-    """
-    if BACKEND_SEN_SLOPE is None:
-        return None
-    try:
-        result = BACKEND_SEN_SLOPE(years, values)
-    except Exception as error:
-        print(
-            f"warning: backend sen_slope failed ({error}); using scipy",
-            file=sys.stderr,
-        )
-        return None
-
-    if isinstance(result, dict):
-        if "slope_per_year" in result:
-            return float(result["slope_per_year"])
-        if "slope" in result:
-            return float(result["slope"])
-        if "slope_per_decade" in result:
-            return float(result["slope_per_decade"]) / 10.0
-        if "sen_slope_per_decade" in result:
-            return float(result["sen_slope_per_decade"]) / 10.0
-        return None
-    if isinstance(result, (tuple, list)):
-        if not result:
-            return None
-        return float(result[0])
-    if isinstance(result, (int, float)):
-        return float(result)
-    return None
+def _descriptive_slope(xs: list[float], ys: list[float]) -> float:
+    """Median pairwise slope, the estimator the browser uses for any n >= 2."""
+    slopes = [
+        (ys[j] - ys[i]) / (xs[j] - xs[i])
+        for i, j in itertools.combinations(range(len(xs)), 2)
+        if xs[j] != xs[i]
+    ]
+    return float(np.median(slopes))
 
 
 def _expected(
@@ -131,6 +119,8 @@ def _expected(
             "intercept": None,
             "n": 0,
             "period": None,
+            "python_comparable": False,
+            "python_note": f"backend sen_slope returns NaN below {PYTHON_MIN_POINTS} valid years",
         }
 
     xs = [pair[0] for pair in pairs]
@@ -143,13 +133,20 @@ def _expected(
             "intercept": None,
             "n": count,
             "period": period,
+            "python_comparable": False,
+            "python_note": "fewer than two valid years; backend sen_slope returns NaN",
         }
 
-    slope_per_year = _backend_slope_per_year(
-        [int(x) for x in xs], [float(y) for y in ys]
-    )
-    if slope_per_year is None:
-        slope_per_year = float(theilslopes(ys, xs).slope)
+    comparable = count >= PYTHON_MIN_POINTS
+    if comparable:
+        slope_per_year = float(BACKEND_SEN_SLOPE(xs, ys)[0])
+        note = ""
+    else:
+        slope_per_year = _descriptive_slope(xs, ys)
+        note = (
+            f"Python backend sen_slope returns NaN below {PYTHON_MIN_POINTS} valid "
+            "years; this stored value is the descriptive browser slope."
+        )
 
     intercept = float(np.median(ys) - slope_per_year * np.median(xs))
     return {
@@ -158,6 +155,8 @@ def _expected(
         "intercept": round(intercept, 12),
         "n": count,
         "period": period,
+        "python_comparable": comparable,
+        "python_note": note,
     }
 
 
@@ -166,37 +165,81 @@ def _case(
     years: Iterable[int],
     values: Iterable[float | None],
     periods: Iterable[tuple[int, int]] = (),
+    *,
+    kind: str = "synthetic",
+    source_file: str | None = None,
+    note: str = "",
+    masked_years: Iterable[int] = (),
+    cell_id: str | None = None,
 ) -> dict[str, Any]:
     year_list = [int(year) for year in years]
     value_list = [
         None
-        if value is None or not isinstance(value, (int, float)) or not math.isfinite(float(value))
+        if value is None
+        or not isinstance(value, (int, float))
+        or not math.isfinite(float(value))
         else float(value)
         for value in values
     ]
     if len(year_list) != len(value_list):
         raise ValueError(f"{name}: years and values differ in length")
 
-    period_cases = []
-    for start_year, end_year in periods:
-        period_cases.append(
-            {
-                "start_year": start_year,
-                "end_year": end_year,
-                "expected": _expected(year_list, value_list, start_year, end_year),
-            }
-        )
+    period_cases = [
+        {
+            "start_year": int(start_year),
+            "end_year": int(end_year),
+            "expected": _expected(year_list, value_list, start_year, end_year),
+        }
+        for start_year, end_year in periods
+    ]
 
-    return {
+    payload: dict[str, Any] = {
         "name": name,
+        "kind": kind,
         "years": year_list,
         "values": value_list,
         "expected_full": _expected(year_list, value_list),
         "periods": period_cases,
     }
+    if source_file:
+        payload["source_file"] = source_file
+    if cell_id:
+        payload["cell_id"] = cell_id
+    if note:
+        payload["note"] = note
+    if list(masked_years):
+        payload["masked_years"] = [int(year) for year in masked_years]
+    return payload
 
 
-def build_cases() -> list[dict[str, Any]]:
+def _relative(path: Path) -> str:
+    return path.relative_to(ROOT).as_posix()
+
+
+def _decode_int16(q: Any, scale: float, offset: float, decimals: float) -> float | None:
+    """Inverse of docs/GRID_FORMAT.md section 4.2 for one integer."""
+    if q is None or q == FILL:
+        return None
+    return float(f"{float(q) * scale + offset:.{int(decimals)}f}")
+
+
+def _precip_meta() -> tuple[list[int], dict[str, Any]]:
+    index = json.loads((GRID_DIR / "index.json").read_text(encoding="utf-8"))
+    meta = index["variables"]["precip"]
+    return [int(year) for year in meta["years_by_season"]["DJF"]], meta
+
+
+def _mask(values: list[float | None], years: list[int], masked: list[int]) -> list[float | None]:
+    """Replace the years in ``masked`` with fill/null, keeping the year axis."""
+    positions = {year: index for index, year in enumerate(years)}
+    out = list(values)
+    for count, year in enumerate(masked):
+        # Alternate null and the int16 fill so both missing spellings are tested.
+        out[positions[year]] = None if count % 2 == 0 else float(FILL)
+    return out
+
+
+def build_synthetic_cases() -> list[dict[str, Any]]:
     linear_years = list(range(1984, 2026))
     linear_values = [round(1.0 + 0.01 * index, 2) for index in range(len(linear_years))]
 
@@ -265,7 +308,245 @@ def build_cases() -> list[dict[str, Any]]:
             negative_values,
             periods=[(1995, 2005), (2006, 2015)],
         ),
+        _case(
+            "medium_eight_years_1990_1997",
+            range(1990, 1998),
+            [round(2.0 + 0.03 * index, 3) for index in range(8)],
+            periods=[(1990, 1993), (1994, 1997)],
+        ),
     ]
+
+
+def build_regional_cases() -> list[dict[str, Any]]:
+    """One case per real regional DJF artifact, plus derived gap variants."""
+    cases: list[dict[str, Any]] = []
+    files = sorted(DATA_DIR.glob("precip_*_DJF.json"))
+    if not files:
+        raise SystemExit(f"no regional artifacts found under {DATA_DIR}")
+
+    for path in files:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        years = [int(year) for year in payload["years"]]
+        values = payload["values"]
+        region = payload["region"]["id"]
+        name = f"regional_{region}_{payload['season']['code']}"
+        # Two ten-year sub-periods for every regional series (n = 10 > MIN_POINTS).
+        periods = [(years[17], years[26]), (years[27], years[36])]
+        if region == "indonesia":
+            # A deliberately short five-year window: descriptive in the browser,
+            # NaN in the backend, recorded as python_comparable = false.
+            periods.append((years[32], years[36]))
+        cases.append(
+            _case(
+                name,
+                years,
+                values,
+                periods=periods,
+                kind="regional",
+                source_file=_relative(path),
+                note=(
+                    "Real regional DJF series. The artifact has no gaps; values are "
+                    "used exactly as stored."
+                ),
+            )
+        )
+
+    india_path = DATA_DIR / "precip_india_DJF.json"
+    india = json.loads(india_path.read_text(encoding="utf-8"))
+    india_years = [int(year) for year in india["years"]]
+    masked_years = [1989, 1997, 2006, 2014]
+    cases.append(
+        _case(
+            "regional_india_DJF_masked_for_gaps",
+            india_years,
+            _mask(india["values"], india_years, masked_years),
+            periods=[(1990, 2010), (2015, 2025)],
+            kind="regional-gap-variant",
+            source_file=_relative(india_path),
+            note=(
+                "Derived from the real India series: four years replaced by null/ "
+                "-32768 to exercise gap handling. The source artifact itself has no gaps."
+            ),
+            masked_years=masked_years,
+        )
+    )
+    return cases
+
+
+def _tile_cell_case(
+    *,
+    name: str,
+    tile_key: str,
+    cell_id: str,
+    years: list[int],
+    values: list[float | None],
+    periods: Iterable[tuple[int, int]] = (),
+    masked_years: Iterable[int] = (),
+    note: str = "",
+) -> dict[str, Any]:
+    tile_path = GRID_DIR / "precip" / "DJF" / f"{tile_key}.json"
+    return _case(
+        name,
+        years,
+        values,
+        periods=periods,
+        kind="grid-cell-gap-variant" if list(masked_years) else "grid-cell",
+        source_file=_relative(tile_path),
+        note=note,
+        masked_years=masked_years,
+        cell_id=cell_id,
+    )
+
+
+def build_grid_cell_cases() -> list[dict[str, Any]]:
+    """Real 1-degree cells decoded with the documented int16 rules."""
+    years, meta = _precip_meta()
+    scale, offset, decimals = meta["scale"], meta["offset"], meta["decimals"]
+
+    chosen = [
+        ("-80_-10", "cell_-4.5_-79.5"),  # coastal Peru
+        ("-80_-10", "cell_-9.5_-79.5"),
+        ("100_-10", "cell_-0.5_100.5"),  # Indonesia
+        ("100_-10", "cell_-4.5_105.5"),
+    ]
+    cases = []
+    for tile_key, cell_id in chosen:
+        tile_path = GRID_DIR / "precip" / "DJF" / f"{tile_key}.json"
+        tile = json.loads(tile_path.read_text(encoding="utf-8"))
+        cell = tile["cells"][cell_id]
+        values = [_decode_int16(q, scale, offset, decimals) for q in cell["v"]]
+        if len(values) != len(years):
+            raise SystemExit(f"{tile_key}/{cell_id}: value length does not match DJF years")
+        cases.append(
+            _tile_cell_case(
+                name=f"grid_{tile_key}_{cell_id}".replace("-", "m"),
+                tile_key=tile_key,
+                cell_id=cell_id,
+                years=years,
+                values=values,
+                periods=[(years[6], years[15])],  # a 10-year sub-period
+                note=(
+                    "Real tile cell decoded from int16 with scale/offset from index.json. "
+                    f"Stored tile slope s={cell['s']} is not used; the values are."
+                ),
+            )
+        )
+
+    tile_key = "-80_-10"
+    cell_id = "cell_-9.5_-79.5"
+    tile_path = GRID_DIR / "precip" / "DJF" / f"{tile_key}.json"
+    tile = json.loads(tile_path.read_text(encoding="utf-8"))
+    cell = tile["cells"][cell_id]
+    masked_years = [years[2], years[13], years[27], years[38], years[41]]
+    values = _mask(
+        [_decode_int16(q, scale, offset, decimals) for q in cell["v"]],
+        years,
+        masked_years,
+    )
+    cases.append(
+        _tile_cell_case(
+            name="grid_peru_cell_masked_for_gaps",
+            tile_key=tile_key,
+            cell_id=cell_id,
+            years=years,
+            values=values,
+            periods=[(years[5], years[20]), (years[21], years[35])],
+            masked_years=masked_years,
+            note=(
+                "Derived from a real Peru tile cell: five years replaced by null/ "
+                "-32768 so gaps are tested on real decoded values."
+            ),
+        )
+    )
+    return cases
+
+
+def build_real_tile_expectations() -> dict[str, Any]:
+    """Python-decoded values for two real tile files, used by the vitest disk test.
+
+    The test reads these tile files from disk at run time and compares the
+    TypeScript decoder with these numbers. The files are listed relative to the
+    repository root; no machine-specific path is stored.
+    """
+    years, meta = _precip_meta()
+    tiles = []
+    for tile_key, cell_ids, clicks in [
+        (
+            "-80_-10",
+            ["cell_-4.5_-79.5", "cell_-9.5_-79.5"],
+            [(-79.2, -4.2), (-79.2, -9.2)],
+        ),
+        (
+            "100_-10",
+            ["cell_-0.5_100.5", "cell_-4.5_105.5"],
+            [(100.2, -0.2), (105.2, -4.2)],
+        ),
+    ]:
+        tile_path = GRID_DIR / "precip" / "DJF" / f"{tile_key}.json"
+        tile = json.loads(tile_path.read_text(encoding="utf-8"))
+        cells = []
+        for cell_id, (lon, lat) in zip(cell_ids, clicks):
+            cell = tile["cells"][cell_id]
+            values = [
+                _decode_int16(q, meta["scale"], meta["offset"], meta["decimals"])
+                for q in cell["v"]
+            ]
+            raw_coverage = (
+                [cell["c"]] * len(cell["v"])
+                if isinstance(cell["c"], int)
+                else cell["c"]
+            )
+            coverage = [
+                0.0
+                if qv == FILL
+                else (
+                    _decode_int16(
+                        qc,
+                        meta["coverage_scale"],
+                        meta["coverage_offset"],
+                        meta["coverage_decimals"],
+                    )
+                    or 0.0
+                )
+                for qv, qc in zip(cell["v"], raw_coverage)
+            ]
+            valid_years = [year for year, value in zip(years, values) if value is not None]
+            valid_values = [value for value in values if value is not None]
+            slope, intercept = BACKEND_SEN_SLOPE(valid_years, valid_values)
+            cells.append(
+                {
+                    "cell_id": cell_id,
+                    "click": {"lon": lon, "lat": lat},
+                    "raw_s": cell["s"],
+                    "decoded": {
+                        "years": years,
+                        "values": values,
+                        "coverage": coverage,
+                        "n_valid": len(valid_values),
+                        "slope_per_decade_raw": round(float(slope) * 10.0, 12),
+                        "intercept": round(float(intercept), 12),
+                    },
+                }
+            )
+        tiles.append(
+            {
+                "path": _relative(tile_path),
+                "v_slug": tile["v_slug"],
+                "season": tile["season"],
+                "tile": tile["tile"],
+                "cells": cells,
+            }
+        )
+
+    return {
+        "note": (
+            "Expected decodes computed by scripts/make_stats_fixtures.py with Python "
+            "from the real tile files. Regenerate rather than edit by hand. "
+            "tests/test_js_python_slope.py checks these numbers against the same tiles."
+        ),
+        "index_path": _relative(GRID_DIR / "index.json"),
+        "tiles": tiles,
+    }
 
 
 def write_json(path: Path, payload: Any, *, minified: bool = False) -> None:
@@ -502,16 +783,19 @@ def build_inference_grid(
 
 
 def main() -> None:
-    source = (
-        "backend.trend.stats.sen_slope"
-        if BACKEND_SEN_SLOPE is not None
-        else "scipy.stats.theilslopes"
-    )
+    cases = build_synthetic_cases() + build_regional_cases() + build_grid_cell_cases()
+    comparable = sum(1 for case in cases if case["expected_full"]["python_comparable"])
     stats_payload = {
-        "source": source,
+        "source": "backend.trend.stats.sen_slope",
+        "python_min_points": PYTHON_MIN_POINTS,
         "fill_value": FILL,
-        "note": "Generated by scripts/make_stats_fixtures.py; regenerate rather than edit by hand.",
-        "cases": build_cases(),
+        "note": (
+            "Generated by scripts/make_stats_fixtures.py; regenerate rather than edit "
+            "by hand. python_comparable is true when backend.trend.stats.sen_slope "
+            "returns a number for the same block; below its MIN_POINTS the stored "
+            "value is the descriptive browser slope and Python returns NaN."
+        ),
+        "cases": cases,
     }
     write_json(OUT_DIR / "stats_fixtures.json", stats_payload)
 
@@ -537,8 +821,12 @@ def main() -> None:
     write_json(GRID_OUT_DIR / "inference_index.json", inference_index)
     write_json(GRID_OUT_DIR / "inference_tile.json", inference_tile, minified=True)
 
-    print(f"wrote {OUT_DIR / 'stats_fixtures.json'} (source: {source})")
+    real_tiles = build_real_tile_expectations()
+    write_json(OUT_DIR / "real_tiles.json", real_tiles)
+
+    print(f"wrote {OUT_DIR / 'stats_fixtures.json'} ({len(cases)} cases, {comparable} Python-comparable)")
     print(f"wrote {OUT_DIR / 'inference_cases.json'}")
+    print(f"wrote {OUT_DIR / 'real_tiles.json'} ({len(real_tiles['tiles'])} tiles)")
     print(f"wrote {GRID_OUT_DIR / 'index.json'}")
     print(f"wrote {GRID_OUT_DIR / 'precip' / 'DJF' / '-80_-10.json'}")
     print(f"wrote {GRID_OUT_DIR / 'inference_index.json'}")
