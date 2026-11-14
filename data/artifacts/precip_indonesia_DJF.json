@@ -180,8 +180,8 @@
   "validation": {
     "reference": "Giovanni GPCPMON 3.3 box request",
     "status": "pending",
-    "notes": "Validation comparison pending; inference unavailable."
+    "notes": "Giovanni comparison pending; inference unavailable."
   },
-  "generated": "2026-11-14T15:47:50.108359+00:00",
+  "generated": "2026-11-14T16:11:29.867900+00:00",
   "code_version": "w1-data"
 }

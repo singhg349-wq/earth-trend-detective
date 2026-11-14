@@ -7,7 +7,23 @@ import geopandas as gpd
 from shapely.geometry import box, mapping
 
 COUNTRY_ZIP = Path(r"D:\trend-detective-data\raw\NaturalEarth_5.1.1\ne_10m_admin_0_countries.zip")
-BOXES = {"indonesia": (95, -11, 141, 6), "coastal_peru": (-82, -10, -76, -3)}
+
+# Featured-region catalog. The final eight are box presets proposed for later
+# build-out; Indonesia and Peru remain the only Giovanni-check candidates.
+REGIONS = [
+    {"id": "indonesia", "label": "Indonesia", "bbox": (95, -11, 141, 6), "polygon_source": "Natural Earth Admin 0: Indonesia"},
+    {"id": "coastal_peru", "label": "Coastal Peru", "bbox": (-82, -10, -76, -3), "polygon_source": "Natural Earth Admin 0: Peru clipped to bbox"},
+    {"id": "amazon", "label": "Amazon", "bbox": (-75, -15, -45, 5)},
+    {"id": "sahel", "label": "Sahel", "bbox": (-18, 10, 35, 20)},
+    {"id": "east_africa", "label": "East Africa", "bbox": (29, -12, 42, 12)},
+    {"id": "india", "label": "India", "bbox": (68, 6, 98, 36)},
+    {"id": "australia", "label": "Australia", "bbox": (112, -44, 154, -10)},
+    {"id": "california", "label": "California", "bbox": (-125, 32, -114, 42)},
+    {"id": "alberta_prairies", "label": "Alberta / Prairies", "bbox": (-120, 48, -96, 60)},
+    {"id": "southern_africa", "label": "Southern Africa", "bbox": (11, -35, 38, -17)},
+]
+BOXES = {r["id"]: r["bbox"] for r in REGIONS}
+FLAGSHIP_REGION_IDS = ("indonesia", "coastal_peru")
 
 def country_geometry(name, archive=COUNTRY_ZIP):
     with zipfile.ZipFile(archive) as z:
@@ -50,10 +66,18 @@ def fractional_mask(lat, lon, geometry):
         weights = weights[::-1]
     return fractions, weights
 
-def build_regions(lat, lon):
-    indonesia = country_geometry("Indonesia")
-    peru = country_geometry("Peru")
-    geoms = {"indonesia": indonesia, "coastal_peru": box(*BOXES["coastal_peru"]).intersection(peru)}
+def build_regions(lat, lon, region_ids=FLAGSHIP_REGION_IDS):
+    geoms = {}
+    for spec in REGIONS:
+        rid = spec["id"]
+        if rid not in region_ids:
+            continue
+        if rid == "indonesia":
+            geoms[rid] = country_geometry("Indonesia")
+        elif rid == "coastal_peru":
+            geoms[rid] = box(*spec["bbox"]).intersection(country_geometry("Peru"))
+        else:
+            geoms[rid] = box(*spec["bbox"])
     out = {}
     for rid, geom in geoms.items():
         frac, area = fractional_mask(lat, lon, geom)
