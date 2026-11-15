@@ -5,9 +5,9 @@ Print this (2 pages) before the evening presentation (`10 min total: 5 min talk 
 ## 1. Setup & Quick Links
 
 - **Live site / local build:** **https://trendtrace.earth-trend-detective-frontend.workers.dev** (`trendtrace.earth` custom domain coming; Pages now deploys as Workers via `frontend/wrangler.jsonc`). Local preview: `npm run preview -- --host 127.0.0.1 --port 4180` inside `frontend/` (`dist` = `297,944,548 B`, `12,592` files).
-- **Decks (`7 slides`, `>= 20 pt`):**
-  1. Primary animated: `deck/TrendTrace.pptx` (`F5` in PowerPoint desktop — test live animations first!).
-  2. Fade-only fallback: `deck/TrendTrace_safe.pptx` (identical 7 slides, zero XML motion).
+- **Decks (`7 slides`, R5 Present-mode twin — black + grainy gradient blobs + `Instrument Serif` embedded):**
+  1. Primary animated: `deck/TrendTrace.pptx` (Morph `0.72 s` across persistent `!!b0`–`!!b3` blobs + staggered fade-in text; `F5` in PowerPoint desktop — test live Morph playback first!).
+  2. Fade-only fallback: `deck/TrendTrace_safe.pptx` (identical 7 slides, embedded fonts, zero XML motion).
   3. Static PDF fallback: `deck/TrendTrace.pdf`.
 - **Direct browser bookmarks (pre-open in tabs if desired):**
   - Edmonton Rain DJF: `https://trendtrace.earth-trend-detective-frontend.workers.dev/?lat=53.55&lon=-113.49&metric=precipitation&season=DJF`
