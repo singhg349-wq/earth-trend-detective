@@ -84,6 +84,21 @@ export default function ResultCard(props: ResultCardProps) {
   const isSubPeriod = item.period !== 'full';
   const sentences = isSubPeriod ? subPeriodSummary(row) : summarySentences(item.doc, row);
 
+  const isPolar = Boolean(
+    item.doc.region.cells_used === 1 && (
+      (item.doc.region.bbox && Math.abs((item.doc.region.bbox[1] + item.doc.region.bbox[3]) / 2) >= 80) ||
+      (/^cell_(-?\d+(?:\.\d+)?)_/.test(item.doc.region.id) && Math.abs(Number(/^cell_(-?\d+(?:\.\d+)?)_/.exec(item.doc.region.id)?.[1])) >= 80)
+    )
+  );
+
+  const hasDifferentSettings = Boolean(
+    item.overridden && (
+      item.doc.variable !== sharedSettings.variable ||
+      item.doc.season.code !== sharedSettings.season ||
+      item.period !== sharedSettings.period
+    )
+  );
+
   const suggestionContext: SuggestionContext = {
     variable: item.doc.variable,
     season: item.doc.season.code,
@@ -109,9 +124,9 @@ export default function ResultCard(props: ResultCardProps) {
           <span className="slot-chip" style={{ backgroundColor: item.color }}>
             {item.slot}
           </span>
-          <h3>{item.doc.region.label}</h3>
+          {inCompareMode && <h3>{item.doc.region.label}</h3>}
           {isRef && <span className="tag tag-reference">Reference</span>}
-          {item.overridden && (
+          {hasDifferentSettings && (
             <span className="override-marker" title="This result uses its own settings">
               Own settings
             </span>
@@ -135,7 +150,7 @@ export default function ResultCard(props: ResultCardProps) {
           checksOpen={checksOpen}
           onRemove={onRemove}
           inCompareMode={inCompareMode}
-          overridden={item.overridden}
+          overridden={hasDifferentSettings}
           onOverride={onOverride}
           onClearOverride={onClearOverride}
           variables={variables}
@@ -144,11 +159,41 @@ export default function ResultCard(props: ResultCardProps) {
       </div>
 
       <div className="result-card-body">
+        {isPolar && (
+          <div className="polar-cell-caution" role="note">
+            <span className="tag tag-caution">Caution</span>
+            <span>Single 1° polar cell — small area and polar-night coverage</span>
+          </div>
+        )}
+
         {/* Headline-first result */}
         <div className="headline-result">
           <p className="ed-eyebrow">{metricById(item.doc.variable)?.label ?? item.doc.variable} · {item.doc.season.code}<InfoTip term="seasons" /> · {row.period.label}</p>
-          <p className="r4-trend-number">{row.slopePerDecade === null ? 'Unavailable' : `${row.slopePerDecade > 0 ? '+' : ''}${row.slopePerDecade.toFixed(metricById(item.doc.variable)?.decimals ?? 3)}`} <small>{metricById(item.doc.variable)?.trendUnits ?? slopeUnits(item.doc)}<InfoTip term="senSlope" /></small></p>
-          {!isSubPeriod && view.status === 'ok' && <dl className="r4-stat-rows"><div><dt>p-value<InfoTip term="pValue" /><InfoTip term="mannKendall" /></dt><dd>{formatPValue(view.pValue)}</dd></div><div><dt>95% confidence interval<InfoTip term="confidence" /></dt><dd>{formatInterval(view.ci,slopeUnits(item.doc))}</dd></div></dl>}
+          <p className="r4-trend-number">
+            {row.slopePerDecade === null ? 'Unavailable' : `${row.slopePerDecade > 0 ? '+' : ''}${row.slopePerDecade.toFixed(metricById(item.doc.variable)?.decimals ?? 3)}`}
+            <span className={`r4-trend-verdict ${isSubPeriod ? 'r4-trend-verdict--subperiod' : view.status === 'ok' && view.pValue !== null && view.pValue < 0.05 ? 'r4-trend-verdict--sig' : 'r4-trend-verdict--neutral'}`}>
+              {isSubPeriod
+                ? 'Sub-period window'
+                : view.status === 'ok' && view.pValue !== null
+                  ? view.pValue < 0.05
+                    ? 'Statistically significant (p < 0.05)'
+                    : 'No clear trend'
+                  : 'Inference unavailable'}
+            </span>
+            <small>{metricById(item.doc.variable)?.trendUnits ?? slopeUnits(item.doc)}<InfoTip term="senSlope" /></small>
+          </p>
+          {!isSubPeriod && view.status === 'ok' && (
+            <dl className="r4-stat-rows">
+              <div>
+                <dt>p-value<InfoTip term="pValue" /></dt>
+                <dd>{formatPValue(view.pValue).startsWith('<') ? `p ${formatPValue(view.pValue)}` : `p = ${formatPValue(view.pValue)}`}</dd>
+              </div>
+              <div>
+                <dt>95% confidence interval<InfoTip term="confidence" /></dt>
+                <dd>{formatInterval(view.ci, slopeUnits(item.doc))}</dd>
+              </div>
+            </dl>
+          )}
           <p className="plain-summary">{sentences[0]}</p>
           {sentences.slice(1, 2).map((sentence, i) => (
             <p key={i} className="plain-summary">{sentence}</p>
@@ -172,12 +217,6 @@ export default function ResultCard(props: ResultCardProps) {
                   : formatMean(item.doc)}
               </span>
             </div>
-            {row.slopePerDecade !== null && (
-              <div className="stat">
-                <span className="stat-label">Sen’s slope<InfoTip term="senSlope" /></span>
-                <span className="stat-value">{formatSlope(row.slopePerDecade, row.units)}</span>
-              </div>
-            )}
             <div className="stat">
               <span className="stat-label">Sample size</span>
               <span className="stat-value">n = {isSubPeriod ? row.n : (view.n ?? 'not recorded')}</span>
@@ -185,7 +224,7 @@ export default function ResultCard(props: ResultCardProps) {
           </div>
         </div>
 
-        {item.overridden && (
+        {hasDifferentSettings && (
           <p className="override-diff muted small">
             This result uses its own settings: {item.doc.variable} · {item.doc.season.code} · {item.period} (shared: {sharedSettings.variable} · {sharedSettings.season} · {sharedSettings.period}).
           </p>
@@ -254,8 +293,7 @@ export default function ResultCard(props: ResultCardProps) {
         </div>
         <p className="muted small">
           Mean and half-window slopes are calculated in the browser from the stored
-          seasonal values. DJF years are labelled by January: DJF 2015 = Dec 2014 to
-          Feb 2015.
+          seasonal values.
         </p>
         {isSubPeriod && (
           <p className="muted small">
@@ -295,13 +333,7 @@ export default function ResultCard(props: ResultCardProps) {
 }
 
 function seasonText(doc: SeriesDoc): string {
-  const parts = [doc.season.code];
-  if (doc.season.year_label) parts.push(doc.season.year_label);
-  return parts.join(' · ');
-}
-
-function sign(value: number): string {
-  return value >= 0 ? '+' : '−';
+  return doc.season.code;
 }
 
 function summarySentences(doc: SeriesDoc, row?: ResolvedResult): string[] {
@@ -309,33 +341,32 @@ function summarySentences(doc: SeriesDoc, row?: ResolvedResult): string[] {
   const metric = metricById(doc.variable);
   const p = readInference(doc.trend?.inference).pValue;
   const rate = doc.trend?.sen_slope_per_decade;
-  if (typeof rate === 'number') sentences.push(`${metric?.label ?? doc.variable} here has been ${rate < 0 ? 'decreasing' : 'increasing'} by about ${Math.abs(rate).toFixed(metric?.decimals ?? 3)} ${metric?.trendUnits ?? slopeUnits(doc)}${p === null ? '.' : `; this is ${p < 0.05 ? 'statistically significant at the 5% level' : 'not statistically significant'} (p = ${formatPValue(p)}).`}`);
-
-  const slope = doc.trend?.sen_slope_per_decade;
   const view = readInference(doc.trend?.inference);
   const firstYear = doc.years[0];
   const lastYear = doc.years[doc.years.length - 1];
+  const n = row?.n ?? view.n ?? 'not recorded';
 
-  if (typeof slope === 'number' && Number.isFinite(slope)) {
-    const n = row?.n ?? view.n ?? 'not recorded';
+  if (typeof rate === 'number' && Number.isFinite(rate)) {
+    const pStr = p !== null ? formatPValue(p) : null;
+    const pClause = pStr ? (pStr.startsWith('<') ? `p ${pStr}` : `p = ${pStr}`) : null;
     sentences.push(
-      `Over the full ${firstYear}–${lastYear} period the Sen slope is ` +
-        `${sign(slope)}${Math.abs(slope).toFixed(3)} ${slopeUnits(doc)} ` +
-        `(n = ${n} seasons).`,
+      `${metric?.label ?? doc.variable} here has been ${rate < 0 ? 'decreasing' : 'increasing'} over the full ${firstYear}–${lastYear} period (n = ${n} seasons)${pClause ? `; this is ${p! < 0.05 ? 'statistically significant at the 5% level' : 'not statistically significant'} (${pClause})` : '.'}`
     );
   }
 
   if (view.status === 'ok' && view.method && view.pValue !== null) {
     const significant = view.pValue < 0.05;
+    const pStr = formatPValue(view.pValue);
+    const pClause = pStr.startsWith('<') ? `p ${pStr}` : `p = ${pStr}`;
     if (significant) {
       sentences.push(
         `Under the main test's assumptions (${view.method}), a monotonic pattern ` +
-          `this strong would be uncommon if no trend were present (p = ${formatPValue(view.pValue)}).`,
+          `this strong would be uncommon if no trend were present (${pClause}).`,
       );
     } else {
       sentences.push(
         `Under the main test's assumptions (${view.method}), a monotonic pattern ` +
-          `this strong would not be uncommon if no trend were present (p = ${formatPValue(view.pValue)}).`,
+          `this strong would not be uncommon if no trend were present (${pClause}).`,
       );
     }
     if (view.ci) {
@@ -351,10 +382,9 @@ function summarySentences(doc: SeriesDoc, row?: ResolvedResult): string[] {
         'The prewhitening sensitivity check (Yue-Wang classic prewhitening) does not reach the same result as the main test.',
       );
     }
-  } else if (typeof slope === 'number' && Number.isFinite(slope)) {
+  } else if (typeof rate === 'number' && Number.isFinite(rate)) {
     sentences.push(
-      `The Sen slope is ${sign(slope)}${Math.abs(slope).toFixed(3)} ${slopeUnits(doc)}; ` +
-        `the artifact did not record an inference result, so no p value or interval is available.`,
+      `The artifact did not record an inference result, so no p value or interval is available.`,
     );
   }
 
@@ -494,8 +524,6 @@ function handleSuggestionClick(
     case 'cite':
       const citation = `${item.doc.source.product} v${item.doc.source.version}${item.doc.source.var ? ` · ${item.doc.source.var}` : ''} · ${item.doc.region.label} · ${item.doc.season.code} · ${item.doc.units}`;
       navigator.clipboard.writeText(citation).catch(() => {});
-      break;
-    case 'explain':
       break;
   }
 }

@@ -85,14 +85,14 @@ export default function InferenceBlock({
       <dl className="inference-facts">
         <div>
           <dt>{MAIN_TEST_LABEL}<InfoTip term="mannKendall" /><InfoTip term="pValue" /></dt>
-          <dd>p = {formatPValue(view.pValue)}</dd>
+          <dd>{formatPValue(view.pValue).startsWith('<') ? `p ${formatPValue(view.pValue)}` : `p = ${formatPValue(view.pValue)}`}</dd>
         </div>
         <div>
           <dt>{STRICT_CHECK_LABEL}<InfoTip term="prewhitening" /></dt>
           <dd>
             {strictCheckVerdict(view)}
             {view.strictCheckP !== null
-              ? ` (p = ${formatPValue(view.strictCheckP)})`
+              ? ` (${formatPValue(view.strictCheckP).startsWith('<') ? `p ${formatPValue(view.strictCheckP)}` : `p = ${formatPValue(view.strictCheckP)}`})`
               : ''}
           </dd>
         </div>

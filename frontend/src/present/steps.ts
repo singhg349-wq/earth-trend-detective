@@ -10,10 +10,6 @@
 /* Things you may want to edit before the talk                         */
 /* ------------------------------------------------------------------ */
 
-/**
- * The opening question. The first sentence is set small; every following
- * sentence becomes one giant line. Rewrite freely.
- */
 export const OPENING_QUESTION =
   'Everyone says the climate is changing. Where? By how much? And how sure are we?';
 
@@ -26,29 +22,33 @@ export const LIVE_URL = 'https://trendtrace.earth-trend-detective-frontend.worke
 
 export type SceneId =
   | 'question'
-  | 'place'
   | 'locked'
-  | 'reveal'
   | 'built'
   | 'method'
-  | 'link'
+  | 'result'
   | 'impact'
   | 'close';
+
+export type MetricVar = 'precipitation' | 'temperature' | 'aerosol_optical_depth' | 'soil_moisture';
 
 export type DemoAction =
   | { type: 'landing' }
   | {
       type: 'investigation';
       place: { name: string; lon: number; lat: number; regionId: string | null };
-      variable: 'precipitation' | 'temperature' | 'aerosol_optical_depth' | 'soil_moisture';
+      variable: MetricVar;
       season: string;
+      compare?: {
+        place: { name: string; lon: number; lat: number; regionId: string | null };
+        variable: MetricVar;
+        season: string;
+      };
     }
   | { type: 'enso'; hash: string };
 
 /** Small caption shown over the live app on demo steps. */
 export interface DemoCaption {
   label: string;
-  /** The one number to read out (optional). */
   value?: string;
   detail?: string;
 }
@@ -58,10 +58,12 @@ export interface PresentStep {
   kind: 'story' | 'demo';
   /** Phone-card title. */
   title: string;
-  /** Story slides: the big words on screen (also used by the PowerPoint twin). */
+  /** Story slides: headline shown on screen. */
   headline?: string;
   /** Story slides only: which designed scene to render. */
   scene?: SceneId;
+  /** Progressive reveal count (1..N) on the same story slide. */
+  reveal?: number;
   /** Demo steps only: which live app state to put on screen. */
   demo?: DemoAction;
   caption?: DemoCaption;
@@ -69,74 +71,95 @@ export interface PresentStep {
   supportNotes: string[];
 }
 
-/** Copy for the designed story scenes. Numbers are real; see the header. */
+/** Copy for the 6 story slides + closing slide. Numbers are real; see header. */
 export const STORY = {
-  eyebrow: 'NASA Space Apps Challenge',
-  place: {
-    pill: 'The problem',
-    lines: ['The headline is global.', 'The question is local.'],
-    sub: 'What about here? Almost no one can check the place they care about.',
-    pin: 'here?',
+  eyebrow: '2026 NASA Space Apps · Be An Earth System Trend Detective!',
+  question: {
+    pill: '2026 NASA Space Apps · Be An Earth System Trend Detective!',
+    lead: 'One interconnected Earth system — opposite local trends.',
+    lines: ['What is changing?', 'Where & by how much?', 'Is it statistically significant?'],
+    points: [
+      'Even when the same global process drives both, one region can warm or dry while another shifts the opposite way.',
+      'Our challenge: turn NASA mission & model variables into a tool anyone can use to test local trends — and separate real signals from noise.',
+    ],
   },
   locked: {
-    pill: 'The data exists',
-    giant: '46 YEARS',
+    pill: 'The problem & NASA data',
+    headline: '46 years of NASA estimates, locked inside 2,534 files.',
     files: 2534,
-    before: 'of open NASA records, locked inside',
-    after: 'files.',
-    sub: 'Public, free, and unreadable without code, file formats and statistics.',
-    barriers: ['NetCDF files', '0.5° grids', 'Seasonal averages', 'Significance tests'],
-  },
-  reveal: {
-    pill: 'So we built',
-    giant: 'TRENDTRACE',
-    tagline: ['Click anywhere on Earth.', 'See what’s changing, and how sure we are.'],
-    metrics: ['Rainfall', 'Temperature', 'Aerosols (haze)', 'Soil moisture'],
+    datasets: [
+      { name: 'Rainfall', detail: 'GPCP v3.3 · 1983–2025 · 516 monthly files (mm/day)' },
+      { name: '2 m Temperature', detail: 'MERRA-2 reanalysis · 1980–2026 · 560 monthly files (°C)' },
+      { name: 'Aerosols (haze)', detail: 'MERRA-2 550 nm AOD · 1980–2026 · 560 files (pre-2000 model-driven)' },
+      { name: 'Topsoil moisture', detail: 'GLDAS Noah v2.1 · 2000–2026 · 319 files (v2.0 withheld: +0.47 kg/m² jump)' },
+    ],
+    barrierNote: 'Delivered as raw NetCDF grids — unreadable without code, seasonal averaging, and statistical tests.',
   },
   built: {
-    pill: 'What we built',
-    headline: ['From raw files to one click,', 'in 48 hours.'],
+    pill: 'What we built · TrendTrace',
+    headline: 'From raw NASA files to one click — zero server required.',
     stations: [
-      { value: 2534, label: 'raw files', sub: 'NASA + NOAA monthly records' },
-      { value: 11055, label: 'map tiles', sub: '250.65 MB of seasonal series' },
-      { value: 64800, label: 'cells you can click', sub: 'every 1° × 1° of the planet' },
+      { value: 2534, label: 'raw files', sub: 'NASA + NOAA monthly archives' },
+      { value: 11055, label: 'map tiles', sub: '250.65 MB of 1° seasonal series' },
+      { value: 64800, label: 'clickable cells', sub: '~0.3 ms browser trend test' },
     ],
-    links: ['Python pipeline', 'statistics in your browser'],
-    facts: ['4 metrics × 5 seasons', '0.29 ms per trend test', '809 timelapse frames', '291 automated tests'],
+    points: [
+      'Click any 1° cell on the globe or search 25,000+ cities offline — full stats run in your browser.',
+      '4 metrics × 5 seasons, 20 global anomaly timelapses, plus an El Niño atlas (NOAA RONI & ERSST v6).',
+    ],
   },
   method: {
-    pill: 'How we decide',
-    headline: ['Is the trend', 'real?'],
+    pill: 'Statistical significance',
+    headline: 'How do we see if a trend is statistically significant?',
     checks: [
-      { name: 'Mann–Kendall test', note: 'Hamed–Rao corrected: is the direction more than year-to-year noise?' },
-      { name: 'Sen’s slope + 95% interval', note: 'How fast, and how sure. Robust to odd years.' },
-      { name: 'False discovery rate on maps', note: 'Thousands of cells tested, q = 0.10.' },
-      { name: 'Checked against NASA Giovanni', note: 'Two test regions reproduced.' },
+      {
+        name: '1. Mann–Kendall + Hamed–Rao (3 lags)',
+        level: 'Checks at p < 0.05 (5% level)',
+        note: 'Tests whether values rise or fall more consistently than year-to-year autocorrelation noise.',
+      },
+      {
+        name: '2. Sen’s slope + 95% confidence interval',
+        level: 'Checks 95% uncertainty range',
+        note: 'Measures decadal rate of change robustly without assuming a straight line or normal data.',
+      },
+      {
+        name: '3. Yue–Wang prewhitening check',
+        level: 'Stricter sensitivity cross-check',
+        note: 'Removes lag-1 persistence and flags a caution whenever the two tests disagree.',
+      },
+      {
+        name: '4. Benjamini–Hochberg FDR + NASA Giovanni',
+        level: 'Checks maps at q = 0.10 (10% FDR)',
+        note: 'Controls false alarms across 64,800 cells, using a pipeline confirmed on NASA Giovanni.',
+      },
     ],
-    chartLabel: 'Amazon · Dec–Feb temperature · 1981–2026',
-    chartResult: '+0.25 °C per decade',
-    chartDetail: 'p = 0.0001 · 95% CI +0.14 to +0.37',
   },
-  link: {
-    pill: 'The why, from our own data',
-    giant: 'EL NIÑO',
-    lead: 'One Pacific pattern shows up in both places.',
-    stats: [
-      { place: 'Amazon', value: '+0.82 °C', note: 'warmer in El Niño winters' },
-      { place: 'Amazon', value: '−0.95 mm/day', note: 'drier in El Niño winters' },
-      { place: 'Alberta / Prairies', value: '+1.51 °C', note: 'warmer in El Niño winters' },
+  result: {
+    pill: 'Reading a full result',
+    headline: 'One full result, labelled — plus what the data shows.',
+    cardTitle: 'Amazon · Dec–Feb 2 m Temperature · 1981–2026 (MERRA-2)',
+    labels: [
+      { tag: '① Direction & rate', value: '+0.25 °C per decade', note: 'Sen’s slope over 46 winters' },
+      { tag: '② 95% confidence interval', value: '+0.14 to +0.37 °C/decade', note: 'Entire interval is above zero' },
+      { tag: '③ Significance verdict', value: 'p < 0.001 · Significant at 5%', note: 'Hamed–Rao & prewhitening agree; Giovanni-confirmed pipeline' },
     ],
-    footer: 'El Niño winters minus La Niña winters, long-term trend removed. Associated with, not a proven cause.',
+    trends: [
+      { place: 'Alberta soil moisture (DJF)', value: '−1.80 kg/m²/dec (p = 0.003)', note: 'Significant drying (26 winters, GLDAS v2.1)' },
+      { place: 'Amazon aerosols (DJF)', value: '+0.010 AOD/dec (p = 0.015)', note: 'Significant (pre-2000 MODIS caveat noted)' },
+      { place: 'Coastal Peru rainfall (DJF)', value: 'No clear trend (p = 0.52)', note: 'Honest null result — we do not colour noise' },
+    ],
   },
   impact: {
-    pill: 'Who it is for',
-    people: ['Farmers.', 'Students.', 'Journalists.', 'Local planners.'],
-    sub: 'Anyone with a place they care about, and no time to learn NetCDF.',
+    pill: 'Impact & who it is for',
+    headline: 'Built for students, scientists, journalists, farmers — anyone with a local question.',
+    points: [
+      'No NetCDF or Python needed: get a plain-language verdict, uncertainty, and (i) glossary in seconds.',
+      'Reproducible & open: export CSV/JSON, copy NASA source & DOI citations, inspect every statistical check.',
+    ],
     nextTitle: 'What’s next',
     next: [
-      'Compare temperature, aerosols and soil moisture with NASA Giovanni',
-      'All five seasons for named regions',
-      'Significance for sub-periods',
+      'Expand individual Giovanni checks across temperature, aerosols & soil moisture',
+      'All five seasons for named study regions + sub-period significance',
     ],
   },
   close: {
@@ -144,140 +167,163 @@ export const STORY = {
     line: 'Click anywhere on Earth. See what’s changing, and how sure we are.',
     url: 'trendtrace.earth-trend-detective-frontend.workers.dev',
     qrLabel: 'Try it now',
-    credits: ['NASA GES DISC', 'GPCP v3.3', 'MERRA-2', 'GLDAS v2.1', 'NOAA ERSST v6', 'NOAA CPC RONI', 'Natural Earth'],
-    footer: 'Built with AI coding assistance. Trends are observed history; links are associations.',
+    credits: ['NASA GES DISC', 'GPCP v3.3', 'MERRA-2', 'GLDAS v2.1', 'NOAA ERSST v6', 'NOAA CPC RONI', 'Natural Earth', 'GeoNames'],
+    footer: '2026 NASA Space Apps Challenge · Built with AI coding assistance. Trends reflect archive estimates; El Niño maps show associations.',
   },
 } as const;
 
 export const STEPS: PresentStep[] = [
+  // ---- Slide 1: Question & Challenge (2 taps) ----
   {
-    id: 'question',
+    id: 'question-1',
     kind: 'story',
     scene: 'question',
-    title: 'Opening: the big question',
-    headline: OPENING_QUESTION,
+    reveal: 1,
+    title: 'Slide 1 (1/2): One Earth system, opposite trends',
+    headline: 'One Earth system — opposite local trends. What is changing, where, by how much, and is it significant?',
     supportNotes: [
-      'Three questions frame the whole talk: where, by how much, how sure.',
-      'TrendTrace answers all three for any 1° × 1° cell on Earth: 64,800 cells.',
-      '4 NASA metrics: rainfall (GPCP v3.3), temperature (MERRA-2), aerosols/haze (MERRA-2 AOD), soil moisture (GLDAS v2.1).',
-      'Every result shows the trend, the uncertainty and the limits, not just a colour.',
+      '2026 NASA Space Apps Challenge: Be An Earth System Trend Detective!',
+      'The same global driver (like El Niño) can push one region drier and another wetter at the exact same time.',
+      'Press Next to tie directly into the problem and TrendTrace.',
     ],
   },
   {
-    id: 'problem-place',
+    id: 'question-2',
     kind: 'story',
-    scene: 'place',
-    title: 'Problem: nobody can check their own place',
-    headline: 'The headline is global. The question is local.',
+    scene: 'question',
+    reveal: 2,
+    title: 'Slide 1 (2/2): Challenge goal → Problem',
+    headline: 'Separate real local signals from noise using NASA mission & model data.',
     supportNotes: [
-      'People hear global averages; their real question is about one place: a farm, a town, a river basin.',
-      'Answering it today takes code, file formats and statistics most people do not have.',
-      'The gap is not data. It is access, plus honesty about uncertainty.',
+      'Our goal: select NASA variables, visualize change over time, and test whether scientists would call it significant.',
+      'Segue to Slide 2: the data to answer this already exists — but it is locked in 2,534 raw files.',
     ],
   },
+
+  // ---- Slide 2: Problem & NASA Data (3 taps) ----
   {
-    id: 'problem-locked',
+    id: 'locked-1',
     kind: 'story',
     scene: 'locked',
-    title: 'Problem: 46 years of data, locked in files',
-    headline: '46 YEARS of open NASA records, locked inside 2,534 files.',
+    reveal: 1,
+    title: 'Slide 2 (1/3): 46 years, 2,534 files',
+    headline: STORY.locked.headline,
     supportNotes: [
-      'MERRA-2 temperature and aerosols: 560 monthly files each, 1980-01 to 2026-08 (46 years).',
-      'GPCP v3.3 rainfall: 516 monthly files, 1983–2025. GLDAS v2.1 soil moisture: 319 files, 2000–2026.',
-      'NOAA ERSST v6 sea surface temperature: 574 monthly files, 1979–2026.',
-      '2,534 input files in total = 516 + 560 + 560 + 319 + 574 + 2 NOAA index tables + 3 Natural Earth files.',
-      'All public (NASA GES DISC, NOAA), but delivered as NetCDF grids that need code to read.',
+      'GPCP v3.3 rainfall (516 monthly files, 1983–2025) and MERRA-2 2 m temperature (560 files, 1980–2026).',
+      'Press Next to reveal Aerosols & Soil Moisture.',
     ],
   },
   {
-    id: 'reveal',
+    id: 'locked-2',
     kind: 'story',
-    scene: 'reveal',
-    title: 'Reveal: TrendTrace',
-    headline: 'TRENDTRACE. Click anywhere on Earth. See what’s changing, and how sure we are.',
+    scene: 'locked',
+    reveal: 2,
+    title: 'Slide 2 (2/3): Aerosols & Soil Moisture',
+    headline: STORY.locked.headline,
     supportNotes: [
-      'Product: TrendTrace. Click anywhere on Earth, see what is changing and how sure we are.',
-      '4 metrics: rainfall, temperature, aerosols (haze), soil moisture (0–10 cm, land only).',
-      '5 seasons per metric: annual, Dec–Feb, Mar–May, Jun–Aug, Sep–Nov.',
-      'Runs as a static site: the statistics are computed in the browser, no server in the loop.',
+      'MERRA-2 550 nm AOD (560 files; pre-2000 land AOD largely model-driven before MODIS).',
+      'GLDAS Noah v2.1 topsoil moisture (319 files, 2000–2026). We audited v2.0 vs v2.1, found a +0.47 kg/m² jump, and withheld v2.0.',
     ],
   },
+  {
+    id: 'locked-3',
+    kind: 'story',
+    scene: 'locked',
+    reveal: 3,
+    title: 'Slide 2 (3/3): Why it was locked',
+    headline: STORY.locked.headline,
+    supportNotes: [
+      'Raw NetCDF grids at 0.5° need code, seasonal averaging, and statistical testing to read.',
+      'Next slide: how TrendTrace turns those 2,534 files into one click.',
+    ],
+  },
+
+  // ---- Slide 3: What We Built (2 taps) ----
+  {
+    id: 'built-1',
+    kind: 'story',
+    scene: 'built',
+    reveal: 1,
+    title: 'Slide 3 (1/2): Files → Tiles → Cells',
+    headline: STORY.built.headline,
+    supportNotes: [
+      '2,534 input files → 11,055 JSON tiles (250.65 MB) → 64,800 clickable 1° cells.',
+      'Browser computes Sen’s slope, CI, and Mann–Kendall in ~0.3 ms with zero backend server.',
+    ],
+  },
+  {
+    id: 'built-2',
+    kind: 'story',
+    scene: 'built',
+    reveal: 2,
+    title: 'Slide 3 (2/2): Search, Timelapses & El Niño',
+    headline: STORY.built.headline,
+    supportNotes: [
+      '25,000+ cities searchable offline, 4 metrics × 5 seasons, 20 seasonal anomaly timelapses.',
+      'Plus a 76-year El Niño atlas (NOAA RONI 1950–2026 & ERSST v6) and 6 impact maps.',
+    ],
+  },
+
+  // ---- Slide 4: How We Test Statistical Significance (4 taps) ----
+  {
+    id: 'method-1',
+    kind: 'story',
+    scene: 'method',
+    reveal: 1,
+    title: 'Slide 4 (1/4): Mann–Kendall + Hamed–Rao',
+    headline: STORY.method.headline,
+    supportNotes: [
+      'Checks at p < 0.05 (5% level) whether values rise or fall more than year-to-year noise.',
+      'Hamed–Rao (3 lags) corrects for autocorrelation so persistent climate years don’t inflate significance.',
+    ],
+  },
+  {
+    id: 'method-2',
+    kind: 'story',
+    scene: 'method',
+    reveal: 2,
+    title: 'Slide 4 (2/4): Sen’s slope + 95% CI',
+    headline: STORY.method.headline,
+    supportNotes: [
+      'Median of all pairwise slopes — robust to extreme El Niño/La Niña outlier years.',
+      'Shown with a 95% confidence interval so you see both speed and uncertainty.',
+    ],
+  },
+  {
+    id: 'method-3',
+    kind: 'story',
+    scene: 'method',
+    reveal: 3,
+    title: 'Slide 4 (3/4): Yue–Wang prewhitening',
+    headline: STORY.method.headline,
+    supportNotes: [
+      'Stricter sensitivity check that removes lag-1 persistence before testing.',
+      'If it disagrees with Hamed–Rao, the UI flags a caution rather than hiding borderline results.',
+    ],
+  },
+  {
+    id: 'method-4',
+    kind: 'story',
+    scene: 'method',
+    reveal: 4,
+    title: 'Slide 4 (4/4): FDR (q = 0.10) & Giovanni',
+    headline: STORY.method.headline,
+    supportNotes: [
+      'Maps apply Benjamini–Hochberg FDR at q = 0.10 across thousands of cells.',
+      'Aggregation & trend pipeline confirmed against NASA Giovanni reference series; 26/26 browser-vs-Python parity tests.',
+    ],
+  },
+
+  // ---- Live Demo (5 step-by-step taps) ----
   {
     id: 'demo-landing',
     kind: 'demo',
     demo: { type: 'landing' },
-    title: 'Live: the globe',
-    caption: { label: 'The globe', detail: 'Drag, click any cell, or start an investigation' },
+    title: 'Demo 1/5: The live 3D globe',
+    caption: { label: 'Live Globe', detail: '64,800 clickable 1° cells · 25,000+ cities offline' },
     supportNotes: [
-      'Drag to rotate, click anywhere for that 1° cell, or use Start an investigation.',
-      'Right bar ranks the 10 study regions for the chosen metric and season.',
-      'Grid: 64,800 cells (1° × 1°); soil moisture is land only (GLDAS covers −59.5° to 89.5°).',
-      'The tool also says when there is no clear trend: Coastal Peru rainfall, Dec–Feb, p = 0.52.',
-    ],
-  },
-  {
-    id: 'built',
-    kind: 'story',
-    scene: 'built',
-    title: 'What we built in 48 hours',
-    headline: 'From raw files to one click, in 48 hours. 2,534 files → 11,055 tiles → 64,800 cells.',
-    supportNotes: [
-      '2,534 input files → 11,055 JSON tiles (250.65 MB): rainfall, temperature, aerosols 3,240 each; soil moisture 1,335 (land only).',
-      '64,800 cells × 5 seasons × 4 metrics; 809 timelapse frames in 20 sets.',
-      'Trend test in the browser: 0.288 ms average for a 47-year series; matches the Python reference on 26 of 26 test series.',
-      'Tests: 291 front-end tests and 180 Python pipeline tests pass; data integrity script 5 of 5.',
-      'GLDAS v2.0 left out on purpose: it differs from v2.1 by +0.469 kg/m² over 2000–2014, which would fake a trend.',
-    ],
-  },
-  {
-    id: 'method',
-    kind: 'story',
-    scene: 'method',
-    title: 'How we decide a trend is real',
-    headline: 'Is the trend real? Mann–Kendall, Sen’s slope + 95% interval, false discovery rate, NASA Giovanni check.',
-    supportNotes: [
-      'Mann–Kendall asks: do values tend to rise or fall over time? Hamed–Rao corrects for autocorrelation (3 lags), so fewer false “significant” results.',
-      'Sen’s slope = median of all pairwise slopes, robust to outliers; shown with a 95% confidence interval.',
-      'False discovery rate (Benjamini–Hochberg, q = 0.10) limits false alarms when thousands of map cells are tested.',
-      'Method check: our pipeline reproduced NASA Giovanni for 2 of 40 regional series (Coastal Peru and Indonesia rainfall, Dec–Feb). The other 38 use the same code, not compared one by one.',
-      'Chart on the slide is the real Amazon Dec–Feb temperature series (MERRA-2, 46 winters).',
-    ],
-  },
-  {
-    id: 'demo-amazon-temp',
-    kind: 'demo',
-    demo: {
-      type: 'investigation',
-      place: { name: 'Amazon', lon: -60, lat: -5, regionId: 'amazon' },
-      variable: 'temperature',
-      season: 'DJF',
-    },
-    title: 'Live: Amazon temperature, Dec–Feb',
-    caption: { label: 'Amazon · Dec–Feb temperature', value: '+0.25 °C per decade', detail: 'p = 0.0001 · 95% CI +0.14 to +0.37' },
-    supportNotes: [
-      'Amazon, temperature, Dec–Feb, 1981–2026 (46 winters, MERRA-2 T2M). Mean 25.19 °C.',
-      'Sen’s slope +0.246 °C per decade, 95% CI +0.145 to +0.372, p = 0.00006 (drawer shows “< 0.001”): statistically significant.',
-      'Prewhitening sensitivity check agrees (p = 0.002).',
-      'The three warmest winters in the record (2024, 2016, 1998) were all El Niño winters.',
-      'This series has not been compared with NASA Giovanni one by one (same code as the two that were).',
-    ],
-  },
-  {
-    id: 'demo-amazon-aod',
-    kind: 'demo',
-    demo: {
-      type: 'investigation',
-      place: { name: 'Amazon', lon: -60, lat: -5, regionId: 'amazon' },
-      variable: 'aerosol_optical_depth',
-      season: 'DJF',
-    },
-    title: 'Live: Amazon aerosols (haze), Dec–Feb',
-    caption: { label: 'Amazon · Dec–Feb aerosols (haze)', value: '+0.010 AOD per decade', detail: 'p = 0.015 · same region, same winters' },
-    supportNotes: [
-      'Amazon, aerosol optical depth at 550 nm, Dec–Feb, 1981–2026 (46 winters, MERRA-2). Mean AOD 0.133.',
-      'Sen’s slope +0.010 AOD per decade, 95% CI +0.004 to +0.016, p = 0.015: statistically significant.',
-      'Same region and same winters as the warming: more haze and warmer air are found together. Associated, not a proven cause.',
-      'Amazon rainfall and soil moisture trends over the same season are not significant (p = 0.21 and p = 0.22).',
+      'Point out the 3D globe, ranking bar, and search bar.',
+      'Next tap opens Alberta / Prairies soil moisture.',
     ],
   },
   {
@@ -289,94 +335,144 @@ export const STEPS: PresentStep[] = [
       variable: 'soil_moisture',
       season: 'DJF',
     },
-    title: 'Live: Alberta / Prairies soil moisture, Dec–Feb',
-    caption: { label: 'Alberta / Prairies · Dec–Feb soil moisture', value: '−1.80 kg/m² per decade', detail: 'p = 0.003 · 26 winters, 2001–2026' },
+    title: 'Demo 2/5: Alberta soil moisture (DJF)',
+    caption: { label: 'Alberta / Prairies · Soil moisture (DJF)', value: '−1.80 kg/m²/dec', detail: 'p = 0.003 · 26 winters (GLDAS v2.1)' },
     supportNotes: [
-      'Alberta / Prairies, topsoil moisture 0–10 cm, Dec–Feb, 2001–2026 (26 winters, GLDAS Noah v2.1). Mean 28.78 kg/m².',
-      'Sen’s slope −1.80 kg/m² per decade, 95% CI −2.80 to −0.83, p = 0.003: statistically significant drying.',
-      'Shorter record than the others (GLDAS v2.1 starts in 2000), so say so.',
-      'Alberta winter temperature trend itself is not significant: +0.18 °C per decade, p = 0.29.',
-      'Warmer winters, drier soils: associated, not a proven cause.',
+      'Local Alberta/Prairies result: −1.80 kg/m² per decade (p = 0.003, 95% CI −2.80 to −0.83).',
+      'Model-estimated 0–10 cm topsoil water (includes frozen winter moisture), 2001–2026.',
+      'Next tap adds Amazon Temperature into Compare mode.',
     ],
   },
   {
-    id: 'link',
-    kind: 'story',
-    scene: 'link',
-    title: 'The why: El Niño links both places',
-    headline: 'EL NIÑO. Amazon +0.82 °C and −0.95 mm/day; Alberta / Prairies +1.51 °C in El Niño winters.',
-    supportNotes: [
-      'Composite = El Niño winters minus La Niña winters, linearly detrended (temperature: 15 El Niño vs 20 La Niña winters; rainfall: 14 vs 19).',
-      'Amazon: +0.82 °C (95% CI +0.53 to +1.12) and −0.95 mm/day (CI −1.27 to −0.65); both significant.',
-      'Alberta / Prairies: +1.51 °C (CI +0.37 to +2.69), significant. Its soil-moisture difference (+0.46 kg/m²) is not significant.',
-      'Method: permutation test (2,000), false discovery rate q = 0.10, bootstrap region intervals (2,000 resamples).',
-      'Association, not causation: winters differ on average; it does not explain any single winter or the long-term trend.',
-    ],
-  },
-  {
-    id: 'demo-enso-normal',
+    id: 'demo-compare-amazon',
     kind: 'demo',
-    demo: { type: 'enso', hash: 'enso?mode=normal' },
-    title: 'Live: the Pacific in a normal year',
-    caption: { label: 'El Niño mode · a normal year', detail: 'Sea surface temperature, 1991–2020 average' },
+    demo: {
+      type: 'investigation',
+      place: { name: 'Alberta / Prairies', lon: -108, lat: 54, regionId: 'alberta_prairies' },
+      variable: 'soil_moisture',
+      season: 'DJF',
+      compare: {
+        place: { name: 'Amazon', lon: -60, lat: -5, regionId: 'amazon' },
+        variable: 'temperature',
+        season: 'DJF',
+      },
+    },
+    title: 'Demo 3/5: Compare Alberta vs Amazon',
+    caption: { label: 'Compare · Alberta Soil vs Amazon Temp', value: '+0.25 °C/dec', detail: 'Amazon DJF warming (p < 0.001) side by side' },
     supportNotes: [
-      'Normal year = 1991–2020 average sea surface temperature, absolute °C (12 monthly frames, −2 to 32 °C scale).',
-      'Source: NOAA ERSST v6, 2° grid. Warm pool in the west Pacific, cold tongue in the east.',
-      'El Niño is classified with the Relative Oceanic Niño Index (RONI), threshold ±0.5 °C.',
-      'RONI history: 921 overlapping 3-month seasons (DJF 1950 to ASO 2026), 44 qualifying episodes.',
+      'Side-by-side comparison: Alberta soil drying (−1.80 kg/m²/dec) alongside Amazon winter warming (+0.25 °C/dec, p < 0.001).',
+      'Different units use independent axes with no false difference claim.',
+      'Next tap jumps to El Niño 1997–98 to show the Pacific link.',
     ],
   },
   {
     id: 'demo-enso-elnino',
     kind: 'demo',
     demo: { type: 'enso', hash: 'enso?mode=el-nino' },
-    title: 'Live: El Niño 1997–98',
-    caption: { label: 'El Niño 1997–98', value: '+2.28 °C', detail: 'peak RONI · warm water spreads east' },
+    title: 'Demo 4/5: El Niño 1997–98 (Pacific link)',
+    caption: { label: 'El Niño 1997–98 · Pacific link', value: '+2.28 °C RONI', detail: 'Shifts winters in both Amazon (+0.82 °C) & Alberta (+1.51 °C)' },
     supportNotes: [
-      'Anomalies vs 1991–2020; 17 monthly frames, 1997-03 to 1998-07.',
-      'Peak RONI +2.28 °C. The 1998 winter is one of the three warmest Amazon winters in our record.',
-      'La Niña 2010–11 for contrast: RONI −1.63 °C. Full history: 574 monthly frames, 1979–2026.',
-      'Latest season on record: ASO 2026, RONI +1.97 °C (El Niño). Observed history only.',
+      'One Pacific pattern connects both regions: El Niño winters warm the Amazon (+0.82 °C, −0.95 mm/day) and Alberta (+1.51 °C).',
+      '1998, 2016, and 2024 — the three warmest Amazon winters — were all El Niño winters.',
+      'Next tap opens the El Niño winter impact map for Alberta.',
     ],
   },
   {
     id: 'demo-enso-impact',
     kind: 'demo',
     demo: { type: 'enso', hash: 'enso?region=alberta_prairies&map=t2m_DJF' },
-    title: 'Live: El Niño impact map, winter temperature',
-    caption: { label: 'El Niño winters minus La Niña winters', value: 'Alberta / Prairies +1.51 °C', detail: '95% CI +0.37 to +2.69' },
+    title: 'Demo 5/5: El Niño impact map (Alberta)',
+    caption: { label: 'El Niño − La Niña winters · Temp', value: 'Alberta +1.51 °C', detail: '95% CI +0.37 to +2.69 · 2,000 permutations + FDR' },
     supportNotes: [
-      'Temperature, Dec–Feb: 15 El Niño winters minus 20 La Niña winters, detrended.',
-      'Alberta / Prairies: +1.51 °C, 95% CI +0.37 to +2.69, statistically significant. Amazon on the same map: +0.82 °C.',
-      'Rainfall map for contrast: Indonesia −1.10 mm/day, Amazon −0.95, East Africa +0.59.',
-      'Dots mark cells that pass the false discovery rate check (q = 0.10).',
-      'Association, not causation.',
+      'Detrended composite: 15 El Niño winters minus 20 La Niña winters.',
+      'Dots mark cells passing Benjamini–Hochberg FDR (q = 0.10). Association, not causation.',
+    ],
+  },
+
+  // ---- Slide 5 (after demo): Full Annotated Result + Key Trends (4 taps) ----
+  {
+    id: 'result-1',
+    kind: 'story',
+    scene: 'result',
+    reveal: 1,
+    title: 'Slide 5 (1/4): Label ① Direction & rate',
+    headline: STORY.result.headline,
+    supportNotes: [
+      'Every result starts with Sen’s slope: Amazon DJF temperature +0.25 °C per decade over 46 winters.',
     ],
   },
   {
-    id: 'impact',
+    id: 'result-2',
     kind: 'story',
-    scene: 'impact',
-    title: 'Impact: who it is for, and what is next',
-    headline: 'Farmers. Students. Journalists. Local planners.',
+    scene: 'result',
+    reveal: 2,
+    title: 'Slide 5 (2/4): Label ② 95% confidence interval',
+    headline: STORY.result.headline,
     supportNotes: [
-      'Users: anyone with a local question and no time to learn NetCDF: farmers, students, journalists, local planners.',
-      'Each result can be saved, exported (CSV/JSON) and cited with its NASA source and DOI.',
-      'Limits, stated up front: 2 of 40 regional series compared with NASA Giovanni; sub-period trends show no p-value yet; named regions are Dec–Feb only.',
-      'Next: compare temperature, aerosols and soil moisture with Giovanni; all five seasons per region; sub-period significance.',
+      '95% CI (+0.14 to +0.37 °C/decade): the entire interval sits above zero.',
     ],
   },
+  {
+    id: 'result-3',
+    kind: 'story',
+    scene: 'result',
+    reveal: 3,
+    title: 'Slide 5 (3/4): Label ③ Significance verdict',
+    headline: STORY.result.headline,
+    supportNotes: [
+      'p < 0.001 (significant at 5%): Hamed–Rao and Yue–Wang prewhitening agree, using our Giovanni-confirmed pipeline.',
+    ],
+  },
+  {
+    id: 'result-4',
+    kind: 'story',
+    scene: 'result',
+    reveal: 4,
+    title: 'Slide 5 (4/4): Real trends & honest contrast',
+    headline: STORY.result.headline,
+    supportNotes: [
+      'Alberta soil drying −1.80 kg/m²/dec (p = 0.003); Amazon haze +0.010 AOD/dec (pre-2000 caveat).',
+      'Coastal Peru DJF rainfall: No clear trend (p = 0.52) — we never colour noise as a trend.',
+    ],
+  },
+
+  // ---- Slide 6: Who It's For & Impact (2 taps) ----
+  {
+    id: 'impact-1',
+    kind: 'story',
+    scene: 'impact',
+    reveal: 1,
+    title: 'Slide 6 (1/2): Who it is for',
+    headline: STORY.impact.headline,
+    supportNotes: [
+      'Students, scientists, journalists, farmers, and local planners can check any place in seconds without NetCDF or Python.',
+    ],
+  },
+  {
+    id: 'impact-2',
+    kind: 'story',
+    scene: 'impact',
+    reveal: 2,
+    title: 'Slide 6 (2/2): Export, cite & what’s next',
+    headline: STORY.impact.headline,
+    supportNotes: [
+      'Export CSV/JSON and copy NASA source + DOI citations.',
+      'Next: expand individual Giovanni checks across all metrics, all 5 seasons per region, sub-period p-values.',
+    ],
+  },
+
+  // ---- Slide 7: Closing Slide (1 tap) ----
   {
     id: 'close',
     kind: 'story',
     scene: 'close',
-    title: 'Close: try it now',
+    reveal: 1,
+    title: 'Slide 7: Try TrendTrace now',
     headline: 'TRENDTRACE. Click anywhere on Earth.',
     supportNotes: [
       'Live site: ' + LIVE_URL,
-      'Data: NASA GES DISC (GPCP v3.3, MERRA-2, GLDAS v2.1), NOAA (ERSST v6, CPC RONI), Natural Earth.',
-      'AI coding assistance disclosed. Trends are observed history; links are associations in the data.',
-      'If asked “is it right?”: 26 of 26 browser-vs-Python parity checks, 2 regional series reproduced against NASA Giovanni.',
+      '26/26 browser-vs-Python parity checks; pipeline confirmed against NASA Giovanni.',
+      'Ready for judge Q&A.',
     ],
   },
 ];

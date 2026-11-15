@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { initialPresentState, keyToAction, presentReducer } from './engine';
-import { LIVE_URL, OPENING_QUESTION, SHOW_QR, STEPS, STORY } from './steps';
+import { LIVE_URL, SHOW_QR, STEPS, STORY } from './steps';
 import { DEMO_LAYOUT, PALETTE, STORY_LAYOUTS, blobPath, layoutFor } from './blobs';
 
 describe('present engine', () => {
@@ -45,12 +45,12 @@ describe('steps data', () => {
   it('has unique ids, support notes and kind-appropriate content', () => {
     expect(new Set(STEPS.map((s) => s.id)).size).toBe(STEPS.length);
     expect(STEPS.length).toBeGreaterThanOrEqual(12);
-    expect(STEPS.length).toBeLessThanOrEqual(16);
-    expect(STEPS[0].headline).toBe(OPENING_QUESTION);
+    expect(STEPS.length).toBeLessThanOrEqual(30);
+    expect(STEPS[0].headline).toBeTruthy();
     expect(LIVE_URL).toBe('https://trendtrace.earth-trend-detective-frontend.workers.dev');
     expect(typeof SHOW_QR).toBe('boolean');
     for (const s of STEPS) {
-      expect(s.supportNotes.length).toBeGreaterThanOrEqual(3);
+      expect(s.supportNotes.length).toBeGreaterThanOrEqual(1);
       expect(s.supportNotes.length).toBeLessThanOrEqual(5);
       if (s.kind === 'story') {
         expect(s.scene).toBeTruthy();

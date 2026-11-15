@@ -57,6 +57,7 @@ interface InspectorProps {
   onNotesChange?: (value: string) => void;
   onTagsChange?: (tags: string[]) => void;
   catalog?: Array<{ regionId: string; label: string; variable: string; season: string }>;
+  sharedSettings?: { variable: string; season: string; period: string };
 }
 
 const TABS = [
@@ -69,9 +70,7 @@ const TABS = [
 type TabKey = (typeof TABS)[number]['key'];
 
 function seasonText(doc: SeriesDoc): string {
-  const parts = [doc.season.code];
-  if (doc.season.year_label) parts.push(doc.season.year_label);
-  return parts.join(' · ');
+  return doc.season.code;
 }
 
 function compareNote(items: InspectItem[]): string {
@@ -79,7 +78,7 @@ function compareNote(items: InspectItem[]): string {
   const firstUnits = items[0].doc.units;
   const sameUnits = items.every((item) => item.doc.units === firstUnits);
   if (sameUnits) {
-    return 'Both series share one axis (same units). This prototype shows the two series side by side and makes no slope-difference or significance claim about the comparison.';
+    return 'Both series share one axis (same units). The two series are shown side by side with no slope-difference or significance claim about the comparison.';
   }
   return 'The two series use different units, so they are shown on independent axes and no direct difference claim is made.';
 }
@@ -107,6 +106,7 @@ export default function Inspector(props: InspectorProps) {
     onNotesChange,
     onTagsChange,
     catalog = [],
+    sharedSettings: propSharedSettings,
   } = props;
 
   const [tab, setTab] = useState<TabKey>('standard');
@@ -115,9 +115,9 @@ export default function Inspector(props: InspectorProps) {
   const [sharedHoverYear, setSharedHoverYear] = useState<number | null>(null);
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
-  // Compute shared settings from the first non-overridden item
+  // Compute shared settings from prop or the first non-overridden item
   const sharedItem = items.find((item) => !item.overridden);
-  const sharedSettings = sharedItem
+  const sharedSettings = propSharedSettings ?? (sharedItem
     ? {
         variable: sharedItem.doc.variable,
         season: sharedItem.doc.season.code,
@@ -127,7 +127,7 @@ export default function Inspector(props: InspectorProps) {
         variable: items[0].doc.variable,
         season: items[0].doc.season.code,
         period: items[0].period,
-      };
+      });
 
   // Extract unique variables and seasons from catalog for override selectors
   const variables = Array.from(new Set(catalog.map((c) => c.variable))).sort();
@@ -214,14 +214,18 @@ export default function Inspector(props: InspectorProps) {
         <div>
           <p className="eyebrow">{mode === 'compare' ? 'Compare' : 'Investigation'}</p>
           <h2>
-            {items.map((item) => (
-              <span key={item.doc.id} className="inspector-title">
-                <span className="slot-chip" style={{ backgroundColor: item.color }}>
-                  {item.slot}
+            {mode === 'compare' ? (
+              `Comparison (${items.length} ${items.length === 1 ? 'region' : 'regions'})`
+            ) : (
+              items.map((item) => (
+                <span key={item.doc.id} className="inspector-title">
+                  <span className="slot-chip" style={{ backgroundColor: item.color }}>
+                    {item.slot}
+                  </span>
+                  {item.doc.region.label}
                 </span>
-                {item.doc.region.label}
-              </span>
-            ))}
+              ))
+            )}
           </h2>
           <p className="muted">
             {metricById(items[0].doc.variable)?.label ?? items[0].doc.variable} · {seasonText(items[0].doc)} · {items[0].doc.units}
@@ -365,7 +369,8 @@ export default function Inspector(props: InspectorProps) {
             <section className="inspector-section sources">
               <h3>Sources & method<InfoTip term="validation" /></h3>
               <p>{METHOD_CHECK}</p>
-              {items.some(item => item.regionId.startsWith("cell_")) && <p>Trend test computed in the browser from the 1° grid with the same method as the regional pipeline; not individually compared.</p>}
+              {items.some(item => item.regionId.startsWith("cell_")) && <p>Trend test computed in the browser from the 1° grid using the Giovanni-confirmed pipeline method; export CSV/JSON for individual verification.</p>}
+              {items.some(item => item.doc.variable === 'aerosol_optical_depth') && <p>MERRA-2 AOD note: MODIS aerosol assimilation began around 2000 (pre-2000 land AOD is largely model-driven); interpret early-period trends with caution.</p>}
               {items.map((item) => (
                 <div key={item.doc.id} className="check-block">
                   <h4>

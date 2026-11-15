@@ -176,16 +176,14 @@ describe('buildSuggestions', () => {
     expect(cite?.label).toBe('Cite these sources');
   });
 
-  it('always suggests explain', () => {
+  it('does not duplicate the plain-language expander as a button', () => {
     const suggestions = buildSuggestions(baseContext);
-    const explain = suggestions.find((s) => s.action === 'explain');
-    expect(explain).toBeDefined();
-    expect(explain?.label).toBe('Explain this in plain language');
+    expect(suggestions.some((s) => s.id === 'explain')).toBe(false);
   });
 
-  it('returns at least 5 suggestions', () => {
+  it('returns at least 4 suggestions', () => {
     const suggestions = buildSuggestions(baseContext);
-    expect(suggestions.length).toBeGreaterThanOrEqual(5);
+    expect(suggestions.length).toBeGreaterThanOrEqual(4);
   });
 });
 

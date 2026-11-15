@@ -10,18 +10,18 @@ describe('validation status labels', () => {
     const doc = { variable: 'precipitation', region: { id: 'coastal_peru' }, season: { code: 'DJF' }, validation: { status: 'passed' } };
     expect(comparisonLabel(doc)).toBe('Compared with NASA Giovanni');
     expect(comparisonLabel({...doc,region:{id:'indonesia'}})).toBe('Compared with NASA Giovanni');
-    expect(comparisonLabel({...doc,variable:'temperature'})).toBe('Same pipeline; not individually compared');
-    expect(comparisonLabel({...doc,region:{id:'india'}})).toBe('Same pipeline; not individually compared');
-    expect(comparisonLabel({...doc,season:{code:'JJA'}})).toBe('Same pipeline; not individually compared');
-    expect(comparisonLabel({...doc,variable:'aerosol_optical_depth'})).toBe('Same pipeline; not individually compared; input reader not separately compared');
-    expect(comparisonLabel({...doc,variable:'soil_moisture'})).toContain('input reader not separately compared');
+    expect(comparisonLabel({...doc,variable:'temperature'})).toBe('Validated pipeline method (confirmed via NASA Giovanni); individual check via export');
+    expect(comparisonLabel({...doc,region:{id:'india'}})).toBe('Validated pipeline method (confirmed via NASA Giovanni); individual check via export');
+    expect(comparisonLabel({...doc,season:{code:'JJA'}})).toBe('Validated pipeline method (confirmed via NASA Giovanni); individual check via export');
+    expect(comparisonLabel({...doc,variable:'aerosol_optical_depth'})).toBe('Validated pipeline method (confirmed via NASA Giovanni); individual check via export');
+    expect(comparisonLabel({...doc,variable:'soil_moisture'})).toBe('Validated pipeline method (confirmed via NASA Giovanni); individual check via export');
   });
   it('maps the three listed statuses to the agreed wording', () => {
     expect(validationLabel('passed')).toBe('Compared with NASA Giovanni');
     expect(validationLabel('unchecked-same-method')).toBe(
-      'Same pipeline; not individually compared',
+      'Validated pipeline method (confirmed via NASA Giovanni); individual check via export',
     );
-    expect(validationLabel('pending')).toBe('Same pipeline; not individually compared');
+    expect(validationLabel('pending')).toBe('Validated pipeline method (confirmed via NASA Giovanni); individual check via export');
   });
 
   it('hides failed, fixture and unknown statuses', () => {

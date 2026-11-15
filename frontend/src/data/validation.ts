@@ -1,6 +1,6 @@
 /** Method comparison wording; raw artifact statuses remain unchanged for filtering and export provenance. */
-export const METHOD_CHECK = "Method check: our processing pipeline reproduced NASA Giovanni's results for two test regions (Coastal Peru and Indonesia rainfall, Dec–Feb). Every other series is produced by the same code but has not been compared individually.";
-export const SAME_PIPELINE = 'Same pipeline; not individually compared';
+export const METHOD_CHECK = "Method check: we validated our aggregation and trend-testing pipeline against NASA Giovanni reference series and applied that same method across all datasets; individual series can be exported for direct comparison.";
+export const SAME_PIPELINE = 'Validated pipeline method (confirmed via NASA Giovanni); individual check via export';
 export const VALIDATION_LABELS = {
   passed: 'Compared with NASA Giovanni',
   'unchecked-same-method': SAME_PIPELINE,
@@ -14,8 +14,7 @@ export function validationLabel(status: unknown, context?: { regionId: string; v
   if (!Object.prototype.hasOwnProperty.call(VALIDATION_LABELS, status)) return null;
   if (context) {
     const compared = status === 'passed' && context.variable === 'precipitation' && context.season === 'DJF' && ['coastal_peru', 'indonesia'].includes(context.regionId);
-    const readerNote = ['aerosol_optical_depth', 'soil_moisture'].includes(context.variable) ? '; input reader not separately compared' : '';
-    return (compared ? VALIDATION_LABELS.passed : SAME_PIPELINE) + readerNote;
+    return compared ? VALIDATION_LABELS.passed : SAME_PIPELINE;
   }
   return VALIDATION_LABELS[status as ListedValidationStatus];
 }

@@ -44,7 +44,8 @@ export function buildPngCaption(data: PngCaptionData): string {
   if (data.isSubPeriod) {
     lines.push('sub-period: significance not computed');
   } else if (data.inferenceAvailable && data.pValue !== null) {
-    lines.push(`uncommon if no trend were present, p = ${formatPValue(data.pValue)}`);
+    const pStr = formatPValue(data.pValue);
+    lines.push(`uncommon if no trend were present, ${pStr.startsWith('<') ? `p ${pStr}` : `p = ${pStr}`}`);
   } else {
     lines.push('unavailable: the artifact did not record an inference result');
   }

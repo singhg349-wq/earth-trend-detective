@@ -22,7 +22,7 @@ describe('buildPngCaption', () => {
   it('builds caption for full period with p-value', () => {
     const caption = buildPngCaption(baseData);
     expect(caption).toContain('Sahel · DJF · January year · 1981–2026');
-    expect(caption).toContain('Units: mm/day · Method: MK + Hamed-Rao (3 lags) · Comparison: Same pipeline; not individually compared');
+    expect(caption).toContain('Units: mm/day · Method: MK + Hamed-Rao (3 lags) · Comparison: Validated pipeline method (confirmed via NASA Giovanni); individual check via export');
     expect(caption).toContain('Source: CHIRPS v2.0 · precipitation');
     expect(caption).toContain('uncommon if no trend were present, p = 0.031');
   });

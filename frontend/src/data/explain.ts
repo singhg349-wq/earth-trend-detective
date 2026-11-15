@@ -10,7 +10,9 @@ export function strictStatusLine(view: InferenceView): string {
     return 'Prewhitening sensitivity check: not available';
   }
   const meets = view.strictCheckPass ? 'statistically significant at the 5% level, with the same direction' : 'does not confirm significance in the same direction';
-  return `Prewhitening sensitivity check: p = ${formatPValue(view.strictCheckP)}, ${meets}`;
+  const pStr = formatPValue(view.strictCheckP);
+  const pClause = pStr.startsWith('<') ? `p ${pStr}` : `p = ${pStr}`;
+  return `Prewhitening sensitivity check: ${pClause}, ${meets}`;
 }
 
 /**
@@ -35,13 +37,15 @@ export function expandedExplanation(doc: SeriesDoc): string[] {
     const slopeText = `${slope >= 0 ? '+' : ''}${slope.toFixed(3)} ${slopeUnits(doc)}`;
     if (view.status === 'ok' && view.method && view.pValue !== null) {
       const significant = view.pValue < 0.05;
+      const pStr = formatPValue(view.pValue);
+      const pClause = pStr.startsWith('<') ? `p ${pStr}` : `p = ${pStr}`;
       if (significant) {
         sentences.push(
-          `The Sen slope is ${slopeText}; under the ${view.method}, a trend this strong would be uncommon if no trend were present (p = ${formatPValue(view.pValue)}).`
+          `The Sen slope is ${slopeText}; under the ${view.method}, a trend this strong would be uncommon if no trend were present (${pClause}).`
         );
       } else {
         sentences.push(
-          `The Sen slope is ${slopeText}; under the ${view.method}, a trend this strong would not be uncommon if no trend were present (p = ${formatPValue(view.pValue)}).`
+          `The Sen slope is ${slopeText}; under the ${view.method}, a trend this strong would not be uncommon if no trend were present (${pClause}).`
         );
       }
     } else {
@@ -107,7 +111,7 @@ export interface Suggestion {
   id: string;
   label: string;
   /** Optional callback hint for the UI to wire up */
-  action?: 'compare' | 'timelapse' | 'toggleChecks' | 'save' | 'cite' | 'explain';
+  action?: 'compare' | 'timelapse' | 'toggleChecks' | 'save' | 'cite';
   /** Extra data needed for the action */
   data?: Record<string, unknown>;
 }
@@ -165,13 +169,6 @@ export function buildSuggestions(ctx: SuggestionContext): Suggestion[] {
     id: 'cite',
     label: 'Cite these sources',
     action: 'cite',
-  });
-
-  // 6. "Explain this in plain language" (expands 2-3 extra sentences)
-  suggestions.push({
-    id: 'explain',
-    label: 'Explain this in plain language',
-    action: 'explain',
   });
 
   return suggestions;
@@ -248,8 +245,10 @@ export function strictCheckExplanation(view: InferenceView): string[] {
 
   if (view.strictCheckPass !== null && view.strictCheckP !== null) {
     const verdict = view.strictCheckPass ? 'is statistically significant at the 5% level, with the same direction' : 'does not confirm significance in the same direction';
+    const pStr = formatPValue(view.strictCheckP);
+    const pClause = pStr.startsWith('<') ? `p ${pStr}` : `p = ${pStr}`;
     sentences.push(
-      `The prewhitening sensitivity check ${verdict} (p = ${formatPValue(view.strictCheckP)}).`
+      `The prewhitening sensitivity check ${verdict} (${pClause}).`
     );
   } else {
     sentences.push('The prewhitening sensitivity check result is not available in this artifact.');

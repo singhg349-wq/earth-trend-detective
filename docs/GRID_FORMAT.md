@@ -338,7 +338,7 @@ The browser loads `data/artifacts/grid/index.json` once at startup. It holds all
         "product": "GPCPMON",
         "version": "3.3",
         "var": "sat_gauge_precip",
-        "doi_or_url": "https://doi.org/10.5067/MEASURES/GPCP/DATA304"
+        "doi_or_url": "https://doi.org/10.5067/MEASURES/GPCP/DATA306"
       },
       "years_by_season": {
         "ANN": [1983, 1984, 1985],
@@ -431,7 +431,7 @@ Calculate `area_km2` for the `1 x 1` degree cell with `R = 6371.0088 km`:
     "product": "GPCPMON",
     "version": "3.3",
     "var": "sat_gauge_precip",
-    "doi_or_url": "https://doi.org/10.5067/MEASURES/GPCP/DATA304"
+    "doi_or_url": "https://doi.org/10.5067/MEASURES/GPCP/DATA306"
   },
   "region": {
     "id": "cell_-4.5_-79.5",

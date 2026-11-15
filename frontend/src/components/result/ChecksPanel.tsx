@@ -20,6 +20,12 @@ export default function ChecksPanel({ items, expandedChecks, onToggleChecks }: C
         {items.map((item) => {
           const view = readInference(item.doc.trend?.inference);
           const checksOpenForCard = expandedChecks[item.id] ?? false;
+          const isPolar = Boolean(
+            item.doc.region.cells_used === 1 && (
+              (item.doc.region.bbox && Math.abs((item.doc.region.bbox[1] + item.doc.region.bbox[3]) / 2) >= 80) ||
+              (/^cell_(-?\d+(?:\.\d+)?)_/.test(item.doc.region.id) && Math.abs(Number(/^cell_(-?\d+(?:\.\d+)?)_/.exec(item.doc.region.id)?.[1])) >= 80)
+            )
+          );
 
           return (
             <div key={item.doc.id} className="check-block">
@@ -41,10 +47,23 @@ export default function ChecksPanel({ items, expandedChecks, onToggleChecks }: C
                 </button>
               </div>
 
+              {isPolar && (
+                <div className="polar-cell-caution" role="note">
+                  <span className="tag tag-caution">Caution</span>
+                  <span>Single 1° polar cell — small area and polar-night coverage</span>
+                </div>
+              )}
+
               {/* Always visible: prewhitening sensitivity check verdict line */}
               <div className="strict-verdict-line">
                 {strictStatusLine(view)}
               </div>
+
+              <p className="checks-summary-line">
+                n = {view.n ?? 'not recorded'} · coverage {coverageText(item.doc)} · detrended lag-1 r1 ={' '}
+                {view.lag1 !== null ? formatNumber(view.lag1) : 'not recorded'}
+                {view.lag1 !== null && view.lag1 >= CAUTION_LAG1 ? ' (caution: ≥ 0.30)' : ''}
+              </p>
 
               {checksOpenForCard && (
                 <dl className="fact-grid">
@@ -52,27 +71,13 @@ export default function ChecksPanel({ items, expandedChecks, onToggleChecks }: C
                     <dt>Prewhitening sensitivity check (Yue–Wang)<InfoTip term="prewhitening" /></dt>
                     <dd>
                       {view.strictCheckP !== null
-                        ? `p = ${formatPValue(view.strictCheckP)} — ${strictCheckVerdict(view)}`
+                        ? `${formatPValue(view.strictCheckP).startsWith('<') ? `p ${formatPValue(view.strictCheckP)}` : `p = ${formatPValue(view.strictCheckP)}`} — ${strictCheckVerdict(view)}`
                         : 'not available'}
                     </dd>
                   </div>
                   <div>
                     <dt>95% confidence interval<InfoTip term="confidence" /></dt>
                     <dd>{formatInterval(view.ci, slopeUnits(item.doc))}</dd>
-                  </div>
-                  <div>
-                    <dt>Detrended lag-1 autocorrelation (r1)<InfoTip term="autocorrelation" /></dt>
-                    <dd>
-                      {view.lag1 !== null
-                        ? `${formatNumber(view.lag1)} ${view.lag1 >= CAUTION_LAG1 ? '(caution: ≥ 0.30)' : ''}`
-                        : 'not recorded'}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>Sample size / coverage</dt>
-                    <dd>
-                      n = {view.n ?? 'not recorded'} · coverage {coverageText(item.doc)}
-                    </dd>
                   </div>
                 </dl>
               )}
