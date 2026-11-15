@@ -1,0 +1,58 @@
+{
+  "note": "Test fixtures only. Inference values are illustrative placeholders in the agreed shape, not results for any series or real data. The short-series case shows the opinionated unavailable shape used whenever n < 8. Do not copy these numbers into artifacts.",
+  "ci_note": "95% slope interval (assumes independent years; narrower than true uncertainty when years correlate)",
+  "method": "MK + Hamed-Rao (3 lags)",
+  "cases": [
+    {
+      "name": "ok_significant_no_caution",
+      "inference": {
+        "status": "ok",
+        "p_value": 0.012,
+        "ci": [
+          0.004,
+          0.031
+        ],
+        "method": "MK + Hamed-Rao (3 lags)",
+        "strict_check_pass": true,
+        "strict_check_p": 0.028,
+        "lag1": 0.11,
+        "caution": false,
+        "ci_note": "95% slope interval (assumes independent years; narrower than true uncertainty when years correlate)",
+        "n": 42
+      }
+    },
+    {
+      "name": "ok_not_significant_with_caution",
+      "inference": {
+        "status": "ok",
+        "p_value": 0.214,
+        "ci": [
+          -0.077,
+          0.087
+        ],
+        "method": "MK + Hamed-Rao (3 lags)",
+        "strict_check_pass": false,
+        "strict_check_p": 0.19,
+        "lag1": 0.34,
+        "caution": true,
+        "ci_note": "95% slope interval (assumes independent years; narrower than true uncertainty when years correlate)",
+        "n": 42
+      }
+    },
+    {
+      "name": "short_series_unavailable",
+      "inference": {
+        "status": "unavailable",
+        "p_value": null,
+        "ci": null,
+        "method": null,
+        "strict_check_pass": null,
+        "strict_check_p": null,
+        "lag1": null,
+        "caution": false,
+        "ci_note": "95% slope interval (assumes independent years; narrower than true uncertainty when years correlate)",
+        "n": 3
+      }
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "id": "fixture_variance_fail_DJF",
+  "variable": "precipitation",
+  "units": "mm/day",
+  "source": {
+    "product": "GPCPMON",
+    "version": "3.3",
+    "var": "sat_gauge_precip",
+    "doi_or_url": "https://doi.org/10.5067/MEASURES/GPCP/DATA304"
+  },
+  "region": {
+    "id": "variance_fail",
+    "label": "Variance check unavailable (fixture)",
+    "geometry": "FIXTURE",
+    "bbox": [100, -5, 110, 0],
+    "cells_used": 1,
+    "area_km2": 12364.0
+  },
+  "season": {
+    "code": "DJF",
+    "year_label": "January year",
+    "months": [12, 1, 2],
+    "aggregation": "day-weighted mean of 3 monthly values"
+  },
+  "years": [
+    1984, 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993,
+    1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003,
+    2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013,
+    2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023,
+    2024, 2025
+  ],
+  "values": [
+    8.0, 8.1, 7.9, 8.2, 8.0, 8.1, 7.95, 8.05, 8.02, 8.12,
+    8.01, 7.98, 8.04, 8.09, 7.96, 8.03, 8.07, 7.99, 8.06, 8.11,
+    8.02, 7.97, 8.05, 8.08, 8.0, 8.03, 7.95, 8.1, 8.06, 8.01,
+    7.98, 8.04, 8.09, 8.02, 8.07, 7.99, 8.05, 8.11, 8.0, 8.03,
+    8.08, 8.01
+  ],
+  "coverage": [
+    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+    1.0, 1.0
+  ],
+  "anomaly_baseline": null,
+  "geometry_file": "data/artifacts/regions.geojson",
+  "template_summary": "FIXTURE DATA. Inference shape only, not a climate result.",
+  "trend": {
+    "sen_slope_per_decade": 0.012,
+    "intercept": 8.0,
+    "method": "Sen",
+    "inference": {
+      "status": "unavailable",
+      "p_value": null,
+      "ci": [-0.048, 0.276],
+      "method": "MK + Hamed-Rao (3 lags)",
+      "strict_check_pass": null,
+      "strict_check_p": null,
+      "lag1": 0.35,
+      "caution": true,
+      "ci_note": "95% slope interval assumes independent years; narrower than true uncertainty when years correlate",
+      "n": 42
+    }
+  },
+  "validation": {
+    "reference": "none",
+    "status": "fixture",
+    "notes": "Fake values for interface testing."
+  },
+  "generated": "2026-11-14T00:00:00-07:00",
+  "code_version": "fixture"
+}

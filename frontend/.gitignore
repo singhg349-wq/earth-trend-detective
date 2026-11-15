@@ -1,0 +1,12 @@
+node_modules/
+dist/
+public/data/
+.vite/
+*.local
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example

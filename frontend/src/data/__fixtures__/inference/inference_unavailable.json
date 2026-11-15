@@ -1,0 +1,55 @@
+{
+  "id": "fixture_short_record_DJF",
+  "variable": "precipitation",
+  "units": "mm/day",
+  "source": {
+    "product": "GPCPMON",
+    "version": "3.3",
+    "var": "sat_gauge_precip",
+    "doi_or_url": "https://doi.org/10.5067/MEASURES/GPCP/DATA304"
+  },
+  "region": {
+    "id": "short_record",
+    "label": "Short record (fixture)",
+    "geometry": "FIXTURE",
+    "bbox": [100, -5, 110, 0],
+    "cells_used": 1,
+    "area_km2": 12364.0
+  },
+  "season": {
+    "code": "DJF",
+    "year_label": "January year",
+    "months": [12, 1, 2],
+    "aggregation": "day-weighted mean of 3 monthly values"
+  },
+  "years": [1984, 1985, 1986, 1987, 1988, 1989],
+  "values": [8.0, 8.1, 7.9, 8.2, 8.0, 8.1],
+  "coverage": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+  "anomaly_baseline": null,
+  "geometry_file": "data/artifacts/regions.geojson",
+  "template_summary": "FIXTURE DATA. Inference shape only, not a climate result.",
+  "trend": {
+    "sen_slope_per_decade": 0.05,
+    "intercept": 8.0,
+    "method": "Sen",
+    "inference": {
+      "status": "unavailable",
+      "p_value": null,
+      "ci": null,
+      "method": null,
+      "strict_check_pass": null,
+      "strict_check_p": null,
+      "lag1": null,
+      "caution": false,
+      "ci_note": "Too few valid years for a validated inference result.",
+      "n": 6
+    }
+  },
+  "validation": {
+    "reference": "none",
+    "status": "fixture",
+    "notes": "Fake values for interface testing."
+  },
+  "generated": "2026-11-14T00:00:00-07:00",
+  "code_version": "fixture"
+}

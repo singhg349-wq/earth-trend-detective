@@ -1,0 +1,23 @@
+{
+  "entries": [
+    {
+      "variable": "precip",
+      "season": "DJF",
+      "fixture": true,
+      "hatch": "DJF_hatch.png",
+      "hatch_geojson": "DJF_hatch.geojson",
+      "fdr_q": 0.1
+    },
+    {
+      "variable": "precip",
+      "season": "JJA",
+      "fixture": true
+    },
+    {
+      "variable": "precip",
+      "season": "ANN",
+      "fixture": true,
+      "hatch": "../outside.png"
+    }
+  ]
+}

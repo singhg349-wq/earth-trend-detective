@@ -1,0 +1,9 @@
+{
+  "years": [1984, 2000, 2025],
+  "units": "mm/day",
+  "vmin": 0,
+  "vmax": 20,
+  "colormap": "YlGnBu",
+  "extent": [-180, -90, 180, 90],
+  "source": "FIXTURE DATA - gray placeholder frames for interface testing"
+}

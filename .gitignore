@@ -226,3 +226,19 @@ frontend/dist/
 *.nc
 *.nc4
 data/raw/
+
+# The frontend keeps hand-written source under src/lib; the Python packaging
+# rule above ignores every directory named lib, so re-include this one.
+!frontend/src/lib/
+!frontend/src/lib/**
+
+# Local-only (never publish): agent settings, internal agent notes, local env files
+.claude/settings.local.json
+docs/workers/
+docs/overnight/
+.env*
+!.env*.example
+
+# Office lock files and third-party reference material
+~$*
+deck/Gradient Texture Morph Shapes Slides.pptx

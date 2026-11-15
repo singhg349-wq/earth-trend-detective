@@ -1,0 +1,55 @@
+{
+  "id": "fixture_indonesia_DJF",
+  "variable": "precipitation",
+  "units": "mm/day",
+  "source": {
+    "product": "GPCPMON",
+    "version": "3.3",
+    "var": "sat_gauge_precip",
+    "doi_or_url": "https://doi.org/10.5067/MEASURES/GPCP/DATA304"
+  },
+  "region": {
+    "id": "indonesia",
+    "label": "Indonesia (fixture)",
+    "geometry": "FIXTURE",
+    "bbox": [95, -11, 141, 6],
+    "cells_used": 1111,
+    "area_km2": 1888134.36
+  },
+  "season": {
+    "code": "DJF",
+    "year_label": "January year",
+    "months": [12, 1, 2],
+    "aggregation": "day-weighted mean of 3 monthly values"
+  },
+  "years": [1984, 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993],
+  "values": [8.0, 7.95, 7.91, 7.88, 7.92, 7.86, 7.8, 7.77, 7.74, 7.7],
+  "coverage": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+  "anomaly_baseline": null,
+  "geometry_file": "data/artifacts/regions.geojson",
+  "template_summary": "FIXTURE DATA. Inference shape only, not a climate result.",
+  "trend": {
+    "sen_slope_per_decade": -0.126,
+    "intercept": 8.1,
+    "method": "Sen",
+    "inference": {
+      "status": "ok",
+      "p_value": 0.042,
+      "ci": [-0.231, -0.021],
+      "method": "MK + Hamed-Rao (3 lags)",
+      "strict_check_pass": true,
+      "strict_check_p": 0.031,
+      "lag1": 0.41,
+      "caution": true,
+      "ci_note": "Assumes independent years after the selected correction.",
+      "n": 10
+    }
+  },
+  "validation": {
+    "reference": "none",
+    "status": "fixture",
+    "notes": "Fake values for interface testing."
+  },
+  "generated": "2026-11-14T00:00:00-07:00",
+  "code_version": "fixture"
+}

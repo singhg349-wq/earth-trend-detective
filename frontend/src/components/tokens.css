@@ -1,0 +1,62 @@
+/* Design tokens for the inspector drawer.
+ * Single source of truth for colours, spacing, radii, type scale, and motion.
+ * Imported once at the top of drawer.css.
+ */
+:root {
+  /* Colour — backgrounds */
+  --color-bg: #04060e;
+  --color-bg-panel: #0a0f1c;
+  --color-bg-panel-2: #0f1626;
+
+  /* Colour — borders & lines */
+  --color-line: #94a3b829;        /* 16% opacity slate-400 */
+
+  /* Colour — text */
+  --color-text: #e6edf6;
+  --color-text-muted: #93a3bd;
+
+  /* Colour — accent & states */
+  --color-accent: #f2a541;
+  --color-accent-soft: #f2a54129;  /* 16% opacity accent */
+  --color-ok: #67e8a0;
+  --color-warn: #ffd07a;
+  --color-err: #ff8a7a;
+
+  /* Colour — slot chips */
+  --color-slot-a: #4c9aff;
+  --color-slot-b: #f6a945;
+
+  /* Spacing scale (px) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* Border radii (px) */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  /* Font sizes (px) */
+  --fs-xs: 11px;
+  --fs-sm: 12px;
+  --fs-base: 13px;
+  --fs-md: 14px;
+  --fs-lg: 18px;
+  --fs-xl: 22px;
+
+  /* Motion */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --dur-fast: 120ms;
+  --dur-base: 180ms;
+  --dur-slow: 260ms;
+
+  /* Legacy aliases used by drawer.css — keep for compatibility during migration */
+  --drawer-tab-h: 44px;
+  --drawer-btn-h: 36px;
+  --drawer-gap: 8px;
+  --drawer-radius: 6px;
+}
