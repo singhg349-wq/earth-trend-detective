@@ -95,7 +95,7 @@ function Locked({ reveal }: { reveal: number }) {
     <div className="pm-s pm-locked">
       <Pill tone="cool">{c.pill}</Pill>
       <h1 className="pm-h pm-h--mid pm-in pm-rise" style={at(1)}>
-        46 years of NASA estimates, locked inside <em><Counter to={c.files} delay={200} /></em> files.
+        <em>231.3 GB</em> of raw NASA &amp; NOAA archives — unreadable without code.
       </h1>
       <div className="pm-ds-grid">
         {c.datasets.map((ds, i) => {
@@ -171,40 +171,55 @@ function Method({ reveal }: { reveal: number }) {
   );
 }
 
-function Result({ reveal }: { reveal: number }) {
-  const c = STORY.result;
+function AlbertaCard({ reveal }: { reveal: number }) {
+  const c = STORY.albertaCard;
   return (
     <div className="pm-s pm-result">
       <Pill>{c.pill}</Pill>
       <h1 className="pm-h pm-h--mid pm-in pm-rise" style={at(1)}>
         {c.headline}
       </h1>
-      <div className="pm-result-layout">
-        <div className="pm-result-card pm-in" style={at(2)}>
-          <p className="pm-result-title">{c.cardTitle}</p>
-          <div className="pm-result-labels">
-            {c.labels.map((lbl, i) => (
-              <Rev key={lbl.tag} show={reveal >= i + 1} className="pm-result-row">
-                <span className="pm-result-tag">{lbl.tag}</span>
-                <strong>{lbl.value}</strong>
-                <span className="pm-result-note">{lbl.note}</span>
-              </Rev>
-            ))}
-          </div>
+      <div className="pm-result-card pm-result-card--wide pm-in" style={at(2)}>
+        <p className="pm-result-title">{c.cardTitle}</p>
+        <div className="pm-result-labels">
+          {c.labels.map((lbl, i) => (
+            <Rev key={lbl.tag} show={reveal >= i + 1} className="pm-result-row">
+              <span className="pm-result-tag">{lbl.tag}</span>
+              <strong>{lbl.value}</strong>
+              <span className="pm-result-note">{lbl.note}</span>
+            </Rev>
+          ))}
         </div>
-        <Rev show={reveal >= 4} className="pm-trends-col">
-          <p className="pm-trends-head">What the data shows across regions</p>
-          <ul className="pm-trends-list">
-            {c.trends.map((t) => (
-              <li key={t.place}>
-                <span className="pm-trend-place">{t.place}</span>
-                <strong>{t.value}</strong>
-                <span>{t.note}</span>
-              </li>
-            ))}
-          </ul>
-        </Rev>
       </div>
+    </div>
+  );
+}
+
+function CompareCard() {
+  const c = STORY.compareCard;
+  const cards = [c.left, c.right];
+  return (
+    <div className="pm-s pm-compare">
+      <Pill tone="cool">{c.pill}</Pill>
+      <h1 className="pm-h pm-h--mid pm-in pm-rise" style={at(1)}>
+        {c.headline}
+      </h1>
+      <div className="pm-compare-grid">
+        {cards.map((item, i) => (
+          <div key={item.place} className={`pm-compare-card pm-in ${item.sig ? 'is-sig' : 'is-nonsig'}`} style={at(2 + i * 2)}>
+            <span className="pm-compare-place">{item.place}</span>
+            <strong className="pm-compare-slope">{item.slope}</strong>
+            <span className="pm-compare-ci">{item.ci}</span>
+            <div className="pm-compare-p-row">
+              <span className="pm-compare-p">{item.p}</span>
+              <span className={`pm-compare-badge ${item.sig ? 'is-sig' : 'is-nonsig'}`}>{item.verdict}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+      <p className="pm-point pm-compare-takeaway pm-in" style={at(6)}>
+        {c.takeaway}
+      </p>
     </div>
   );
 }
@@ -273,7 +288,8 @@ const SCENES: Record<SceneId, (props: { reveal: number }) => ReactNode> = {
   locked: Locked,
   built: Built,
   method: Method,
-  result: Result,
+  albertaCard: AlbertaCard,
+  compareCard: CompareCard,
   impact: Impact,
   close: Close,
 };

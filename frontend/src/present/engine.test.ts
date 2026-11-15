@@ -45,7 +45,7 @@ describe('steps data', () => {
   it('has unique ids, support notes and kind-appropriate content', () => {
     expect(new Set(STEPS.map((s) => s.id)).size).toBe(STEPS.length);
     expect(STEPS.length).toBeGreaterThanOrEqual(12);
-    expect(STEPS.length).toBeLessThanOrEqual(30);
+    expect(STEPS.length).toBeLessThanOrEqual(40);
     expect(STEPS[0].headline).toBeTruthy();
     expect(LIVE_URL).toBe('https://trendtrace.earth-trend-detective-frontend.workers.dev');
     expect(typeof SHOW_QR).toBe('boolean');

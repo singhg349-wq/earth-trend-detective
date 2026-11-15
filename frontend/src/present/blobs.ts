@@ -165,6 +165,20 @@ export const STORY_LAYOUTS: Record<string, BlobLayout> = {
     { cx: 1085, cy: 560, rx: 34, ry: 34, shape: 'orb', colors: SUN },
     { cx: 1560, cy: 60, rx: 150, ry: 150, shape: 'pebble', colors: WARM },
   ],
+  // Mid-demo annotated Alberta result card.
+  albertaCard: [
+    { cx: 1220, cy: 480, rx: 520, ry: 360, rot: -3, shape: 'bean', colors: DEEP },
+    { cx: 140, cy: 880, rx: 160, ry: 150, shape: 'pebble', colors: WARM },
+    { cx: 1560, cy: 80, rx: 72, ry: 72, shape: 'orb', colors: MINT },
+    { cx: 1620, cy: 900, rx: 160, ry: 120, shape: 'pebble', colors: COOL },
+  ],
+  // Mid-demo Compare graphs & p-values card (before Library).
+  compareCard: [
+    { cx: 400, cy: 520, rx: 480, ry: 340, rot: 4, shape: 'bean', colors: DEEP },
+    { cx: 1380, cy: 760, rx: 220, ry: 180, shape: 'pebble', colors: WARM },
+    { cx: 1500, cy: 120, rx: 84, ry: 84, shape: 'orb', colors: MINT },
+    { cx: 120, cy: 120, rx: 140, ry: 120, shape: 'pebble', colors: COOL },
+  ],
   // Annotated result card + key trends (after the demo).
   result: [
     { cx: 1220, cy: 480, rx: 520, ry: 360, rot: -3, shape: 'bean', colors: DEEP },
