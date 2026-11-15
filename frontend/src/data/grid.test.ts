@@ -34,7 +34,7 @@ describe('fixture grid through the click lookup', () => {
     expect(outcome.result.values[0]).not.toBeNull();
     expect(outcome.result.trend.sen_slope_per_decade).not.toBeNull();
     expect(outcome.result.validation.status).toBe('unchecked-same-method');
-    expect(outcome.result.trend.inference.status).toBe('unavailable');
+    expect(outcome.result.trend.inference.status).toBe('ok');
   });
 
   it('reports no data outside the fixture tiles without a failed request', async () => {

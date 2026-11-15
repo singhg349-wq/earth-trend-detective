@@ -1,3 +1,4 @@
+import InfoTip from './InfoTip';
 import {
   CI_LABEL,
   MAIN_TEST_LABEL,
@@ -45,7 +46,7 @@ export default function InferenceBlock({
           <dl className="inference-facts">
             {view.lag1 !== null && (
               <div>
-                <dt>Detrended lag-1 correlation</dt>
+                <dt>Detrended lag-1 correlation<InfoTip term="autocorrelation" /></dt>
                 <dd>
                   {formatNumber(view.lag1)}
                   {view.caution && (
@@ -63,7 +64,7 @@ export default function InferenceBlock({
           </dl>
         )}
         <p className="muted inference-note">
-          Inference is shown only after the method passes the project checks.
+          A trend test requires at least eight valid observations and positive test variance.
         </p>
       </section>
     );
@@ -71,23 +72,23 @@ export default function InferenceBlock({
 
   const caution = cautionText(view);
   const showCiNote = Boolean(
-    view.ciNote && !/^95% slope interval/i.test(view.ciNote),
+    view.ciNote && !/^95% confidence interval/i.test(view.ciNote),
   );
 
   return (
     <section className="inference" aria-label="Trend inference">
       <div className="inference-head">
         <h3>Trend inference</h3>
-        <span className="tag tag-inference-ok">inference ok</span>
+        <InfoTip term="mannKendall" />
       </div>
 
       <dl className="inference-facts">
         <div>
-          <dt>{MAIN_TEST_LABEL}</dt>
+          <dt>{MAIN_TEST_LABEL}<InfoTip term="mannKendall" /><InfoTip term="pValue" /></dt>
           <dd>p = {formatPValue(view.pValue)}</dd>
         </div>
         <div>
-          <dt>{STRICT_CHECK_LABEL}</dt>
+          <dt>{STRICT_CHECK_LABEL}<InfoTip term="prewhitening" /></dt>
           <dd>
             {strictCheckVerdict(view)}
             {view.strictCheckP !== null
@@ -96,7 +97,7 @@ export default function InferenceBlock({
           </dd>
         </div>
         <div>
-          <dt>Detrended lag-1 correlation</dt>
+          <dt>Detrended lag-1 correlation<InfoTip term="autocorrelation" /></dt>
           <dd>
             {formatNumber(view.lag1)}
             {view.caution && <span className="tag tag-caution">caution</span>}
@@ -119,12 +120,7 @@ export default function InferenceBlock({
         <p className="muted inference-note">{view.ciNote}</p>
       )}
 
-      <p className="muted inference-note">
-        A small p-value means the observed slope is unusual under a no-trend
-        model. It does not establish a cause. The strict check repeats the test
-        after Yue-Wang prewhitening; both tests are reported so the result can be
-        read either way.
-      </p>
+
 
       {caution && (
         <p className="caution-note">

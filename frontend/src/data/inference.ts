@@ -6,7 +6,7 @@
  *     lag1, caution, ci_note, n }
  *
  * The UI shows both requested tests (Hamed-Rao main test and the Yue-Wang
- * strict check), the slope interval with its independence caveat, and the
+ * prewhitening sensitivity check), the slope interval with its independence caveat, and the
  * detrended lag-1 correlation. It never turns a p-value into a claim of proof.
  */
 
@@ -14,10 +14,10 @@ export const CAUTION_LAG1 = 0.3;
 export const FDR_Q = 0.1;
 
 export const CI_LABEL =
-  '95% slope interval (assumes independent years; narrower than true uncertainty when years correlate)';
+  '95% confidence interval (assumes independent years; narrower than true uncertainty when years correlate)';
 export const MAIN_TEST_LABEL =
-  'Main test: Mann-Kendall with Hamed-Rao correction (3 lags)';
-export const STRICT_CHECK_LABEL = 'Strict check: Yue-Wang prewhitening';
+  'Mann–Kendall trend test (Hamed–Rao autocorrelation-corrected)';
+export const STRICT_CHECK_LABEL = 'Prewhitening sensitivity check (Yue–Wang)';
 
 export type InferenceStatus = 'ok' | 'unavailable';
 
@@ -109,9 +109,9 @@ export function formatInterval(
 }
 
 export function strictCheckVerdict(view: InferenceView): string {
-  if (view.strictCheckPass === true) return 'Also passes the strict check';
-  if (view.strictCheckPass === false) return 'Does not pass the strict check';
-  return 'Strict check not available';
+  if (view.strictCheckPass === true) return 'Statistically significant at the 5% level, with the same direction';
+  if (view.strictCheckPass === false) return 'Does not confirm significance in the same direction';
+  return 'Prewhitening sensitivity check not available';
 }
 
 export function cautionText(view: InferenceView): string | null {

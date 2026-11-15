@@ -1,0 +1,255 @@
+/* Ranked region list — flat, solid, editorial. Thin rules, no cards. */
+
+.rb {
+  --rb-gap: 12px;
+  background: var(--ed-panel-bg);
+  color: var(--ed-text);
+  font-family: var(--ed-sans);
+  padding: 18px 16px 20px;
+  border: 1px solid var(--ed-line);
+  border-radius: var(--ed-radius);
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.rb-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--rb-gap);
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--ed-line);
+}
+
+.rb-head .ed-eyebrow {
+  margin: 0;
+}
+
+.rb-count {
+  font: 500 10px/1 var(--ed-mono);
+  letter-spacing: 0.08em;
+  color: var(--ed-text-3);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.rb-sub {
+  margin: 8px 0 4px;
+  font: 500 13px/1.4 var(--ed-sans);
+  color: var(--ed-text-2);
+}
+
+.rb-list {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  outline: none;
+}
+
+.rb-row {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  width: 100%;
+  padding: 10px 8px 10px 6px;
+  margin: 0;
+  border: 0;
+  border-top: 1px solid var(--ed-line);
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 160ms var(--ed-ease);
+}
+
+.rb-list .rb-row:first-child {
+  border-top: 0;
+}
+
+.rb-row:hover {
+  background: var(--ed-panel-bg-2);
+}
+
+.rb-row:focus-visible {
+  outline: 2px solid var(--ed-accent);
+  outline-offset: -2px;
+}
+
+.rb-row--selected {
+  background: var(--ed-panel-bg-2);
+  box-shadow: inset 2px 0 0 var(--ed-accent);
+}
+
+.rb-rank {
+  font: 500 11px/1.5 var(--ed-mono);
+  color: var(--ed-text-3);
+  font-variant-numeric: tabular-nums;
+  padding-top: 1px;
+}
+
+.rb-row--selected .rb-rank {
+  color: var(--ed-accent);
+}
+
+.rb-main {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.rb-line {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+}
+
+.rb-name {
+  font: 500 13.5px/1.35 var(--ed-sans);
+  color: var(--ed-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rb-slope {
+  font: 500 11.5px/1.35 var(--ed-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--ed-text-2);
+  white-space: nowrap;
+  flex: none;
+}
+
+.rb-slope--up {
+  color: var(--ed-up);
+}
+
+.rb-slope--down {
+  color: var(--ed-down);
+}
+
+.rb-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.rb-bar {
+  position: relative;
+  flex: none;
+  width: 54px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.rb-bar-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--ed-text-3);
+}
+
+.rb-p {
+  font: 400 11px/1 var(--ed-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--ed-text-3);
+  white-space: nowrap;
+}
+
+.rb-sig {
+  font: 400 11px/1.2 var(--ed-sans);
+  color: var(--ed-text-2);
+  margin-left: auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rb-sig--significant {
+  color: var(--ed-text);
+}
+
+.rb-foot {
+  margin: 12px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid var(--ed-line);
+  font: 400 11px/1.5 var(--ed-sans);
+  color: var(--ed-text-3);
+}
+
+.rb-foot p {
+  margin: 0;
+}
+
+.rb-foot p + p {
+  margin-top: 3px;
+}
+
+.rb-state {
+  margin: 14px 0 0;
+  font: 400 12px/1.5 var(--ed-sans);
+  color: var(--ed-text-2);
+}
+
+.rb-state--error {
+  color: var(--ed-warn);
+}
+
+.rb-retry {
+  margin-top: 8px;
+  padding: 5px 12px;
+  background: transparent;
+  border: 1px solid var(--ed-line-strong);
+  border-radius: 6px;
+  color: var(--ed-text);
+  font: 500 12px var(--ed-sans);
+  cursor: pointer;
+}
+
+.rb-retry:hover {
+  background: var(--ed-panel-bg-2);
+}
+
+.rb-retry:focus-visible {
+  outline: 2px solid var(--ed-accent);
+  outline-offset: 2px;
+}
+
+/* Loading rows keep the list height steady without inventing numbers. */
+.rb-skeleton {
+  display: block;
+  height: 10px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.rb-skeleton-row {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 10px;
+  padding: 12px 6px;
+  border-top: 1px solid var(--ed-line);
+}
+
+.rb-skeleton-row:first-child {
+  border-top: 0;
+}
+
+.rb-skeleton-row .rb-skeleton:last-child {
+  width: 62%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rb-row {
+    transition: none;
+  }
+}

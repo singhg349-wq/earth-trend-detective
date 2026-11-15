@@ -1,0 +1,52 @@
+/* Editorial dark design layer. Loaded after styles.css. Owned by the supervisor; workers USE these, do not edit.
+ * Direction: dark data-journalism. Deep navy, one accent, serif headlines, thin rules, restrained motion.
+ */
+:root {
+  --ed-bg: #060a14;
+  --ed-bg-2: #0a1020;
+  --ed-panel-bg: #0d1424;        /* solid surface for data panels */
+  --ed-panel-bg-2: #111a2e;      /* solid, one step lighter (table stripes, hover) */
+  --ed-surface: rgba(255, 255, 255, 0.035);
+  --ed-surface-2: rgba(255, 255, 255, 0.06);
+  --ed-line: rgba(255, 255, 255, 0.10);
+  --ed-line-strong: rgba(255, 255, 255, 0.22);
+  --ed-text: #e9eef7;
+  --ed-text-2: #aab6c9;
+  --ed-text-3: #7f8ea6;
+  --ed-accent: #f2a541;          /* the single UI accent */
+  --ed-accent-ink: #1a1206;      /* text on accent */
+  --ed-up: #f2a541;              /* data: increase / warmer / wetter-than-normal is NOT implied */
+  --ed-down: #4f9dff;            /* data: decrease */
+  --ed-ok: #6ee7a8;
+  --ed-warn: #f5c76b;
+  --ed-serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+  --ed-sans: "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --ed-mono: "Cascadia Mono", Consolas, "SFMono-Regular", monospace;
+  --ed-radius: 10px;
+  --ed-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.ed-root { color: var(--ed-text); font-family: var(--ed-sans); font-size: 15px; line-height: 1.55; font-feature-settings: "tnum" 1; }
+.ed-eyebrow { font: 600 11px/1 var(--ed-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ed-text-3); }
+.ed-h1 { font: 600 clamp(34px, 4.2vw, 58px)/1.05 var(--ed-serif); letter-spacing: -0.015em; margin: 0; color: var(--ed-text); }
+.ed-h2 { font: 600 clamp(24px, 2.4vw, 32px)/1.15 var(--ed-serif); letter-spacing: -0.01em; margin: 0; }
+.ed-h3 { font: 600 17px/1.3 var(--ed-sans); margin: 0; }
+.ed-lede { font: 400 18px/1.55 var(--ed-sans); color: var(--ed-text-2); max-width: 62ch; }
+.ed-body { color: var(--ed-text-2); max-width: 68ch; }
+.ed-num { font-family: var(--ed-serif); font-variant-numeric: tabular-nums; font-weight: 600; letter-spacing: -0.01em; }
+.ed-rule { border: 0; border-top: 1px solid var(--ed-line); margin: 0; }
+/* DATA VIEWS (result drawer, right bar, workflow panel, search, timelapse bar, El Niño page): SOLID, flat, like a regular dashboard.
+ * No transparency, no blur, no glow, no gradients. Use --ed-panel-bg and a 1px border. */
+.ed-panel { background: var(--ed-panel-bg); border: 1px solid var(--ed-line); border-radius: var(--ed-radius); box-shadow: none; }
+.ed-panel--raised { box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35); } /* only for popups that float over the globe */
+/* LANDING ONLY (hero over the globe): the one place glass/cinematic effects are allowed. */
+.ed-glass { background: rgba(10, 16, 32, 0.45); border: 1px solid var(--ed-line); border-radius: 14px; backdrop-filter: blur(14px) saturate(120%); }
+.ed-btn { display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 18px; border-radius: 999px; border: 1px solid var(--ed-line-strong); background: transparent; color: var(--ed-text); font: 600 14px var(--ed-sans); cursor: pointer; transition: background 160ms var(--ed-ease), border-color 160ms var(--ed-ease), transform 160ms var(--ed-ease); }
+.ed-btn:hover { background: var(--ed-surface-2); border-color: var(--ed-text-3); }
+.ed-btn:focus-visible { outline: 2px solid var(--ed-accent); outline-offset: 2px; }
+.ed-btn--primary { background: var(--ed-accent); color: var(--ed-accent-ink); border-color: transparent; }
+.ed-btn--primary:hover { background: #f6bd6b; border-color: transparent; }
+@media (prefers-reduced-motion: reduce) { .ed-btn { transition: none; } }
+
+/* Native controls (range sliders, checkboxes) use the UI accent instead of browser blue. */
+:root { accent-color: var(--ed-accent); }

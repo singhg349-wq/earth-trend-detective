@@ -1,0 +1,23 @@
+{
+  "retrieved_at_utc": "2026-11-15T04:18:47.897230+00:00",
+  "files": [
+    {
+      "filename": "RONI.ascii.txt",
+      "url": "https://www.cpc.ncep.noaa.gov/data/indices/RONI.ascii.txt",
+      "description": "NOAA CPC Relative Oceanic Nino Index (3-month running mean, ERSSTv6, 1991-2020 base)",
+      "http_status": 200,
+      "last_modified_header": "Tue, 03 Nov 2026 19:31:48 GMT",
+      "size_bytes": 14752,
+      "sha256": "1297887f581b6190e459cbbf8bdec9a703ff65c1a229e2de4dd94285254f35c8"
+    },
+    {
+      "filename": "oni.ascii.txt",
+      "url": "https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt",
+      "description": "NOAA CPC Traditional Oceanic Nino Index (3-month running mean, ERSSTv6, centered 30-yr base periods)",
+      "http_status": 200,
+      "last_modified_header": "Tue, 03 Nov 2026 19:31:48 GMT",
+      "size_bytes": 23050,
+      "sha256": "118c563331335c8649cdc2677e6be7ae89d1259d901345fcddbc2857af280f7f"
+    }
+  ]
+}

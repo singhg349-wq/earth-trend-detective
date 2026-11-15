@@ -1945,7 +1945,7 @@
           }
         }
       ],
-      "source_file": "data/artifacts/precip_peru_DJF.json",
+      "source_file": "data/artifacts/precip_coastal_peru_DJF.json",
       "note": "Real regional DJF series. The artifact has no gaps; values are used exactly as stored."
     },
     {

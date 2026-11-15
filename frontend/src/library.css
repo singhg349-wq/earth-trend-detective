@@ -1,0 +1,256 @@
+/* ---- Library overlay ---- */
+/* The library overlay is a dialog that can be modal or full-screen */
+.library-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-panel);
+  z-index: 1000;
+  overflow-y: auto;
+  direction: ltr;
+}
+
+/* Full-screen sheet mode at mobile (390x844) */
+@media (max-width: 480px) {
+  .library-overlay {
+    /* Remove border radius, fill screen */
+    border-radius: 0;
+    /* Position as full-screen sheet */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /* Prevent horizontal overflow on document element */
+    /* Note: the parent app controls document overflow; we just ensure
+         our content doesn't cause horizontal scroll */ 
+    max-width: none;
+    width: 100%;
+    height: 100%;
+  }
+
+  .library-head {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 12px;
+    background: var(--bg-panel);
+    z-index: 1001;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .library-tabs {
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.35) transparent;
+    -webkit-overflow-scrolling: touch;
+    /* Prevent tabs from being clipped */
+    display: flex;
+    gap: 4px;
+    padding: 8px 12px;
+    margin: 0;
+    white-space: nowrap;
+    /* tabs scrollable but not clipped - ensure container can scroll */
+    overscroll-behavior-x: contain;
+  }
+
+  .library-tab {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .library-body {
+    margin-top: 80px;
+    /* Height: fill remaining space below header */
+    height: calc(100vh - 80px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    /* Ensure table scrolls horizontally */
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .catalog-table,
+  .saved-list {
+    width: calc(100% + min(1rem, 100vw));
+    margin-left: -min(1rem, 100vw);
+    /* Sticky first column for tables */
+    tableLayout: fixed;
+  }
+
+  .catalog-table th,
+  .catalog-table td,
+  .saved-list li {
+    padding: 4px 6px;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  .saved-slot-count {
+    display: none;
+  }
+
+  .saved-tags {
+    display: none;
+  }
+
+  /* Ensure result table sticky column works */
+  .catalog-table thead th:first-child,
+  .catalog-table tbody td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 10;
+    background: var(--bg-panel);
+    border-right: 1px solid var(--line);
+    flex-shrink: 0;
+  }
+
+  .saved-list li {
+    border-bottom: 1px solid var(--line);
+    padding: 8px 4px;
+  }
+}
+
+/* ---- Responsive: tablet / small desktop ---- */
+@media (min-width: 481px) and (max-width: 1280px) {
+  .library-overlay {
+    width: 100%;
+    max-width: 400px;
+    border-radius: 12px;
+    inset: auto;
+  }
+
+  .library-head {
+    padding: 0 20px 12px;
+  }
+
+  .library-tabs {
+    padding: 0 20px 8px;
+  }
+
+  .library-body {
+    padding: 0 20px;
+  }
+}
+
+/* ---- Focus ring for all interactive controls in library ---- */
+.library-overlay .btn:focus-visible,
+.library-overlay .tag:focus-visible,
+.library-overlay .add-region-input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ---- Close button in mobile ---- */
+.library-overlay .icon-btn {
+  z-index: 1002;
+}
+
+/* ---- Chart accessibility ---- */
+/* Give each chart role=img with accessible label */
+.chart-accessible {
+  role: 'img';
+  aria-label: '';
+}
+
+/* Visually hidden data table for screen readers */
+.chart-data-table {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Title and description for chart */
+.chart-accessible > title {
+  visibility: hidden;
+}
+
+.chart-accessible > desc {
+  visibility: hidden;
+}
+
+/* ---- Tag filter ---- */
+.tag-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 12px 0;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.tag-filter span {
+  margin-right: 4px;
+}
+
+.tag-filter .tag {
+  display: inline-block;
+  padding: 4px 8px;
+  background: rgba(10, 15, 28, 0.7);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.tag-filter .tag:hover {
+  background: var(--accent-soft);
+  color: #e8f1ff;
+  border-color: rgba(92, 200, 255, 0.5);
+}
+
+.tag-filter .tag:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  background: var(--accent-soft);
+  color: #e8f1ff;
+}
+
+/* ---- Catalog search input ---- */
+.add-region-input {
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(10, 15, 28, 0.7);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  padding: 8px 10px;
+  margin: 8px 0;
+}
+
+.add-region-input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 0;
+  border-color: transparent;
+}
+
+/* ---- Empty state ---- */
+.empty {
+  margin-top: 20px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+/* ---- Focus trap: confine focus within the overlay when open ---- */
+/* Prevent Tab from escaping into page behind */
+.library-overlay[open] .library-tabs button,
+.library-overlay[open] .catalog-table tbody th,
+.library-overlay[open] .saved-list li {
+  outline: none; /* prevent extra outlines */
+}
+
+/* Ensure focus stays within focusable elements */
+.library-overlay:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}

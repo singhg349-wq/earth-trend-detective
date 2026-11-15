@@ -76,12 +76,12 @@ export default function Timelapse({
       </div>
 
       <div className="legend">
-        <div className="legend-bar" style={{ background: colormapGradient(index.colormap) }} />
+        <div className="legend-bar" style={{ background: colormapGradient(typeof index.colormap === 'string' ? index.colormap : index.colormap.name) }} />
         <div className="legend-labels">
           <span>
             {index.vmin} {index.units}
           </span>
-          <span className="muted">{index.colormap}</span>
+          <span className="muted">{typeof index.colormap === 'string' ? index.colormap : index.colormap.name}</span>
           <span>
             {index.vmax} {index.units}
           </span>

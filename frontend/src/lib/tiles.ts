@@ -1,3 +1,4 @@
+import { computeInference } from './trendTests';
 /**
  * Browser lookup and decoding for the precomputed 1-degree grid.
  *
@@ -788,7 +789,7 @@ export async function fetchCellSeries(
     "W",
   )} (1\u00b0 cell)`;
 
-  const inference = parseInference(cell.inference, validValues.length);
+  const inference = cell.inference === undefined ? computeInference(years, values) : parseInference(cell.inference, validValues.length);
   const fdrSignificant =
     typeof cell.fdr_significant === "boolean" ? cell.fdr_significant : null;
 

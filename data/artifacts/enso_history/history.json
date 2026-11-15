@@ -1,0 +1,6956 @@
+{
+  "index": {
+    "name": "RONI",
+    "long_name": "Relative Oceanic Niño Index",
+    "source": "NOAA CPC",
+    "url": "https://www.cpc.ncep.noaa.gov/data/indices/RONI.ascii.txt",
+    "threshold_c": 0.5,
+    "episode_rule": "at least 5 consecutive overlapping 3-month seasons at or beyond ±0.5 °C",
+    "strength_rule": "by |peak_anom_c|: weak 0.5–0.9, moderate 1.0–1.4, strong 1.5–1.9, very strong ≥ 2.0"
+  },
+  "seasons": [
+    {
+      "season": "DJF",
+      "year": 1950,
+      "center_ym": "1950-01",
+      "anom_c": -1.19,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JFM",
+      "year": 1950,
+      "center_ym": "1950-02",
+      "anom_c": -1.08,
+      "phase": "la_nina"
+    },
+    {
+      "season": "FMA",
+      "year": 1950,
+      "center_ym": "1950-03",
+      "anom_c": -0.96,
+      "phase": "la_nina"
+    },
+    {
+      "season": "MAM",
+      "year": 1950,
+      "center_ym": "1950-04",
+      "anom_c": -1.0,
+      "phase": "la_nina"
+    },
+    {
+      "season": "AMJ",
+      "year": 1950,
+      "center_ym": "1950-05",
+      "anom_c": -0.99,
+      "phase": "la_nina"
+    },
+    {
+      "season": "MJJ",
+      "year": 1950,
+      "center_ym": "1950-06",
+      "anom_c": -0.75,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JJA",
+      "year": 1950,
+      "center_ym": "1950-07",
+      "anom_c": -0.38,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 1950,
+      "center_ym": "1950-08",
+      "anom_c": -0.32,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 1950,
+      "center_ym": "1950-09",
+      "anom_c": -0.29,
+      "phase": "neutral"
+    },
+    {
+      "season": "SON",
+      "year": 1950,
+      "center_ym": "1950-10",
+      "anom_c": -0.38,
+      "phase": "neutral"
+    },
+    {
+      "season": "OND",
+      "year": 1950,
+      "center_ym": "1950-11",
+      "anom_c": -0.36,
+      "phase": "neutral"
+    },
+    {
+      "season": "NDJ",
+      "year": 1950,
+      "center_ym": "1950-12",
+      "anom_c": -0.5,
+      "phase": "la_nina"
+    },
+    {
+      "season": "DJF",
+      "year": 1951,
+      "center_ym": "1951-01",
+      "anom_c": -0.28,
+      "phase": "neutral"
+    },
+    {
+      "season": "JFM",
+      "year": 1951,
+      "center_ym": "1951-02",
+      "anom_c": 0.09,
+      "phase": "neutral"
+    },
+    {
+      "season": "FMA",
+      "year": 1951,
+      "center_ym": "1951-03",
+      "anom_c": 0.48,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 1951,
+      "center_ym": "1951-04",
+      "anom_c": 0.63,
+      "phase": "el_nino"
+    },
+    {
+      "season": "AMJ",
+      "year": 1951,
+      "center_ym": "1951-05",
+      "anom_c": 0.59,
+      "phase": "el_nino"
+    },
+    {
+      "season": "MJJ",
+      "year": 1951,
+      "center_ym": "1951-06",
+      "anom_c": 0.69,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JJA",
+      "year": 1951,
+      "center_ym": "1951-07",
+      "anom_c": 0.79,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JAS",
+      "year": 1951,
+      "center_ym": "1951-08",
+      "anom_c": 0.97,
+      "phase": "el_nino"
+    },
+    {
+      "season": "ASO",
+      "year": 1951,
+      "center_ym": "1951-09",
+      "anom_c": 1.04,
+      "phase": "el_nino"
+    },
+    {
+      "season": "SON",
+      "year": 1951,
+      "center_ym": "1951-10",
+      "anom_c": 0.98,
+      "phase": "el_nino"
+    },
+    {
+      "season": "OND",
+      "year": 1951,
+      "center_ym": "1951-11",
+      "anom_c": 0.94,
+      "phase": "el_nino"
+    },
+    {
+      "season": "NDJ",
+      "year": 1951,
+      "center_ym": "1951-12",
+      "anom_c": 0.71,
+      "phase": "el_nino"
+    },
+    {
+      "season": "DJF",
+      "year": 1952,
+      "center_ym": "1952-01",
+      "anom_c": 0.65,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JFM",
+      "year": 1952,
+      "center_ym": "1952-02",
+      "anom_c": 0.33,
+      "phase": "neutral"
+    },
+    {
+      "season": "FMA",
+      "year": 1952,
+      "center_ym": "1952-03",
+      "anom_c": 0.46,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 1952,
+      "center_ym": "1952-04",
+      "anom_c": 0.24,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 1952,
+      "center_ym": "1952-05",
+      "anom_c": -0.03,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 1952,
+      "center_ym": "1952-06",
+      "anom_c": -0.45,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 1952,
+      "center_ym": "1952-07",
+      "anom_c": -0.41,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 1952,
+      "center_ym": "1952-08",
+      "anom_c": -0.14,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 1952,
+      "center_ym": "1952-09",
+      "anom_c": 0.08,
+      "phase": "neutral"
+    },
+    {
+      "season": "SON",
+      "year": 1952,
+      "center_ym": "1952-10",
+      "anom_c": 0.04,
+      "phase": "neutral"
+    },
+    {
+      "season": "OND",
+      "year": 1952,
+      "center_ym": "1952-11",
+      "anom_c": -0.1,
+      "phase": "neutral"
+    },
+    {
+      "season": "NDJ",
+      "year": 1952,
+      "center_ym": "1952-12",
+      "anom_c": 0.1,
+      "phase": "neutral"
+    },
+    {
+      "season": "DJF",
+      "year": 1953,
+      "center_ym": "1953-01",
+      "anom_c": 0.4,
+      "phase": "neutral"
+    },
+    {
+      "season": "JFM",
+      "year": 1953,
+      "center_ym": "1953-02",
+      "anom_c": 0.67,
+      "phase": "el_nino"
+    },
+    {
+      "season": "FMA",
+      "year": 1953,
+      "center_ym": "1953-03",
+      "anom_c": 0.68,
+      "phase": "el_nino"
+    },
+    {
+      "season": "MAM",
+      "year": 1953,
+      "center_ym": "1953-04",
+      "anom_c": 0.72,
+      "phase": "el_nino"
+    },
+    {
+      "season": "AMJ",
+      "year": 1953,
+      "center_ym": "1953-05",
+      "anom_c": 0.94,
+      "phase": "el_nino"
+    },
+    {
+      "season": "MJJ",
+      "year": 1953,
+      "center_ym": "1953-06",
+      "anom_c": 0.84,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JJA",
+      "year": 1953,
+      "center_ym": "1953-07",
+      "anom_c": 0.68,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JAS",
+      "year": 1953,
+      "center_ym": "1953-08",
+      "anom_c": 0.73,
+      "phase": "el_nino"
+    },
+    {
+      "season": "ASO",
+      "year": 1953,
+      "center_ym": "1953-09",
+      "anom_c": 0.65,
+      "phase": "el_nino"
+    },
+    {
+      "season": "SON",
+      "year": 1953,
+      "center_ym": "1953-10",
+      "anom_c": 0.84,
+      "phase": "el_nino"
+    },
+    {
+      "season": "OND",
+      "year": 1953,
+      "center_ym": "1953-11",
+      "anom_c": 0.57,
+      "phase": "el_nino"
+    },
+    {
+      "season": "NDJ",
+      "year": 1953,
+      "center_ym": "1953-12",
+      "anom_c": 0.66,
+      "phase": "el_nino"
+    },
+    {
+      "season": "DJF",
+      "year": 1954,
+      "center_ym": "1954-01",
+      "anom_c": 0.63,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JFM",
+      "year": 1954,
+      "center_ym": "1954-02",
+      "anom_c": 0.63,
+      "phase": "el_nino"
+    },
+    {
+      "season": "FMA",
+      "year": 1954,
+      "center_ym": "1954-03",
+      "anom_c": 0.31,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 1954,
+      "center_ym": "1954-04",
+      "anom_c": -0.02,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 1954,
+      "center_ym": "1954-05",
+      "anom_c": -0.24,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 1954,
+      "center_ym": "1954-06",
+      "anom_c": -0.21,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 1954,
+      "center_ym": "1954-07",
+      "anom_c": -0.45,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 1954,
+      "center_ym": "1954-08",
+      "anom_c": -0.62,
+      "phase": "la_nina"
+    },
+    {
+      "season": "ASO",
+      "year": 1954,
+      "center_ym": "1954-09",
+      "anom_c": -0.54,
+      "phase": "la_nina"
+    },
+    {
+      "season": "SON",
+      "year": 1954,
+      "center_ym": "1954-10",
+      "anom_c": -0.31,
+      "phase": "neutral"
+    },
+    {
+      "season": "OND",
+      "year": 1954,
+      "center_ym": "1954-11",
+      "anom_c": -0.09,
+      "phase": "neutral"
+    },
+    {
+      "season": "NDJ",
+      "year": 1954,
+      "center_ym": "1954-12",
+      "anom_c": -0.18,
+      "phase": "neutral"
+    },
+    {
+      "season": "DJF",
+      "year": 1955,
+      "center_ym": "1955-01",
+      "anom_c": -0.12,
+      "phase": "neutral"
+    },
+    {
+      "season": "JFM",
+      "year": 1955,
+      "center_ym": "1955-02",
+      "anom_c": -0.14,
+      "phase": "neutral"
+    },
+    {
+      "season": "FMA",
+      "year": 1955,
+      "center_ym": "1955-03",
+      "anom_c": -0.13,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 1955,
+      "center_ym": "1955-04",
+      "anom_c": -0.38,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 1955,
+      "center_ym": "1955-05",
+      "anom_c": -0.36,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 1955,
+      "center_ym": "1955-06",
+      "anom_c": -0.52,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JJA",
+      "year": 1955,
+      "center_ym": "1955-07",
+      "anom_c": -0.4,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 1955,
+      "center_ym": "1955-08",
+      "anom_c": -0.7,
+      "phase": "la_nina"
+    },
+    {
+      "season": "ASO",
+      "year": 1955,
+      "center_ym": "1955-09",
+      "anom_c": -0.9,
+      "phase": "la_nina"
+    },
+    {
+      "season": "SON",
+      "year": 1955,
+      "center_ym": "1955-10",
+      "anom_c": -1.31,
+      "phase": "la_nina"
+    },
+    {
+      "season": "OND",
+      "year": 1955,
+      "center_ym": "1955-11",
+      "anom_c": -1.4,
+      "phase": "la_nina"
+    },
+    {
+      "season": "NDJ",
+      "year": 1955,
+      "center_ym": "1955-12",
+      "anom_c": -1.31,
+      "phase": "la_nina"
+    },
+    {
+      "season": "DJF",
+      "year": 1956,
+      "center_ym": "1956-01",
+      "anom_c": -0.81,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JFM",
+      "year": 1956,
+      "center_ym": "1956-02",
+      "anom_c": -0.4,
+      "phase": "neutral"
+    },
+    {
+      "season": "FMA",
+      "year": 1956,
+      "center_ym": "1956-03",
+      "anom_c": -0.12,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 1956,
+      "center_ym": "1956-04",
+      "anom_c": -0.09,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 1956,
+      "center_ym": "1956-05",
+      "anom_c": -0.03,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 1956,
+      "center_ym": "1956-06",
+      "anom_c": -0.01,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 1956,
+      "center_ym": "1956-07",
+      "anom_c": -0.15,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 1956,
+      "center_ym": "1956-08",
+      "anom_c": -0.18,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 1956,
+      "center_ym": "1956-09",
+      "anom_c": -0.12,
+      "phase": "neutral"
+    },
+    {
+      "season": "SON",
+      "year": 1956,
+      "center_ym": "1956-10",
+      "anom_c": -0.14,
+      "phase": "neutral"
+    },
+    {
+      "season": "OND",
+      "year": 1956,
+      "center_ym": "1956-11",
+      "anom_c": -0.14,
+      "phase": "neutral"
+    },
+    {
+      "season": "NDJ",
+      "year": 1956,
+      "center_ym": "1956-12",
+      "anom_c": -0.17,
+      "phase": "neutral"
+    },
+    {
+      "season": "DJF",
+      "year": 1957,
+      "center_ym": "1957-01",
+      "anom_c": 0.0,
+      "phase": "neutral"
+    },
+    {
+      "season": "JFM",
+      "year": 1957,
+      "center_ym": "1957-02",
+      "anom_c": 0.22,
+      "phase": "neutral"
+    },
+    {
+      "season": "FMA",
+      "year": 1957,
+      "center_ym": "1957-03",
+      "anom_c": 0.53,
+      "phase": "el_nino"
+    },
+    {
+      "season": "MAM",
+      "year": 1957,
+      "center_ym": "1957-04",
+      "anom_c": 0.83,
+      "phase": "el_nino"
+    },
+    {
+      "season": "AMJ",
+      "year": 1957,
+      "center_ym": "1957-05",
+      "anom_c": 0.88,
+      "phase": "el_nino"
+    },
+    {
+      "season": "MJJ",
+      "year": 1957,
+      "center_ym": "1957-06",
+      "anom_c": 0.9,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JJA",
+      "year": 1957,
+      "center_ym": "1957-07",
+      "anom_c": 1.03,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JAS",
+      "year": 1957,
+      "center_ym": "1957-08",
+      "anom_c": 1.05,
+      "phase": "el_nino"
+    },
+    {
+      "season": "ASO",
+      "year": 1957,
+      "center_ym": "1957-09",
+      "anom_c": 1.14,
+      "phase": "el_nino"
+    },
+    {
+      "season": "SON",
+      "year": 1957,
+      "center_ym": "1957-10",
+      "anom_c": 1.16,
+      "phase": "el_nino"
+    },
+    {
+      "season": "OND",
+      "year": 1957,
+      "center_ym": "1957-11",
+      "anom_c": 1.45,
+      "phase": "el_nino"
+    },
+    {
+      "season": "NDJ",
+      "year": 1957,
+      "center_ym": "1957-12",
+      "anom_c": 1.75,
+      "phase": "el_nino"
+    },
+    {
+      "season": "DJF",
+      "year": 1958,
+      "center_ym": "1958-01",
+      "anom_c": 1.89,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JFM",
+      "year": 1958,
+      "center_ym": "1958-02",
+      "anom_c": 1.79,
+      "phase": "el_nino"
+    },
+    {
+      "season": "FMA",
+      "year": 1958,
+      "center_ym": "1958-03",
+      "anom_c": 1.31,
+      "phase": "el_nino"
+    },
+    {
+      "season": "MAM",
+      "year": 1958,
+      "center_ym": "1958-04",
+      "anom_c": 0.95,
+      "phase": "el_nino"
+    },
+    {
+      "season": "AMJ",
+      "year": 1958,
+      "center_ym": "1958-05",
+      "anom_c": 0.66,
+      "phase": "el_nino"
+    },
+    {
+      "season": "MJJ",
+      "year": 1958,
+      "center_ym": "1958-06",
+      "anom_c": 0.56,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JJA",
+      "year": 1958,
+      "center_ym": "1958-07",
+      "anom_c": 0.45,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 1958,
+      "center_ym": "1958-08",
+      "anom_c": 0.26,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 1958,
+      "center_ym": "1958-09",
+      "anom_c": 0.23,
+      "phase": "neutral"
+    },
+    {
+      "season": "SON",
+      "year": 1958,
+      "center_ym": "1958-10",
+      "anom_c": 0.24,
+      "phase": "neutral"
+    },
+    {
+      "season": "OND",
+      "year": 1958,
+      "center_ym": "1958-11",
+      "anom_c": 0.36,
+      "phase": "neutral"
+    },
+    {
+      "season": "NDJ",
+      "year": 1958,
+      "center_ym": "1958-12",
+      "anom_c": 0.64,
+      "phase": "el_nino"
+    },
+    {
+      "season": "DJF",
+      "year": 1959,
+      "center_ym": "1959-01",
+      "anom_c": 0.77,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JFM",
+      "year": 1959,
+      "center_ym": "1959-02",
+      "anom_c": 0.83,
+      "phase": "el_nino"
+    },
+    {
+      "season": "FMA",
+      "year": 1959,
+      "center_ym": "1959-03",
+      "anom_c": 0.64,
+      "phase": "el_nino"
+    },
+    {
+      "season": "MAM",
+      "year": 1959,
+      "center_ym": "1959-04",
+      "anom_c": 0.48,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 1959,
+      "center_ym": "1959-05",
+      "anom_c": 0.33,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 1959,
+      "center_ym": "1959-06",
+      "anom_c": 0.09,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 1959,
+      "center_ym": "1959-07",
+      "anom_c": -0.11,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 1959,
+      "center_ym": "1959-08",
+      "anom_c": -0.23,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 1959,
+      "center_ym": "1959-09",
+      "anom_c": -0.07,
+      "phase": "neutral"
+    },
+    {
+      "season": "SON",
+      "year": 1959,
+      "center_ym": "1959-10",
+      "anom_c": 0.04,
+      "phase": "neutral"
+    },
+    {
+      "season": "OND",
+      "year": 1959,
+      "center_ym": "1959-11",
+      "anom_c": 0.24,
+      "phase": "neutral"
+    },
+    {
+      "season": "NDJ",
+      "year": 1959,
+      "center_ym": "1959-12",
+      "anom_c": 0.22,
+      "phase": "neutral"
+    },
+    {
+      "season": "DJF",
+      "year": 1960,
+      "center_ym": "1960-01",
+      "anom_c": 0.2,
+      "phase": "neutral"
+    },
+    {
+      "season": "JFM",
+      "year": 1960,
+      "center_ym": "1960-02",
+      "anom_c": 0.19,
+      "phase": "neutral"
+    },
+    {
+      "season": "FMA",
+      "year": 1960,
+      "center_ym": "1960-03",
+      "anom_c": 0.21,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 1960,
+      "center_ym": "1960-04",
+      "anom_c": 0.25,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 1960,
+      "center_ym": "1960-05",
+      "anom_c": 0.16,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 1960,
+      "center_ym": "1960-06",
+      "anom_c": 0.06,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 1960,
+      "center_ym": "1960-07",
+      "anom_c": 0.12,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 1960,
+      "center_ym": "1960-08",
+      "anom_c": 0.2,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 1960,
+      "center_ym": "1960-09",
+      "anom_c": 0.26,
+      "phase": "neutral"
+    },
+    {
+      "season": "SON",
+      "year": 1960,
+      "center_ym": "1960-10",
+      "anom_c": 0.08,
+      "phase": "neutral"
+    },
+    {
+      "season": "OND",
+      "year": 1960,
+      "center_ym": "1960-11",
+      "anom_c": -0.07,
+      "phase": "neutral"
+    },
+    {
+      "season": "NDJ",
+      "year": 1960,
+      "center_ym": "1960-12",
+      "anom_c": -0.09,
+      "phase": "neutral"
+    },
+    {
+      "season": "DJF",
+      "year": 1961,
+      "center_ym": "1961-01",
+      "anom_c": 0.03,
+      "phase": "neutral"
+    },
+    {
+      "season": "JFM",
+      "year": 1961,
+      "center_ym": "1961-02",
+      "anom_c": 0.08,
+      "phase": "neutral"
+    },
+    {
+      "season": "FMA",
+      "year": 1961,
+      "center_ym": "1961-03",
+      "anom_c": 0.03,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 1961,
+      "center_ym": "1961-04",
+      "anom_c": 0.06,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 1961,
+      "center_ym": "1961-05",
+      "anom_c": 0.24,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 1961,
+      "center_ym": "1961-06",
+      "anom_c": 0.3,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 1961,
+      "center_ym": "1961-07",
+      "anom_c": 0.2,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 1961,
+      "center_ym": "1961-08",
+      "anom_c": -0.07,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 1961,
+      "center_ym": "1961-09",
+      "anom_c": -0.23,
+      "phase": "neutral"
+    },
+    {
+      "season": "SON",
+      "year": 1961,
+      "center_ym": "1961-10",
+      "anom_c": -0.16,
+      "phase": "neutral"
+    },
+    {
+      "season": "OND",
+      "year": 1961,
+      "center_ym": "1961-11",
+      "anom_c": -0.06,
+      "phase": "neutral"
+    },
+    {
+      "season": "NDJ",
+      "year": 1961,
+      "center_ym": "1961-12",
+      "anom_c": 0.02,
+      "phase": "neutral"
+    },
+    {
+      "season": "DJF",
+      "year": 1962,
+      "center_ym": "1962-01",
+      "anom_c": -0.01,
+      "phase": "neutral"
+    },
+    {
+      "season": "JFM",
+      "year": 1962,
+      "center_ym": "1962-02",
+      "anom_c": -0.01,
+      "phase": "neutral"
+    },
+    {
+      "season": "FMA",
+      "year": 1962,
+      "center_ym": "1962-03",
+      "anom_c": 0.0,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 1962,
+      "center_ym": "1962-04",
+      "anom_c": -0.16,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 1962,
+      "center_ym": "1962-05",
+      "anom_c": -0.17,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 1962,
+      "center_ym": "1962-06",
+      "anom_c": -0.14,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 1962,
+      "center_ym": "1962-07",
+      "anom_c": 0.01,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 1962,
+      "center_ym": "1962-08",
+      "anom_c": -0.1,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 1962,
+      "center_ym": "1962-09",
+      "anom_c": -0.15,
+      "phase": "neutral"
+    },
+    {
+      "season": "SON",
+      "year": 1962,
+      "center_ym": "1962-10",
+      "anom_c": -0.3,
+      "phase": "neutral"
+    },
+    {
+      "season": "OND",
+      "year": 1962,
+      "center_ym": "1962-11",
+      "anom_c": -0.29,
+      "phase": "neutral"
+    },
+    {
+      "season": "NDJ",
+      "year": 1962,
+      "center_ym": "1962-12",
+      "anom_c": -0.37,
+      "phase": "neutral"
+    },
+    {
+      "season": "DJF",
+      "year": 1963,
+      "center_ym": "1963-01",
+      "anom_c": -0.29,
+      "phase": "neutral"
+    },
+    {
+      "season": "JFM",
+      "year": 1963,
+      "center_ym": "1963-02",
+      "anom_c": -0.12,
+      "phase": "neutral"
+    },
+    {
+      "season": "FMA",
+      "year": 1963,
+      "center_ym": "1963-03",
+      "anom_c": 0.04,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 1963,
+      "center_ym": "1963-04",
+      "anom_c": 0.06,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 1963,
+      "center_ym": "1963-05",
+      "anom_c": 0.01,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 1963,
+      "center_ym": "1963-06",
+      "anom_c": 0.37,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 1963,
+      "center_ym": "1963-07",
+      "anom_c": 0.73,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JAS",
+      "year": 1963,
+      "center_ym": "1963-08",
+      "anom_c": 1.08,
+      "phase": "el_nino"
+    },
+    {
+      "season": "ASO",
+      "year": 1963,
+      "center_ym": "1963-09",
+      "anom_c": 1.07,
+      "phase": "el_nino"
+    },
+    {
+      "season": "SON",
+      "year": 1963,
+      "center_ym": "1963-10",
+      "anom_c": 1.06,
+      "phase": "el_nino"
+    },
+    {
+      "season": "OND",
+      "year": 1963,
+      "center_ym": "1963-11",
+      "anom_c": 1.11,
+      "phase": "el_nino"
+    },
+    {
+      "season": "NDJ",
+      "year": 1963,
+      "center_ym": "1963-12",
+      "anom_c": 1.07,
+      "phase": "el_nino"
+    },
+    {
+      "season": "DJF",
+      "year": 1964,
+      "center_ym": "1964-01",
+      "anom_c": 1.0,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JFM",
+      "year": 1964,
+      "center_ym": "1964-02",
+      "anom_c": 0.6,
+      "phase": "el_nino"
+    },
+    {
+      "season": "FMA",
+      "year": 1964,
+      "center_ym": "1964-03",
+      "anom_c": 0.1,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 1964,
+      "center_ym": "1964-04",
+      "anom_c": -0.37,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 1964,
+      "center_ym": "1964-05",
+      "anom_c": -0.66,
+      "phase": "la_nina"
+    },
+    {
+      "season": "MJJ",
+      "year": 1964,
+      "center_ym": "1964-06",
+      "anom_c": -0.66,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JJA",
+      "year": 1964,
+      "center_ym": "1964-07",
+      "anom_c": -0.59,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JAS",
+      "year": 1964,
+      "center_ym": "1964-08",
+      "anom_c": -0.55,
+      "phase": "la_nina"
+    },
+    {
+      "season": "ASO",
+      "year": 1964,
+      "center_ym": "1964-09",
+      "anom_c": -0.53,
+      "phase": "la_nina"
+    },
+    {
+      "season": "SON",
+      "year": 1964,
+      "center_ym": "1964-10",
+      "anom_c": -0.64,
+      "phase": "la_nina"
+    },
+    {
+      "season": "OND",
+      "year": 1964,
+      "center_ym": "1964-11",
+      "anom_c": -0.58,
+      "phase": "la_nina"
+    },
+    {
+      "season": "NDJ",
+      "year": 1964,
+      "center_ym": "1964-12",
+      "anom_c": -0.48,
+      "phase": "neutral"
+    },
+    {
+      "season": "DJF",
+      "year": 1965,
+      "center_ym": "1965-01",
+      "anom_c": -0.16,
+      "phase": "neutral"
+    },
+    {
+      "season": "JFM",
+      "year": 1965,
+      "center_ym": "1965-02",
+      "anom_c": 0.1,
+      "phase": "neutral"
+    },
+    {
+      "season": "FMA",
+      "year": 1965,
+      "center_ym": "1965-03",
+      "anom_c": 0.22,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 1965,
+      "center_ym": "1965-04",
+      "anom_c": 0.36,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 1965,
+      "center_ym": "1965-05",
+      "anom_c": 0.64,
+      "phase": "el_nino"
+    },
+    {
+      "season": "MJJ",
+      "year": 1965,
+      "center_ym": "1965-06",
+      "anom_c": 1.01,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JJA",
+      "year": 1965,
+      "center_ym": "1965-07",
+      "anom_c": 1.33,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JAS",
+      "year": 1965,
+      "center_ym": "1965-08",
+      "anom_c": 1.49,
+      "phase": "el_nino"
+    },
+    {
+      "season": "ASO",
+      "year": 1965,
+      "center_ym": "1965-09",
+      "anom_c": 1.76,
+      "phase": "el_nino"
+    },
+    {
+      "season": "SON",
+      "year": 1965,
+      "center_ym": "1965-10",
+      "anom_c": 1.86,
+      "phase": "el_nino"
+    },
+    {
+      "season": "OND",
+      "year": 1965,
+      "center_ym": "1965-11",
+      "anom_c": 1.99,
+      "phase": "el_nino"
+    },
+    {
+      "season": "NDJ",
+      "year": 1965,
+      "center_ym": "1965-12",
+      "anom_c": 1.81,
+      "phase": "el_nino"
+    },
+    {
+      "season": "DJF",
+      "year": 1966,
+      "center_ym": "1966-01",
+      "anom_c": 1.53,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JFM",
+      "year": 1966,
+      "center_ym": "1966-02",
+      "anom_c": 1.29,
+      "phase": "el_nino"
+    },
+    {
+      "season": "FMA",
+      "year": 1966,
+      "center_ym": "1966-03",
+      "anom_c": 1.04,
+      "phase": "el_nino"
+    },
+    {
+      "season": "MAM",
+      "year": 1966,
+      "center_ym": "1966-04",
+      "anom_c": 0.59,
+      "phase": "el_nino"
+    },
+    {
+      "season": "AMJ",
+      "year": 1966,
+      "center_ym": "1966-05",
+      "anom_c": 0.31,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 1966,
+      "center_ym": "1966-06",
+      "anom_c": 0.22,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 1966,
+      "center_ym": "1966-07",
+      "anom_c": 0.32,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 1966,
+      "center_ym": "1966-08",
+      "anom_c": 0.19,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 1966,
+      "center_ym": "1966-09",
+      "anom_c": 0.0,
+      "phase": "neutral"
+    },
+    {
+      "season": "SON",
+      "year": 1966,
+      "center_ym": "1966-10",
+      "anom_c": -0.03,
+      "phase": "neutral"
+    },
+    {
+      "season": "OND",
+      "year": 1966,
+      "center_ym": "1966-11",
+      "anom_c": -0.12,
+      "phase": "neutral"
+    },
+    {
+      "season": "NDJ",
+      "year": 1966,
+      "center_ym": "1966-12",
+      "anom_c": -0.22,
+      "phase": "neutral"
+    },
+    {
+      "season": "DJF",
+      "year": 1967,
+      "center_ym": "1967-01",
+      "anom_c": -0.26,
+      "phase": "neutral"
+    },
+    {
+      "season": "JFM",
+      "year": 1967,
+      "center_ym": "1967-02",
+      "anom_c": -0.24,
+      "phase": "neutral"
+    },
+    {
+      "season": "FMA",
+      "year": 1967,
+      "center_ym": "1967-03",
+      "anom_c": -0.35,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 1967,
+      "center_ym": "1967-04",
+      "anom_c": -0.31,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 1967,
+      "center_ym": "1967-05",
+      "anom_c": -0.09,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 1967,
+      "center_ym": "1967-06",
+      "anom_c": 0.21,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 1967,
+      "center_ym": "1967-07",
+      "anom_c": 0.25,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 1967,
+      "center_ym": "1967-08",
+      "anom_c": -0.01,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 1967,
+      "center_ym": "1967-09",
+      "anom_c": -0.11,
+      "phase": "neutral"
+    },
+    {
+      "season": "SON",
+      "year": 1967,
+      "center_ym": "1967-10",
+      "anom_c": -0.08,
+      "phase": "neutral"
+    },
+    {
+      "season": "OND",
+      "year": 1967,
+      "center_ym": "1967-11",
+      "anom_c": 0.01,
+      "phase": "neutral"
+    },
+    {
+      "season": "NDJ",
+      "year": 1967,
+      "center_ym": "1967-12",
+      "anom_c": -0.03,
+      "phase": "neutral"
+    },
+    {
+      "season": "DJF",
+      "year": 1968,
+      "center_ym": "1968-01",
+      "anom_c": -0.23,
+      "phase": "neutral"
+    },
+    {
+      "season": "JFM",
+      "year": 1968,
+      "center_ym": "1968-02",
+      "anom_c": -0.36,
+      "phase": "neutral"
+    },
+    {
+      "season": "FMA",
+      "year": 1968,
+      "center_ym": "1968-03",
+      "anom_c": -0.32,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 1968,
+      "center_ym": "1968-04",
+      "anom_c": -0.26,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 1968,
+      "center_ym": "1968-05",
+      "anom_c": 0.07,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 1968,
+      "center_ym": "1968-06",
+      "anom_c": 0.32,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 1968,
+      "center_ym": "1968-07",
+      "anom_c": 0.56,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JAS",
+      "year": 1968,
+      "center_ym": "1968-08",
+      "anom_c": 0.46,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 1968,
+      "center_ym": "1968-09",
+      "anom_c": 0.39,
+      "phase": "neutral"
+    },
+    {
+      "season": "SON",
+      "year": 1968,
+      "center_ym": "1968-10",
+      "anom_c": 0.56,
+      "phase": "el_nino"
+    },
+    {
+      "season": "OND",
+      "year": 1968,
+      "center_ym": "1968-11",
+      "anom_c": 0.74,
+      "phase": "el_nino"
+    },
+    {
+      "season": "NDJ",
+      "year": 1968,
+      "center_ym": "1968-12",
+      "anom_c": 1.02,
+      "phase": "el_nino"
+    },
+    {
+      "season": "DJF",
+      "year": 1969,
+      "center_ym": "1969-01",
+      "anom_c": 1.07,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JFM",
+      "year": 1969,
+      "center_ym": "1969-02",
+      "anom_c": 1.0,
+      "phase": "el_nino"
+    },
+    {
+      "season": "FMA",
+      "year": 1969,
+      "center_ym": "1969-03",
+      "anom_c": 0.67,
+      "phase": "el_nino"
+    },
+    {
+      "season": "MAM",
+      "year": 1969,
+      "center_ym": "1969-04",
+      "anom_c": 0.44,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 1969,
+      "center_ym": "1969-05",
+      "anom_c": 0.37,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 1969,
+      "center_ym": "1969-06",
+      "anom_c": 0.3,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 1969,
+      "center_ym": "1969-07",
+      "anom_c": 0.28,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 1969,
+      "center_ym": "1969-08",
+      "anom_c": 0.34,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 1969,
+      "center_ym": "1969-09",
+      "anom_c": 0.57,
+      "phase": "el_nino"
+    },
+    {
+      "season": "SON",
+      "year": 1969,
+      "center_ym": "1969-10",
+      "anom_c": 0.67,
+      "phase": "el_nino"
+    },
+    {
+      "season": "OND",
+      "year": 1969,
+      "center_ym": "1969-11",
+      "anom_c": 0.81,
+      "phase": "el_nino"
+    },
+    {
+      "season": "NDJ",
+      "year": 1969,
+      "center_ym": "1969-12",
+      "anom_c": 0.68,
+      "phase": "el_nino"
+    },
+    {
+      "season": "DJF",
+      "year": 1970,
+      "center_ym": "1970-01",
+      "anom_c": 0.46,
+      "phase": "neutral"
+    },
+    {
+      "season": "JFM",
+      "year": 1970,
+      "center_ym": "1970-02",
+      "anom_c": 0.21,
+      "phase": "neutral"
+    },
+    {
+      "season": "FMA",
+      "year": 1970,
+      "center_ym": "1970-03",
+      "anom_c": 0.24,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 1970,
+      "center_ym": "1970-04",
+      "anom_c": 0.24,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 1970,
+      "center_ym": "1970-05",
+      "anom_c": 0.12,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 1970,
+      "center_ym": "1970-06",
+      "anom_c": -0.23,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 1970,
+      "center_ym": "1970-07",
+      "anom_c": -0.47,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 1970,
+      "center_ym": "1970-08",
+      "anom_c": -0.64,
+      "phase": "la_nina"
+    },
+    {
+      "season": "ASO",
+      "year": 1970,
+      "center_ym": "1970-09",
+      "anom_c": -0.55,
+      "phase": "la_nina"
+    },
+    {
+      "season": "SON",
+      "year": 1970,
+      "center_ym": "1970-10",
+      "anom_c": -0.57,
+      "phase": "la_nina"
+    },
+    {
+      "season": "OND",
+      "year": 1970,
+      "center_ym": "1970-11",
+      "anom_c": -0.55,
+      "phase": "la_nina"
+    },
+    {
+      "season": "NDJ",
+      "year": 1970,
+      "center_ym": "1970-12",
+      "anom_c": -0.85,
+      "phase": "la_nina"
+    },
+    {
+      "season": "DJF",
+      "year": 1971,
+      "center_ym": "1971-01",
+      "anom_c": -0.95,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JFM",
+      "year": 1971,
+      "center_ym": "1971-02",
+      "anom_c": -1.0,
+      "phase": "la_nina"
+    },
+    {
+      "season": "FMA",
+      "year": 1971,
+      "center_ym": "1971-03",
+      "anom_c": -0.78,
+      "phase": "la_nina"
+    },
+    {
+      "season": "MAM",
+      "year": 1971,
+      "center_ym": "1971-04",
+      "anom_c": -0.57,
+      "phase": "la_nina"
+    },
+    {
+      "season": "AMJ",
+      "year": 1971,
+      "center_ym": "1971-05",
+      "anom_c": -0.48,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 1971,
+      "center_ym": "1971-06",
+      "anom_c": -0.37,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 1971,
+      "center_ym": "1971-07",
+      "anom_c": -0.3,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 1971,
+      "center_ym": "1971-08",
+      "anom_c": -0.25,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 1971,
+      "center_ym": "1971-09",
+      "anom_c": -0.3,
+      "phase": "neutral"
+    },
+    {
+      "season": "SON",
+      "year": 1971,
+      "center_ym": "1971-10",
+      "anom_c": -0.4,
+      "phase": "neutral"
+    },
+    {
+      "season": "OND",
+      "year": 1971,
+      "center_ym": "1971-11",
+      "anom_c": -0.41,
+      "phase": "neutral"
+    },
+    {
+      "season": "NDJ",
+      "year": 1971,
+      "center_ym": "1971-12",
+      "anom_c": -0.38,
+      "phase": "neutral"
+    },
+    {
+      "season": "DJF",
+      "year": 1972,
+      "center_ym": "1972-01",
+      "anom_c": -0.21,
+      "phase": "neutral"
+    },
+    {
+      "season": "JFM",
+      "year": 1972,
+      "center_ym": "1972-02",
+      "anom_c": 0.03,
+      "phase": "neutral"
+    },
+    {
+      "season": "FMA",
+      "year": 1972,
+      "center_ym": "1972-03",
+      "anom_c": 0.32,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 1972,
+      "center_ym": "1972-04",
+      "anom_c": 0.51,
+      "phase": "el_nino"
+    },
+    {
+      "season": "AMJ",
+      "year": 1972,
+      "center_ym": "1972-05",
+      "anom_c": 0.66,
+      "phase": "el_nino"
+    },
+    {
+      "season": "MJJ",
+      "year": 1972,
+      "center_ym": "1972-06",
+      "anom_c": 0.87,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JJA",
+      "year": 1972,
+      "center_ym": "1972-07",
+      "anom_c": 1.14,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JAS",
+      "year": 1972,
+      "center_ym": "1972-08",
+      "anom_c": 1.4,
+      "phase": "el_nino"
+    },
+    {
+      "season": "ASO",
+      "year": 1972,
+      "center_ym": "1972-09",
+      "anom_c": 1.64,
+      "phase": "el_nino"
+    },
+    {
+      "season": "SON",
+      "year": 1972,
+      "center_ym": "1972-10",
+      "anom_c": 1.82,
+      "phase": "el_nino"
+    },
+    {
+      "season": "OND",
+      "year": 1972,
+      "center_ym": "1972-11",
+      "anom_c": 1.97,
+      "phase": "el_nino"
+    },
+    {
+      "season": "NDJ",
+      "year": 1972,
+      "center_ym": "1972-12",
+      "anom_c": 1.88,
+      "phase": "el_nino"
+    },
+    {
+      "season": "DJF",
+      "year": 1973,
+      "center_ym": "1973-01",
+      "anom_c": 1.69,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JFM",
+      "year": 1973,
+      "center_ym": "1973-02",
+      "anom_c": 1.25,
+      "phase": "el_nino"
+    },
+    {
+      "season": "FMA",
+      "year": 1973,
+      "center_ym": "1973-03",
+      "anom_c": 0.58,
+      "phase": "el_nino"
+    },
+    {
+      "season": "MAM",
+      "year": 1973,
+      "center_ym": "1973-04",
+      "anom_c": -0.17,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 1973,
+      "center_ym": "1973-05",
+      "anom_c": -0.73,
+      "phase": "la_nina"
+    },
+    {
+      "season": "MJJ",
+      "year": 1973,
+      "center_ym": "1973-06",
+      "anom_c": -0.98,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JJA",
+      "year": 1973,
+      "center_ym": "1973-07",
+      "anom_c": -1.1,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JAS",
+      "year": 1973,
+      "center_ym": "1973-08",
+      "anom_c": -1.19,
+      "phase": "la_nina"
+    },
+    {
+      "season": "ASO",
+      "year": 1973,
+      "center_ym": "1973-09",
+      "anom_c": -1.3,
+      "phase": "la_nina"
+    },
+    {
+      "season": "SON",
+      "year": 1973,
+      "center_ym": "1973-10",
+      "anom_c": -1.63,
+      "phase": "la_nina"
+    },
+    {
+      "season": "OND",
+      "year": 1973,
+      "center_ym": "1973-11",
+      "anom_c": -1.86,
+      "phase": "la_nina"
+    },
+    {
+      "season": "NDJ",
+      "year": 1973,
+      "center_ym": "1973-12",
+      "anom_c": -1.91,
+      "phase": "la_nina"
+    },
+    {
+      "season": "DJF",
+      "year": 1974,
+      "center_ym": "1974-01",
+      "anom_c": -1.6,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JFM",
+      "year": 1974,
+      "center_ym": "1974-02",
+      "anom_c": -1.28,
+      "phase": "la_nina"
+    },
+    {
+      "season": "FMA",
+      "year": 1974,
+      "center_ym": "1974-03",
+      "anom_c": -0.97,
+      "phase": "la_nina"
+    },
+    {
+      "season": "MAM",
+      "year": 1974,
+      "center_ym": "1974-04",
+      "anom_c": -0.84,
+      "phase": "la_nina"
+    },
+    {
+      "season": "AMJ",
+      "year": 1974,
+      "center_ym": "1974-05",
+      "anom_c": -0.57,
+      "phase": "la_nina"
+    },
+    {
+      "season": "MJJ",
+      "year": 1974,
+      "center_ym": "1974-06",
+      "anom_c": -0.5,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JJA",
+      "year": 1974,
+      "center_ym": "1974-07",
+      "anom_c": -0.27,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 1974,
+      "center_ym": "1974-08",
+      "anom_c": -0.21,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 1974,
+      "center_ym": "1974-09",
+      "anom_c": -0.24,
+      "phase": "neutral"
+    },
+    {
+      "season": "SON",
+      "year": 1974,
+      "center_ym": "1974-10",
+      "anom_c": -0.45,
+      "phase": "neutral"
+    },
+    {
+      "season": "OND",
+      "year": 1974,
+      "center_ym": "1974-11",
+      "anom_c": -0.59,
+      "phase": "la_nina"
+    },
+    {
+      "season": "NDJ",
+      "year": 1974,
+      "center_ym": "1974-12",
+      "anom_c": -0.35,
+      "phase": "neutral"
+    },
+    {
+      "season": "DJF",
+      "year": 1975,
+      "center_ym": "1975-01",
+      "anom_c": -0.12,
+      "phase": "neutral"
+    },
+    {
+      "season": "JFM",
+      "year": 1975,
+      "center_ym": "1975-02",
+      "anom_c": -0.13,
+      "phase": "neutral"
+    },
+    {
+      "season": "FMA",
+      "year": 1975,
+      "center_ym": "1975-03",
+      "anom_c": -0.29,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 1975,
+      "center_ym": "1975-04",
+      "anom_c": -0.42,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 1975,
+      "center_ym": "1975-05",
+      "anom_c": -0.61,
+      "phase": "la_nina"
+    },
+    {
+      "season": "MJJ",
+      "year": 1975,
+      "center_ym": "1975-06",
+      "anom_c": -0.73,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JJA",
+      "year": 1975,
+      "center_ym": "1975-07",
+      "anom_c": -0.87,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JAS",
+      "year": 1975,
+      "center_ym": "1975-08",
+      "anom_c": -0.88,
+      "phase": "la_nina"
+    },
+    {
+      "season": "ASO",
+      "year": 1975,
+      "center_ym": "1975-09",
+      "anom_c": -0.98,
+      "phase": "la_nina"
+    },
+    {
+      "season": "SON",
+      "year": 1975,
+      "center_ym": "1975-10",
+      "anom_c": -0.95,
+      "phase": "la_nina"
+    },
+    {
+      "season": "OND",
+      "year": 1975,
+      "center_ym": "1975-11",
+      "anom_c": -1.02,
+      "phase": "la_nina"
+    },
+    {
+      "season": "NDJ",
+      "year": 1975,
+      "center_ym": "1975-12",
+      "anom_c": -1.11,
+      "phase": "la_nina"
+    },
+    {
+      "season": "DJF",
+      "year": 1976,
+      "center_ym": "1976-01",
+      "anom_c": -1.0,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JFM",
+      "year": 1976,
+      "center_ym": "1976-02",
+      "anom_c": -0.65,
+      "phase": "la_nina"
+    },
+    {
+      "season": "FMA",
+      "year": 1976,
+      "center_ym": "1976-03",
+      "anom_c": -0.26,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 1976,
+      "center_ym": "1976-04",
+      "anom_c": -0.14,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 1976,
+      "center_ym": "1976-05",
+      "anom_c": 0.01,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 1976,
+      "center_ym": "1976-06",
+      "anom_c": 0.27,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 1976,
+      "center_ym": "1976-07",
+      "anom_c": 0.52,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JAS",
+      "year": 1976,
+      "center_ym": "1976-08",
+      "anom_c": 0.72,
+      "phase": "el_nino"
+    },
+    {
+      "season": "ASO",
+      "year": 1976,
+      "center_ym": "1976-09",
+      "anom_c": 0.89,
+      "phase": "el_nino"
+    },
+    {
+      "season": "SON",
+      "year": 1976,
+      "center_ym": "1976-10",
+      "anom_c": 1.04,
+      "phase": "el_nino"
+    },
+    {
+      "season": "OND",
+      "year": 1976,
+      "center_ym": "1976-11",
+      "anom_c": 1.05,
+      "phase": "el_nino"
+    },
+    {
+      "season": "NDJ",
+      "year": 1976,
+      "center_ym": "1976-12",
+      "anom_c": 1.08,
+      "phase": "el_nino"
+    },
+    {
+      "season": "DJF",
+      "year": 1977,
+      "center_ym": "1977-01",
+      "anom_c": 0.96,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JFM",
+      "year": 1977,
+      "center_ym": "1977-02",
+      "anom_c": 0.89,
+      "phase": "el_nino"
+    },
+    {
+      "season": "FMA",
+      "year": 1977,
+      "center_ym": "1977-03",
+      "anom_c": 0.46,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 1977,
+      "center_ym": "1977-04",
+      "anom_c": 0.32,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 1977,
+      "center_ym": "1977-05",
+      "anom_c": 0.25,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 1977,
+      "center_ym": "1977-06",
+      "anom_c": 0.51,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JJA",
+      "year": 1977,
+      "center_ym": "1977-07",
+      "anom_c": 0.48,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 1977,
+      "center_ym": "1977-08",
+      "anom_c": 0.48,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 1977,
+      "center_ym": "1977-09",
+      "anom_c": 0.62,
+      "phase": "el_nino"
+    },
+    {
+      "season": "SON",
+      "year": 1977,
+      "center_ym": "1977-10",
+      "anom_c": 0.89,
+      "phase": "el_nino"
+    },
+    {
+      "season": "OND",
+      "year": 1977,
+      "center_ym": "1977-11",
+      "anom_c": 1.1,
+      "phase": "el_nino"
+    },
+    {
+      "season": "NDJ",
+      "year": 1977,
+      "center_ym": "1977-12",
+      "anom_c": 1.05,
+      "phase": "el_nino"
+    },
+    {
+      "season": "DJF",
+      "year": 1978,
+      "center_ym": "1978-01",
+      "anom_c": 0.96,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JFM",
+      "year": 1978,
+      "center_ym": "1978-02",
+      "anom_c": 0.71,
+      "phase": "el_nino"
+    },
+    {
+      "season": "FMA",
+      "year": 1978,
+      "center_ym": "1978-03",
+      "anom_c": 0.26,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 1978,
+      "center_ym": "1978-04",
+      "anom_c": -0.07,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 1978,
+      "center_ym": "1978-05",
+      "anom_c": -0.33,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 1978,
+      "center_ym": "1978-06",
+      "anom_c": -0.25,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 1978,
+      "center_ym": "1978-07",
+      "anom_c": -0.32,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 1978,
+      "center_ym": "1978-08",
+      "anom_c": -0.27,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 1978,
+      "center_ym": "1978-09",
+      "anom_c": -0.27,
+      "phase": "neutral"
+    },
+    {
+      "season": "SON",
+      "year": 1978,
+      "center_ym": "1978-10",
+      "anom_c": -0.08,
+      "phase": "neutral"
+    },
+    {
+      "season": "OND",
+      "year": 1978,
+      "center_ym": "1978-11",
+      "anom_c": 0.15,
+      "phase": "neutral"
+    },
+    {
+      "season": "NDJ",
+      "year": 1978,
+      "center_ym": "1978-12",
+      "anom_c": 0.27,
+      "phase": "neutral"
+    },
+    {
+      "season": "DJF",
+      "year": 1979,
+      "center_ym": "1979-01",
+      "anom_c": 0.35,
+      "phase": "neutral"
+    },
+    {
+      "season": "JFM",
+      "year": 1979,
+      "center_ym": "1979-02",
+      "anom_c": 0.3,
+      "phase": "neutral"
+    },
+    {
+      "season": "FMA",
+      "year": 1979,
+      "center_ym": "1979-03",
+      "anom_c": 0.3,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 1979,
+      "center_ym": "1979-04",
+      "anom_c": 0.23,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 1979,
+      "center_ym": "1979-05",
+      "anom_c": 0.13,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 1979,
+      "center_ym": "1979-06",
+      "anom_c": 0.03,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 1979,
+      "center_ym": "1979-07",
+      "anom_c": 0.04,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 1979,
+      "center_ym": "1979-08",
+      "anom_c": 0.26,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 1979,
+      "center_ym": "1979-09",
+      "anom_c": 0.41,
+      "phase": "neutral"
+    },
+    {
+      "season": "SON",
+      "year": 1979,
+      "center_ym": "1979-10",
+      "anom_c": 0.52,
+      "phase": "el_nino"
+    },
+    {
+      "season": "OND",
+      "year": 1979,
+      "center_ym": "1979-11",
+      "anom_c": 0.52,
+      "phase": "el_nino"
+    },
+    {
+      "season": "NDJ",
+      "year": 1979,
+      "center_ym": "1979-12",
+      "anom_c": 0.64,
+      "phase": "el_nino"
+    },
+    {
+      "season": "DJF",
+      "year": 1980,
+      "center_ym": "1980-01",
+      "anom_c": 0.65,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JFM",
+      "year": 1980,
+      "center_ym": "1980-02",
+      "anom_c": 0.45,
+      "phase": "neutral"
+    },
+    {
+      "season": "FMA",
+      "year": 1980,
+      "center_ym": "1980-03",
+      "anom_c": 0.25,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 1980,
+      "center_ym": "1980-04",
+      "anom_c": 0.14,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 1980,
+      "center_ym": "1980-05",
+      "anom_c": 0.27,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 1980,
+      "center_ym": "1980-06",
+      "anom_c": 0.28,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 1980,
+      "center_ym": "1980-07",
+      "anom_c": 0.14,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 1980,
+      "center_ym": "1980-08",
+      "anom_c": -0.1,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 1980,
+      "center_ym": "1980-09",
+      "anom_c": -0.18,
+      "phase": "neutral"
+    },
+    {
+      "season": "SON",
+      "year": 1980,
+      "center_ym": "1980-10",
+      "anom_c": -0.06,
+      "phase": "neutral"
+    },
+    {
+      "season": "OND",
+      "year": 1980,
+      "center_ym": "1980-11",
+      "anom_c": 0.14,
+      "phase": "neutral"
+    },
+    {
+      "season": "NDJ",
+      "year": 1980,
+      "center_ym": "1980-12",
+      "anom_c": 0.09,
+      "phase": "neutral"
+    },
+    {
+      "season": "DJF",
+      "year": 1981,
+      "center_ym": "1981-01",
+      "anom_c": -0.03,
+      "phase": "neutral"
+    },
+    {
+      "season": "JFM",
+      "year": 1981,
+      "center_ym": "1981-02",
+      "anom_c": -0.18,
+      "phase": "neutral"
+    },
+    {
+      "season": "FMA",
+      "year": 1981,
+      "center_ym": "1981-03",
+      "anom_c": -0.28,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 1981,
+      "center_ym": "1981-04",
+      "anom_c": -0.24,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 1981,
+      "center_ym": "1981-05",
+      "anom_c": -0.3,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 1981,
+      "center_ym": "1981-06",
+      "anom_c": -0.26,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 1981,
+      "center_ym": "1981-07",
+      "anom_c": -0.23,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 1981,
+      "center_ym": "1981-08",
+      "anom_c": -0.16,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 1981,
+      "center_ym": "1981-09",
+      "anom_c": -0.02,
+      "phase": "neutral"
+    },
+    {
+      "season": "SON",
+      "year": 1981,
+      "center_ym": "1981-10",
+      "anom_c": -0.17,
+      "phase": "neutral"
+    },
+    {
+      "season": "OND",
+      "year": 1981,
+      "center_ym": "1981-11",
+      "anom_c": -0.21,
+      "phase": "neutral"
+    },
+    {
+      "season": "NDJ",
+      "year": 1981,
+      "center_ym": "1981-12",
+      "anom_c": -0.08,
+      "phase": "neutral"
+    },
+    {
+      "season": "DJF",
+      "year": 1982,
+      "center_ym": "1982-01",
+      "anom_c": 0.11,
+      "phase": "neutral"
+    },
+    {
+      "season": "JFM",
+      "year": 1982,
+      "center_ym": "1982-02",
+      "anom_c": 0.22,
+      "phase": "neutral"
+    },
+    {
+      "season": "FMA",
+      "year": 1982,
+      "center_ym": "1982-03",
+      "anom_c": 0.23,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 1982,
+      "center_ym": "1982-04",
+      "anom_c": 0.46,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 1982,
+      "center_ym": "1982-05",
+      "anom_c": 0.74,
+      "phase": "el_nino"
+    },
+    {
+      "season": "MJJ",
+      "year": 1982,
+      "center_ym": "1982-06",
+      "anom_c": 0.84,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JJA",
+      "year": 1982,
+      "center_ym": "1982-07",
+      "anom_c": 0.89,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JAS",
+      "year": 1982,
+      "center_ym": "1982-08",
+      "anom_c": 1.14,
+      "phase": "el_nino"
+    },
+    {
+      "season": "ASO",
+      "year": 1982,
+      "center_ym": "1982-09",
+      "anom_c": 1.64,
+      "phase": "el_nino"
+    },
+    {
+      "season": "SON",
+      "year": 1982,
+      "center_ym": "1982-10",
+      "anom_c": 2.03,
+      "phase": "el_nino"
+    },
+    {
+      "season": "OND",
+      "year": 1982,
+      "center_ym": "1982-11",
+      "anom_c": 2.24,
+      "phase": "el_nino"
+    },
+    {
+      "season": "NDJ",
+      "year": 1982,
+      "center_ym": "1982-12",
+      "anom_c": 2.36,
+      "phase": "el_nino"
+    },
+    {
+      "season": "DJF",
+      "year": 1983,
+      "center_ym": "1983-01",
+      "anom_c": 2.4,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JFM",
+      "year": 1983,
+      "center_ym": "1983-02",
+      "anom_c": 2.15,
+      "phase": "el_nino"
+    },
+    {
+      "season": "FMA",
+      "year": 1983,
+      "center_ym": "1983-03",
+      "anom_c": 1.67,
+      "phase": "el_nino"
+    },
+    {
+      "season": "MAM",
+      "year": 1983,
+      "center_ym": "1983-04",
+      "anom_c": 1.3,
+      "phase": "el_nino"
+    },
+    {
+      "season": "AMJ",
+      "year": 1983,
+      "center_ym": "1983-05",
+      "anom_c": 0.87,
+      "phase": "el_nino"
+    },
+    {
+      "season": "MJJ",
+      "year": 1983,
+      "center_ym": "1983-06",
+      "anom_c": 0.47,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 1983,
+      "center_ym": "1983-07",
+      "anom_c": 0.03,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 1983,
+      "center_ym": "1983-08",
+      "anom_c": -0.23,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 1983,
+      "center_ym": "1983-09",
+      "anom_c": -0.59,
+      "phase": "la_nina"
+    },
+    {
+      "season": "SON",
+      "year": 1983,
+      "center_ym": "1983-10",
+      "anom_c": -0.9,
+      "phase": "la_nina"
+    },
+    {
+      "season": "OND",
+      "year": 1983,
+      "center_ym": "1983-11",
+      "anom_c": -1.1,
+      "phase": "la_nina"
+    },
+    {
+      "season": "NDJ",
+      "year": 1983,
+      "center_ym": "1983-12",
+      "anom_c": -0.96,
+      "phase": "la_nina"
+    },
+    {
+      "season": "DJF",
+      "year": 1984,
+      "center_ym": "1984-01",
+      "anom_c": -0.63,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JFM",
+      "year": 1984,
+      "center_ym": "1984-02",
+      "anom_c": -0.52,
+      "phase": "la_nina"
+    },
+    {
+      "season": "FMA",
+      "year": 1984,
+      "center_ym": "1984-03",
+      "anom_c": -0.45,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 1984,
+      "center_ym": "1984-04",
+      "anom_c": -0.59,
+      "phase": "la_nina"
+    },
+    {
+      "season": "AMJ",
+      "year": 1984,
+      "center_ym": "1984-05",
+      "anom_c": -0.62,
+      "phase": "la_nina"
+    },
+    {
+      "season": "MJJ",
+      "year": 1984,
+      "center_ym": "1984-06",
+      "anom_c": -0.51,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JJA",
+      "year": 1984,
+      "center_ym": "1984-07",
+      "anom_c": -0.32,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 1984,
+      "center_ym": "1984-08",
+      "anom_c": -0.17,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 1984,
+      "center_ym": "1984-09",
+      "anom_c": -0.28,
+      "phase": "neutral"
+    },
+    {
+      "season": "SON",
+      "year": 1984,
+      "center_ym": "1984-10",
+      "anom_c": -0.61,
+      "phase": "la_nina"
+    },
+    {
+      "season": "OND",
+      "year": 1984,
+      "center_ym": "1984-11",
+      "anom_c": -0.88,
+      "phase": "la_nina"
+    },
+    {
+      "season": "NDJ",
+      "year": 1984,
+      "center_ym": "1984-12",
+      "anom_c": -0.93,
+      "phase": "la_nina"
+    },
+    {
+      "season": "DJF",
+      "year": 1985,
+      "center_ym": "1985-01",
+      "anom_c": -0.83,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JFM",
+      "year": 1985,
+      "center_ym": "1985-02",
+      "anom_c": -0.68,
+      "phase": "la_nina"
+    },
+    {
+      "season": "FMA",
+      "year": 1985,
+      "center_ym": "1985-03",
+      "anom_c": -0.75,
+      "phase": "la_nina"
+    },
+    {
+      "season": "MAM",
+      "year": 1985,
+      "center_ym": "1985-04",
+      "anom_c": -0.76,
+      "phase": "la_nina"
+    },
+    {
+      "season": "AMJ",
+      "year": 1985,
+      "center_ym": "1985-05",
+      "anom_c": -0.77,
+      "phase": "la_nina"
+    },
+    {
+      "season": "MJJ",
+      "year": 1985,
+      "center_ym": "1985-06",
+      "anom_c": -0.55,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JJA",
+      "year": 1985,
+      "center_ym": "1985-07",
+      "anom_c": -0.33,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 1985,
+      "center_ym": "1985-08",
+      "anom_c": -0.2,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 1985,
+      "center_ym": "1985-09",
+      "anom_c": -0.16,
+      "phase": "neutral"
+    },
+    {
+      "season": "SON",
+      "year": 1985,
+      "center_ym": "1985-10",
+      "anom_c": -0.18,
+      "phase": "neutral"
+    },
+    {
+      "season": "OND",
+      "year": 1985,
+      "center_ym": "1985-11",
+      "anom_c": -0.14,
+      "phase": "neutral"
+    },
+    {
+      "season": "NDJ",
+      "year": 1985,
+      "center_ym": "1985-12",
+      "anom_c": -0.21,
+      "phase": "neutral"
+    },
+    {
+      "season": "DJF",
+      "year": 1986,
+      "center_ym": "1986-01",
+      "anom_c": -0.26,
+      "phase": "neutral"
+    },
+    {
+      "season": "JFM",
+      "year": 1986,
+      "center_ym": "1986-02",
+      "anom_c": -0.27,
+      "phase": "neutral"
+    },
+    {
+      "season": "FMA",
+      "year": 1986,
+      "center_ym": "1986-03",
+      "anom_c": -0.19,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 1986,
+      "center_ym": "1986-04",
+      "anom_c": -0.14,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 1986,
+      "center_ym": "1986-05",
+      "anom_c": -0.11,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 1986,
+      "center_ym": "1986-06",
+      "anom_c": -0.01,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 1986,
+      "center_ym": "1986-07",
+      "anom_c": 0.26,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 1986,
+      "center_ym": "1986-08",
+      "anom_c": 0.57,
+      "phase": "el_nino"
+    },
+    {
+      "season": "ASO",
+      "year": 1986,
+      "center_ym": "1986-09",
+      "anom_c": 0.79,
+      "phase": "el_nino"
+    },
+    {
+      "season": "SON",
+      "year": 1986,
+      "center_ym": "1986-10",
+      "anom_c": 1.0,
+      "phase": "el_nino"
+    },
+    {
+      "season": "OND",
+      "year": 1986,
+      "center_ym": "1986-11",
+      "anom_c": 1.22,
+      "phase": "el_nino"
+    },
+    {
+      "season": "NDJ",
+      "year": 1986,
+      "center_ym": "1986-12",
+      "anom_c": 1.42,
+      "phase": "el_nino"
+    },
+    {
+      "season": "DJF",
+      "year": 1987,
+      "center_ym": "1987-01",
+      "anom_c": 1.46,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JFM",
+      "year": 1987,
+      "center_ym": "1987-02",
+      "anom_c": 1.35,
+      "phase": "el_nino"
+    },
+    {
+      "season": "FMA",
+      "year": 1987,
+      "center_ym": "1987-03",
+      "anom_c": 1.14,
+      "phase": "el_nino"
+    },
+    {
+      "season": "MAM",
+      "year": 1987,
+      "center_ym": "1987-04",
+      "anom_c": 0.93,
+      "phase": "el_nino"
+    },
+    {
+      "season": "AMJ",
+      "year": 1987,
+      "center_ym": "1987-05",
+      "anom_c": 0.85,
+      "phase": "el_nino"
+    },
+    {
+      "season": "MJJ",
+      "year": 1987,
+      "center_ym": "1987-06",
+      "anom_c": 0.94,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JJA",
+      "year": 1987,
+      "center_ym": "1987-07",
+      "anom_c": 1.11,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JAS",
+      "year": 1987,
+      "center_ym": "1987-08",
+      "anom_c": 1.3,
+      "phase": "el_nino"
+    },
+    {
+      "season": "ASO",
+      "year": 1987,
+      "center_ym": "1987-09",
+      "anom_c": 1.34,
+      "phase": "el_nino"
+    },
+    {
+      "season": "SON",
+      "year": 1987,
+      "center_ym": "1987-10",
+      "anom_c": 1.2,
+      "phase": "el_nino"
+    },
+    {
+      "season": "OND",
+      "year": 1987,
+      "center_ym": "1987-11",
+      "anom_c": 0.98,
+      "phase": "el_nino"
+    },
+    {
+      "season": "NDJ",
+      "year": 1987,
+      "center_ym": "1987-12",
+      "anom_c": 0.8,
+      "phase": "el_nino"
+    },
+    {
+      "season": "DJF",
+      "year": 1988,
+      "center_ym": "1988-01",
+      "anom_c": 0.45,
+      "phase": "neutral"
+    },
+    {
+      "season": "JFM",
+      "year": 1988,
+      "center_ym": "1988-02",
+      "anom_c": 0.11,
+      "phase": "neutral"
+    },
+    {
+      "season": "FMA",
+      "year": 1988,
+      "center_ym": "1988-03",
+      "anom_c": -0.4,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 1988,
+      "center_ym": "1988-04",
+      "anom_c": -0.91,
+      "phase": "la_nina"
+    },
+    {
+      "season": "AMJ",
+      "year": 1988,
+      "center_ym": "1988-05",
+      "anom_c": -1.49,
+      "phase": "la_nina"
+    },
+    {
+      "season": "MJJ",
+      "year": 1988,
+      "center_ym": "1988-06",
+      "anom_c": -1.74,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JJA",
+      "year": 1988,
+      "center_ym": "1988-07",
+      "anom_c": -1.64,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JAS",
+      "year": 1988,
+      "center_ym": "1988-08",
+      "anom_c": -1.36,
+      "phase": "la_nina"
+    },
+    {
+      "season": "ASO",
+      "year": 1988,
+      "center_ym": "1988-09",
+      "anom_c": -1.44,
+      "phase": "la_nina"
+    },
+    {
+      "season": "SON",
+      "year": 1988,
+      "center_ym": "1988-10",
+      "anom_c": -1.71,
+      "phase": "la_nina"
+    },
+    {
+      "season": "OND",
+      "year": 1988,
+      "center_ym": "1988-11",
+      "anom_c": -1.95,
+      "phase": "la_nina"
+    },
+    {
+      "season": "NDJ",
+      "year": 1988,
+      "center_ym": "1988-12",
+      "anom_c": -1.94,
+      "phase": "la_nina"
+    },
+    {
+      "season": "DJF",
+      "year": 1989,
+      "center_ym": "1989-01",
+      "anom_c": -1.64,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JFM",
+      "year": 1989,
+      "center_ym": "1989-02",
+      "anom_c": -1.37,
+      "phase": "la_nina"
+    },
+    {
+      "season": "FMA",
+      "year": 1989,
+      "center_ym": "1989-03",
+      "anom_c": -1.11,
+      "phase": "la_nina"
+    },
+    {
+      "season": "MAM",
+      "year": 1989,
+      "center_ym": "1989-04",
+      "anom_c": -0.89,
+      "phase": "la_nina"
+    },
+    {
+      "season": "AMJ",
+      "year": 1989,
+      "center_ym": "1989-05",
+      "anom_c": -0.65,
+      "phase": "la_nina"
+    },
+    {
+      "season": "MJJ",
+      "year": 1989,
+      "center_ym": "1989-06",
+      "anom_c": -0.43,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 1989,
+      "center_ym": "1989-07",
+      "anom_c": -0.41,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 1989,
+      "center_ym": "1989-08",
+      "anom_c": -0.38,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 1989,
+      "center_ym": "1989-09",
+      "anom_c": -0.31,
+      "phase": "neutral"
+    },
+    {
+      "season": "SON",
+      "year": 1989,
+      "center_ym": "1989-10",
+      "anom_c": -0.23,
+      "phase": "neutral"
+    },
+    {
+      "season": "OND",
+      "year": 1989,
+      "center_ym": "1989-11",
+      "anom_c": -0.08,
+      "phase": "neutral"
+    },
+    {
+      "season": "NDJ",
+      "year": 1989,
+      "center_ym": "1989-12",
+      "anom_c": 0.06,
+      "phase": "neutral"
+    },
+    {
+      "season": "DJF",
+      "year": 1990,
+      "center_ym": "1990-01",
+      "anom_c": 0.32,
+      "phase": "neutral"
+    },
+    {
+      "season": "JFM",
+      "year": 1990,
+      "center_ym": "1990-02",
+      "anom_c": 0.3,
+      "phase": "neutral"
+    },
+    {
+      "season": "FMA",
+      "year": 1990,
+      "center_ym": "1990-03",
+      "anom_c": 0.32,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 1990,
+      "center_ym": "1990-04",
+      "anom_c": 0.26,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 1990,
+      "center_ym": "1990-05",
+      "anom_c": 0.19,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 1990,
+      "center_ym": "1990-06",
+      "anom_c": 0.2,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 1990,
+      "center_ym": "1990-07",
+      "anom_c": 0.21,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 1990,
+      "center_ym": "1990-08",
+      "anom_c": 0.33,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 1990,
+      "center_ym": "1990-09",
+      "anom_c": 0.33,
+      "phase": "neutral"
+    },
+    {
+      "season": "SON",
+      "year": 1990,
+      "center_ym": "1990-10",
+      "anom_c": 0.27,
+      "phase": "neutral"
+    },
+    {
+      "season": "OND",
+      "year": 1990,
+      "center_ym": "1990-11",
+      "anom_c": 0.3,
+      "phase": "neutral"
+    },
+    {
+      "season": "NDJ",
+      "year": 1990,
+      "center_ym": "1990-12",
+      "anom_c": 0.43,
+      "phase": "neutral"
+    },
+    {
+      "season": "DJF",
+      "year": 1991,
+      "center_ym": "1991-01",
+      "anom_c": 0.57,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JFM",
+      "year": 1991,
+      "center_ym": "1991-02",
+      "anom_c": 0.53,
+      "phase": "el_nino"
+    },
+    {
+      "season": "FMA",
+      "year": 1991,
+      "center_ym": "1991-03",
+      "anom_c": 0.42,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 1991,
+      "center_ym": "1991-04",
+      "anom_c": 0.42,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 1991,
+      "center_ym": "1991-05",
+      "anom_c": 0.56,
+      "phase": "el_nino"
+    },
+    {
+      "season": "MJJ",
+      "year": 1991,
+      "center_ym": "1991-06",
+      "anom_c": 0.7,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JJA",
+      "year": 1991,
+      "center_ym": "1991-07",
+      "anom_c": 0.86,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JAS",
+      "year": 1991,
+      "center_ym": "1991-08",
+      "anom_c": 0.83,
+      "phase": "el_nino"
+    },
+    {
+      "season": "ASO",
+      "year": 1991,
+      "center_ym": "1991-09",
+      "anom_c": 1.01,
+      "phase": "el_nino"
+    },
+    {
+      "season": "SON",
+      "year": 1991,
+      "center_ym": "1991-10",
+      "anom_c": 1.2,
+      "phase": "el_nino"
+    },
+    {
+      "season": "OND",
+      "year": 1991,
+      "center_ym": "1991-11",
+      "anom_c": 1.66,
+      "phase": "el_nino"
+    },
+    {
+      "season": "NDJ",
+      "year": 1991,
+      "center_ym": "1991-12",
+      "anom_c": 1.97,
+      "phase": "el_nino"
+    },
+    {
+      "season": "DJF",
+      "year": 1992,
+      "center_ym": "1992-01",
+      "anom_c": 2.12,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JFM",
+      "year": 1992,
+      "center_ym": "1992-02",
+      "anom_c": 2.08,
+      "phase": "el_nino"
+    },
+    {
+      "season": "FMA",
+      "year": 1992,
+      "center_ym": "1992-03",
+      "anom_c": 1.94,
+      "phase": "el_nino"
+    },
+    {
+      "season": "MAM",
+      "year": 1992,
+      "center_ym": "1992-04",
+      "anom_c": 1.76,
+      "phase": "el_nino"
+    },
+    {
+      "season": "AMJ",
+      "year": 1992,
+      "center_ym": "1992-05",
+      "anom_c": 1.4,
+      "phase": "el_nino"
+    },
+    {
+      "season": "MJJ",
+      "year": 1992,
+      "center_ym": "1992-06",
+      "anom_c": 0.93,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JJA",
+      "year": 1992,
+      "center_ym": "1992-07",
+      "anom_c": 0.52,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JAS",
+      "year": 1992,
+      "center_ym": "1992-08",
+      "anom_c": 0.3,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 1992,
+      "center_ym": "1992-09",
+      "anom_c": 0.13,
+      "phase": "neutral"
+    },
+    {
+      "season": "SON",
+      "year": 1992,
+      "center_ym": "1992-10",
+      "anom_c": 0.1,
+      "phase": "neutral"
+    },
+    {
+      "season": "OND",
+      "year": 1992,
+      "center_ym": "1992-11",
+      "anom_c": 0.12,
+      "phase": "neutral"
+    },
+    {
+      "season": "NDJ",
+      "year": 1992,
+      "center_ym": "1992-12",
+      "anom_c": 0.35,
+      "phase": "neutral"
+    },
+    {
+      "season": "DJF",
+      "year": 1993,
+      "center_ym": "1993-01",
+      "anom_c": 0.55,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JFM",
+      "year": 1993,
+      "center_ym": "1993-02",
+      "anom_c": 0.7,
+      "phase": "el_nino"
+    },
+    {
+      "season": "FMA",
+      "year": 1993,
+      "center_ym": "1993-03",
+      "anom_c": 0.86,
+      "phase": "el_nino"
+    },
+    {
+      "season": "MAM",
+      "year": 1993,
+      "center_ym": "1993-04",
+      "anom_c": 1.06,
+      "phase": "el_nino"
+    },
+    {
+      "season": "AMJ",
+      "year": 1993,
+      "center_ym": "1993-05",
+      "anom_c": 1.0,
+      "phase": "el_nino"
+    },
+    {
+      "season": "MJJ",
+      "year": 1993,
+      "center_ym": "1993-06",
+      "anom_c": 0.77,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JJA",
+      "year": 1993,
+      "center_ym": "1993-07",
+      "anom_c": 0.45,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 1993,
+      "center_ym": "1993-08",
+      "anom_c": 0.46,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 1993,
+      "center_ym": "1993-09",
+      "anom_c": 0.48,
+      "phase": "neutral"
+    },
+    {
+      "season": "SON",
+      "year": 1993,
+      "center_ym": "1993-10",
+      "anom_c": 0.46,
+      "phase": "neutral"
+    },
+    {
+      "season": "OND",
+      "year": 1993,
+      "center_ym": "1993-11",
+      "anom_c": 0.44,
+      "phase": "neutral"
+    },
+    {
+      "season": "NDJ",
+      "year": 1993,
+      "center_ym": "1993-12",
+      "anom_c": 0.42,
+      "phase": "neutral"
+    },
+    {
+      "season": "DJF",
+      "year": 1994,
+      "center_ym": "1994-01",
+      "anom_c": 0.33,
+      "phase": "neutral"
+    },
+    {
+      "season": "JFM",
+      "year": 1994,
+      "center_ym": "1994-02",
+      "anom_c": 0.24,
+      "phase": "neutral"
+    },
+    {
+      "season": "FMA",
+      "year": 1994,
+      "center_ym": "1994-03",
+      "anom_c": 0.23,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 1994,
+      "center_ym": "1994-04",
+      "anom_c": 0.32,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 1994,
+      "center_ym": "1994-05",
+      "anom_c": 0.4,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 1994,
+      "center_ym": "1994-06",
+      "anom_c": 0.41,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 1994,
+      "center_ym": "1994-07",
+      "anom_c": 0.53,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JAS",
+      "year": 1994,
+      "center_ym": "1994-08",
+      "anom_c": 0.6,
+      "phase": "el_nino"
+    },
+    {
+      "season": "ASO",
+      "year": 1994,
+      "center_ym": "1994-09",
+      "anom_c": 0.79,
+      "phase": "el_nino"
+    },
+    {
+      "season": "SON",
+      "year": 1994,
+      "center_ym": "1994-10",
+      "anom_c": 0.97,
+      "phase": "el_nino"
+    },
+    {
+      "season": "OND",
+      "year": 1994,
+      "center_ym": "1994-11",
+      "anom_c": 1.23,
+      "phase": "el_nino"
+    },
+    {
+      "season": "NDJ",
+      "year": 1994,
+      "center_ym": "1994-12",
+      "anom_c": 1.28,
+      "phase": "el_nino"
+    },
+    {
+      "season": "DJF",
+      "year": 1995,
+      "center_ym": "1995-01",
+      "anom_c": 1.17,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JFM",
+      "year": 1995,
+      "center_ym": "1995-02",
+      "anom_c": 0.86,
+      "phase": "el_nino"
+    },
+    {
+      "season": "FMA",
+      "year": 1995,
+      "center_ym": "1995-03",
+      "anom_c": 0.55,
+      "phase": "el_nino"
+    },
+    {
+      "season": "MAM",
+      "year": 1995,
+      "center_ym": "1995-04",
+      "anom_c": 0.2,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 1995,
+      "center_ym": "1995-05",
+      "anom_c": -0.07,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 1995,
+      "center_ym": "1995-06",
+      "anom_c": -0.23,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 1995,
+      "center_ym": "1995-07",
+      "anom_c": -0.41,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 1995,
+      "center_ym": "1995-08",
+      "anom_c": -0.57,
+      "phase": "la_nina"
+    },
+    {
+      "season": "ASO",
+      "year": 1995,
+      "center_ym": "1995-09",
+      "anom_c": -0.76,
+      "phase": "la_nina"
+    },
+    {
+      "season": "SON",
+      "year": 1995,
+      "center_ym": "1995-10",
+      "anom_c": -0.93,
+      "phase": "la_nina"
+    },
+    {
+      "season": "OND",
+      "year": 1995,
+      "center_ym": "1995-11",
+      "anom_c": -1.02,
+      "phase": "la_nina"
+    },
+    {
+      "season": "NDJ",
+      "year": 1995,
+      "center_ym": "1995-12",
+      "anom_c": -0.99,
+      "phase": "la_nina"
+    },
+    {
+      "season": "DJF",
+      "year": 1996,
+      "center_ym": "1996-01",
+      "anom_c": -0.87,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JFM",
+      "year": 1996,
+      "center_ym": "1996-02",
+      "anom_c": -0.75,
+      "phase": "la_nina"
+    },
+    {
+      "season": "FMA",
+      "year": 1996,
+      "center_ym": "1996-03",
+      "anom_c": -0.58,
+      "phase": "la_nina"
+    },
+    {
+      "season": "MAM",
+      "year": 1996,
+      "center_ym": "1996-04",
+      "anom_c": -0.37,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 1996,
+      "center_ym": "1996-05",
+      "anom_c": -0.25,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 1996,
+      "center_ym": "1996-06",
+      "anom_c": -0.24,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 1996,
+      "center_ym": "1996-07",
+      "anom_c": -0.2,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 1996,
+      "center_ym": "1996-08",
+      "anom_c": -0.2,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 1996,
+      "center_ym": "1996-09",
+      "anom_c": -0.2,
+      "phase": "neutral"
+    },
+    {
+      "season": "SON",
+      "year": 1996,
+      "center_ym": "1996-10",
+      "anom_c": -0.25,
+      "phase": "neutral"
+    },
+    {
+      "season": "OND",
+      "year": 1996,
+      "center_ym": "1996-11",
+      "anom_c": -0.3,
+      "phase": "neutral"
+    },
+    {
+      "season": "NDJ",
+      "year": 1996,
+      "center_ym": "1996-12",
+      "anom_c": -0.29,
+      "phase": "neutral"
+    },
+    {
+      "season": "DJF",
+      "year": 1997,
+      "center_ym": "1997-01",
+      "anom_c": -0.21,
+      "phase": "neutral"
+    },
+    {
+      "season": "JFM",
+      "year": 1997,
+      "center_ym": "1997-02",
+      "anom_c": -0.03,
+      "phase": "neutral"
+    },
+    {
+      "season": "FMA",
+      "year": 1997,
+      "center_ym": "1997-03",
+      "anom_c": 0.17,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 1997,
+      "center_ym": "1997-04",
+      "anom_c": 0.47,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 1997,
+      "center_ym": "1997-05",
+      "anom_c": 0.83,
+      "phase": "el_nino"
+    },
+    {
+      "season": "MJJ",
+      "year": 1997,
+      "center_ym": "1997-06",
+      "anom_c": 1.2,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JJA",
+      "year": 1997,
+      "center_ym": "1997-07",
+      "anom_c": 1.5,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JAS",
+      "year": 1997,
+      "center_ym": "1997-08",
+      "anom_c": 1.84,
+      "phase": "el_nino"
+    },
+    {
+      "season": "ASO",
+      "year": 1997,
+      "center_ym": "1997-09",
+      "anom_c": 2.07,
+      "phase": "el_nino"
+    },
+    {
+      "season": "SON",
+      "year": 1997,
+      "center_ym": "1997-10",
+      "anom_c": 2.22,
+      "phase": "el_nino"
+    },
+    {
+      "season": "OND",
+      "year": 1997,
+      "center_ym": "1997-11",
+      "anom_c": 2.25,
+      "phase": "el_nino"
+    },
+    {
+      "season": "NDJ",
+      "year": 1997,
+      "center_ym": "1997-12",
+      "anom_c": 2.28,
+      "phase": "el_nino"
+    },
+    {
+      "season": "DJF",
+      "year": 1998,
+      "center_ym": "1998-01",
+      "anom_c": 2.13,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JFM",
+      "year": 1998,
+      "center_ym": "1998-02",
+      "anom_c": 1.82,
+      "phase": "el_nino"
+    },
+    {
+      "season": "FMA",
+      "year": 1998,
+      "center_ym": "1998-03",
+      "anom_c": 1.22,
+      "phase": "el_nino"
+    },
+    {
+      "season": "MAM",
+      "year": 1998,
+      "center_ym": "1998-04",
+      "anom_c": 0.81,
+      "phase": "el_nino"
+    },
+    {
+      "season": "AMJ",
+      "year": 1998,
+      "center_ym": "1998-05",
+      "anom_c": 0.07,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 1998,
+      "center_ym": "1998-06",
+      "anom_c": -0.46,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 1998,
+      "center_ym": "1998-07",
+      "anom_c": -1.05,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JAS",
+      "year": 1998,
+      "center_ym": "1998-08",
+      "anom_c": -1.14,
+      "phase": "la_nina"
+    },
+    {
+      "season": "ASO",
+      "year": 1998,
+      "center_ym": "1998-09",
+      "anom_c": -1.24,
+      "phase": "la_nina"
+    },
+    {
+      "season": "SON",
+      "year": 1998,
+      "center_ym": "1998-10",
+      "anom_c": -1.33,
+      "phase": "la_nina"
+    },
+    {
+      "season": "OND",
+      "year": 1998,
+      "center_ym": "1998-11",
+      "anom_c": -1.51,
+      "phase": "la_nina"
+    },
+    {
+      "season": "NDJ",
+      "year": 1998,
+      "center_ym": "1998-12",
+      "anom_c": -1.61,
+      "phase": "la_nina"
+    },
+    {
+      "season": "DJF",
+      "year": 1999,
+      "center_ym": "1999-01",
+      "anom_c": -1.56,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JFM",
+      "year": 1999,
+      "center_ym": "1999-02",
+      "anom_c": -1.28,
+      "phase": "la_nina"
+    },
+    {
+      "season": "FMA",
+      "year": 1999,
+      "center_ym": "1999-03",
+      "anom_c": -0.99,
+      "phase": "la_nina"
+    },
+    {
+      "season": "MAM",
+      "year": 1999,
+      "center_ym": "1999-04",
+      "anom_c": -0.88,
+      "phase": "la_nina"
+    },
+    {
+      "season": "AMJ",
+      "year": 1999,
+      "center_ym": "1999-05",
+      "anom_c": -0.81,
+      "phase": "la_nina"
+    },
+    {
+      "season": "MJJ",
+      "year": 1999,
+      "center_ym": "1999-06",
+      "anom_c": -0.82,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JJA",
+      "year": 1999,
+      "center_ym": "1999-07",
+      "anom_c": -0.83,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JAS",
+      "year": 1999,
+      "center_ym": "1999-08",
+      "anom_c": -0.86,
+      "phase": "la_nina"
+    },
+    {
+      "season": "ASO",
+      "year": 1999,
+      "center_ym": "1999-09",
+      "anom_c": -0.87,
+      "phase": "la_nina"
+    },
+    {
+      "season": "SON",
+      "year": 1999,
+      "center_ym": "1999-10",
+      "anom_c": -1.06,
+      "phase": "la_nina"
+    },
+    {
+      "season": "OND",
+      "year": 1999,
+      "center_ym": "1999-11",
+      "anom_c": -1.33,
+      "phase": "la_nina"
+    },
+    {
+      "season": "NDJ",
+      "year": 1999,
+      "center_ym": "1999-12",
+      "anom_c": -1.56,
+      "phase": "la_nina"
+    },
+    {
+      "season": "DJF",
+      "year": 2000,
+      "center_ym": "2000-01",
+      "anom_c": -1.5,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JFM",
+      "year": 2000,
+      "center_ym": "2000-02",
+      "anom_c": -1.31,
+      "phase": "la_nina"
+    },
+    {
+      "season": "FMA",
+      "year": 2000,
+      "center_ym": "2000-03",
+      "anom_c": -1.06,
+      "phase": "la_nina"
+    },
+    {
+      "season": "MAM",
+      "year": 2000,
+      "center_ym": "2000-04",
+      "anom_c": -0.88,
+      "phase": "la_nina"
+    },
+    {
+      "season": "AMJ",
+      "year": 2000,
+      "center_ym": "2000-05",
+      "anom_c": -0.68,
+      "phase": "la_nina"
+    },
+    {
+      "season": "MJJ",
+      "year": 2000,
+      "center_ym": "2000-06",
+      "anom_c": -0.54,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JJA",
+      "year": 2000,
+      "center_ym": "2000-07",
+      "anom_c": -0.35,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 2000,
+      "center_ym": "2000-08",
+      "anom_c": -0.29,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 2000,
+      "center_ym": "2000-09",
+      "anom_c": -0.36,
+      "phase": "neutral"
+    },
+    {
+      "season": "SON",
+      "year": 2000,
+      "center_ym": "2000-10",
+      "anom_c": -0.55,
+      "phase": "la_nina"
+    },
+    {
+      "season": "OND",
+      "year": 2000,
+      "center_ym": "2000-11",
+      "anom_c": -0.79,
+      "phase": "la_nina"
+    },
+    {
+      "season": "NDJ",
+      "year": 2000,
+      "center_ym": "2000-12",
+      "anom_c": -0.82,
+      "phase": "la_nina"
+    },
+    {
+      "season": "DJF",
+      "year": 2001,
+      "center_ym": "2001-01",
+      "anom_c": -0.79,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JFM",
+      "year": 2001,
+      "center_ym": "2001-02",
+      "anom_c": -0.62,
+      "phase": "la_nina"
+    },
+    {
+      "season": "FMA",
+      "year": 2001,
+      "center_ym": "2001-03",
+      "anom_c": -0.55,
+      "phase": "la_nina"
+    },
+    {
+      "season": "MAM",
+      "year": 2001,
+      "center_ym": "2001-04",
+      "anom_c": -0.41,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 2001,
+      "center_ym": "2001-05",
+      "anom_c": -0.28,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 2001,
+      "center_ym": "2001-06",
+      "anom_c": -0.08,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 2001,
+      "center_ym": "2001-07",
+      "anom_c": 0.01,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 2001,
+      "center_ym": "2001-08",
+      "anom_c": -0.02,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 2001,
+      "center_ym": "2001-09",
+      "anom_c": -0.05,
+      "phase": "neutral"
+    },
+    {
+      "season": "SON",
+      "year": 2001,
+      "center_ym": "2001-10",
+      "anom_c": -0.18,
+      "phase": "neutral"
+    },
+    {
+      "season": "OND",
+      "year": 2001,
+      "center_ym": "2001-11",
+      "anom_c": -0.27,
+      "phase": "neutral"
+    },
+    {
+      "season": "NDJ",
+      "year": 2001,
+      "center_ym": "2001-12",
+      "anom_c": -0.32,
+      "phase": "neutral"
+    },
+    {
+      "season": "DJF",
+      "year": 2002,
+      "center_ym": "2002-01",
+      "anom_c": -0.16,
+      "phase": "neutral"
+    },
+    {
+      "season": "JFM",
+      "year": 2002,
+      "center_ym": "2002-02",
+      "anom_c": 0.01,
+      "phase": "neutral"
+    },
+    {
+      "season": "FMA",
+      "year": 2002,
+      "center_ym": "2002-03",
+      "anom_c": 0.03,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 2002,
+      "center_ym": "2002-04",
+      "anom_c": 0.05,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 2002,
+      "center_ym": "2002-05",
+      "anom_c": 0.22,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 2002,
+      "center_ym": "2002-06",
+      "anom_c": 0.44,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 2002,
+      "center_ym": "2002-07",
+      "anom_c": 0.64,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JAS",
+      "year": 2002,
+      "center_ym": "2002-08",
+      "anom_c": 0.8,
+      "phase": "el_nino"
+    },
+    {
+      "season": "ASO",
+      "year": 2002,
+      "center_ym": "2002-09",
+      "anom_c": 0.97,
+      "phase": "el_nino"
+    },
+    {
+      "season": "SON",
+      "year": 2002,
+      "center_ym": "2002-10",
+      "anom_c": 1.18,
+      "phase": "el_nino"
+    },
+    {
+      "season": "OND",
+      "year": 2002,
+      "center_ym": "2002-11",
+      "anom_c": 1.33,
+      "phase": "el_nino"
+    },
+    {
+      "season": "NDJ",
+      "year": 2002,
+      "center_ym": "2002-12",
+      "anom_c": 1.13,
+      "phase": "el_nino"
+    },
+    {
+      "season": "DJF",
+      "year": 2003,
+      "center_ym": "2003-01",
+      "anom_c": 0.85,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JFM",
+      "year": 2003,
+      "center_ym": "2003-02",
+      "anom_c": 0.47,
+      "phase": "neutral"
+    },
+    {
+      "season": "FMA",
+      "year": 2003,
+      "center_ym": "2003-03",
+      "anom_c": 0.23,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 2003,
+      "center_ym": "2003-04",
+      "anom_c": -0.19,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 2003,
+      "center_ym": "2003-05",
+      "anom_c": -0.34,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 2003,
+      "center_ym": "2003-06",
+      "anom_c": -0.24,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 2003,
+      "center_ym": "2003-07",
+      "anom_c": 0.04,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 2003,
+      "center_ym": "2003-08",
+      "anom_c": 0.09,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 2003,
+      "center_ym": "2003-09",
+      "anom_c": 0.17,
+      "phase": "neutral"
+    },
+    {
+      "season": "SON",
+      "year": 2003,
+      "center_ym": "2003-10",
+      "anom_c": 0.17,
+      "phase": "neutral"
+    },
+    {
+      "season": "OND",
+      "year": 2003,
+      "center_ym": "2003-11",
+      "anom_c": 0.25,
+      "phase": "neutral"
+    },
+    {
+      "season": "NDJ",
+      "year": 2003,
+      "center_ym": "2003-12",
+      "anom_c": 0.22,
+      "phase": "neutral"
+    },
+    {
+      "season": "DJF",
+      "year": 2004,
+      "center_ym": "2004-01",
+      "anom_c": 0.23,
+      "phase": "neutral"
+    },
+    {
+      "season": "JFM",
+      "year": 2004,
+      "center_ym": "2004-02",
+      "anom_c": 0.12,
+      "phase": "neutral"
+    },
+    {
+      "season": "FMA",
+      "year": 2004,
+      "center_ym": "2004-03",
+      "anom_c": 0.07,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 2004,
+      "center_ym": "2004-04",
+      "anom_c": 0.09,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 2004,
+      "center_ym": "2004-05",
+      "anom_c": 0.18,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 2004,
+      "center_ym": "2004-06",
+      "anom_c": 0.36,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 2004,
+      "center_ym": "2004-07",
+      "anom_c": 0.54,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JAS",
+      "year": 2004,
+      "center_ym": "2004-08",
+      "anom_c": 0.69,
+      "phase": "el_nino"
+    },
+    {
+      "season": "ASO",
+      "year": 2004,
+      "center_ym": "2004-09",
+      "anom_c": 0.71,
+      "phase": "el_nino"
+    },
+    {
+      "season": "SON",
+      "year": 2004,
+      "center_ym": "2004-10",
+      "anom_c": 0.7,
+      "phase": "el_nino"
+    },
+    {
+      "season": "OND",
+      "year": 2004,
+      "center_ym": "2004-11",
+      "anom_c": 0.7,
+      "phase": "el_nino"
+    },
+    {
+      "season": "NDJ",
+      "year": 2004,
+      "center_ym": "2004-12",
+      "anom_c": 0.69,
+      "phase": "el_nino"
+    },
+    {
+      "season": "DJF",
+      "year": 2005,
+      "center_ym": "2005-01",
+      "anom_c": 0.54,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JFM",
+      "year": 2005,
+      "center_ym": "2005-02",
+      "anom_c": 0.4,
+      "phase": "neutral"
+    },
+    {
+      "season": "FMA",
+      "year": 2005,
+      "center_ym": "2005-03",
+      "anom_c": 0.26,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 2005,
+      "center_ym": "2005-04",
+      "anom_c": 0.25,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 2005,
+      "center_ym": "2005-05",
+      "anom_c": 0.2,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 2005,
+      "center_ym": "2005-06",
+      "anom_c": 0.05,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 2005,
+      "center_ym": "2005-07",
+      "anom_c": -0.06,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 2005,
+      "center_ym": "2005-08",
+      "anom_c": -0.11,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 2005,
+      "center_ym": "2005-09",
+      "anom_c": -0.04,
+      "phase": "neutral"
+    },
+    {
+      "season": "SON",
+      "year": 2005,
+      "center_ym": "2005-10",
+      "anom_c": -0.18,
+      "phase": "neutral"
+    },
+    {
+      "season": "OND",
+      "year": 2005,
+      "center_ym": "2005-11",
+      "anom_c": -0.5,
+      "phase": "la_nina"
+    },
+    {
+      "season": "NDJ",
+      "year": 2005,
+      "center_ym": "2005-12",
+      "anom_c": -0.81,
+      "phase": "la_nina"
+    },
+    {
+      "season": "DJF",
+      "year": 2006,
+      "center_ym": "2006-01",
+      "anom_c": -0.9,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JFM",
+      "year": 2006,
+      "center_ym": "2006-02",
+      "anom_c": -0.87,
+      "phase": "la_nina"
+    },
+    {
+      "season": "FMA",
+      "year": 2006,
+      "center_ym": "2006-03",
+      "anom_c": -0.69,
+      "phase": "la_nina"
+    },
+    {
+      "season": "MAM",
+      "year": 2006,
+      "center_ym": "2006-04",
+      "anom_c": -0.49,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 2006,
+      "center_ym": "2006-05",
+      "anom_c": -0.19,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 2006,
+      "center_ym": "2006-06",
+      "anom_c": -0.05,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 2006,
+      "center_ym": "2006-07",
+      "anom_c": 0.15,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 2006,
+      "center_ym": "2006-08",
+      "anom_c": 0.36,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 2006,
+      "center_ym": "2006-09",
+      "anom_c": 0.57,
+      "phase": "el_nino"
+    },
+    {
+      "season": "SON",
+      "year": 2006,
+      "center_ym": "2006-10",
+      "anom_c": 0.73,
+      "phase": "el_nino"
+    },
+    {
+      "season": "OND",
+      "year": 2006,
+      "center_ym": "2006-11",
+      "anom_c": 0.91,
+      "phase": "el_nino"
+    },
+    {
+      "season": "NDJ",
+      "year": 2006,
+      "center_ym": "2006-12",
+      "anom_c": 0.89,
+      "phase": "el_nino"
+    },
+    {
+      "season": "DJF",
+      "year": 2007,
+      "center_ym": "2007-01",
+      "anom_c": 0.6,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JFM",
+      "year": 2007,
+      "center_ym": "2007-02",
+      "anom_c": 0.16,
+      "phase": "neutral"
+    },
+    {
+      "season": "FMA",
+      "year": 2007,
+      "center_ym": "2007-03",
+      "anom_c": -0.15,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 2007,
+      "center_ym": "2007-04",
+      "anom_c": -0.33,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 2007,
+      "center_ym": "2007-05",
+      "anom_c": -0.36,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 2007,
+      "center_ym": "2007-06",
+      "anom_c": -0.44,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 2007,
+      "center_ym": "2007-07",
+      "anom_c": -0.5,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JAS",
+      "year": 2007,
+      "center_ym": "2007-08",
+      "anom_c": -0.79,
+      "phase": "la_nina"
+    },
+    {
+      "season": "ASO",
+      "year": 2007,
+      "center_ym": "2007-09",
+      "anom_c": -1.04,
+      "phase": "la_nina"
+    },
+    {
+      "season": "SON",
+      "year": 2007,
+      "center_ym": "2007-10",
+      "anom_c": -1.33,
+      "phase": "la_nina"
+    },
+    {
+      "season": "OND",
+      "year": 2007,
+      "center_ym": "2007-11",
+      "anom_c": -1.49,
+      "phase": "la_nina"
+    },
+    {
+      "season": "NDJ",
+      "year": 2007,
+      "center_ym": "2007-12",
+      "anom_c": -1.65,
+      "phase": "la_nina"
+    },
+    {
+      "season": "DJF",
+      "year": 2008,
+      "center_ym": "2008-01",
+      "anom_c": -1.73,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JFM",
+      "year": 2008,
+      "center_ym": "2008-02",
+      "anom_c": -1.62,
+      "phase": "la_nina"
+    },
+    {
+      "season": "FMA",
+      "year": 2008,
+      "center_ym": "2008-03",
+      "anom_c": -1.39,
+      "phase": "la_nina"
+    },
+    {
+      "season": "MAM",
+      "year": 2008,
+      "center_ym": "2008-04",
+      "anom_c": -1.04,
+      "phase": "la_nina"
+    },
+    {
+      "season": "AMJ",
+      "year": 2008,
+      "center_ym": "2008-05",
+      "anom_c": -0.8,
+      "phase": "la_nina"
+    },
+    {
+      "season": "MJJ",
+      "year": 2008,
+      "center_ym": "2008-06",
+      "anom_c": -0.46,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 2008,
+      "center_ym": "2008-07",
+      "anom_c": -0.24,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 2008,
+      "center_ym": "2008-08",
+      "anom_c": -0.17,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 2008,
+      "center_ym": "2008-09",
+      "anom_c": -0.26,
+      "phase": "neutral"
+    },
+    {
+      "season": "SON",
+      "year": 2008,
+      "center_ym": "2008-10",
+      "anom_c": -0.38,
+      "phase": "neutral"
+    },
+    {
+      "season": "OND",
+      "year": 2008,
+      "center_ym": "2008-11",
+      "anom_c": -0.6,
+      "phase": "la_nina"
+    },
+    {
+      "season": "NDJ",
+      "year": 2008,
+      "center_ym": "2008-12",
+      "anom_c": -0.86,
+      "phase": "la_nina"
+    },
+    {
+      "season": "DJF",
+      "year": 2009,
+      "center_ym": "2009-01",
+      "anom_c": -0.96,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JFM",
+      "year": 2009,
+      "center_ym": "2009-02",
+      "anom_c": -0.92,
+      "phase": "la_nina"
+    },
+    {
+      "season": "FMA",
+      "year": 2009,
+      "center_ym": "2009-03",
+      "anom_c": -0.7,
+      "phase": "la_nina"
+    },
+    {
+      "season": "MAM",
+      "year": 2009,
+      "center_ym": "2009-04",
+      "anom_c": -0.43,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 2009,
+      "center_ym": "2009-05",
+      "anom_c": -0.05,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 2009,
+      "center_ym": "2009-06",
+      "anom_c": 0.24,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 2009,
+      "center_ym": "2009-07",
+      "anom_c": 0.35,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 2009,
+      "center_ym": "2009-08",
+      "anom_c": 0.42,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 2009,
+      "center_ym": "2009-09",
+      "anom_c": 0.53,
+      "phase": "el_nino"
+    },
+    {
+      "season": "SON",
+      "year": 2009,
+      "center_ym": "2009-10",
+      "anom_c": 0.86,
+      "phase": "el_nino"
+    },
+    {
+      "season": "OND",
+      "year": 2009,
+      "center_ym": "2009-11",
+      "anom_c": 1.29,
+      "phase": "el_nino"
+    },
+    {
+      "season": "NDJ",
+      "year": 2009,
+      "center_ym": "2009-12",
+      "anom_c": 1.5,
+      "phase": "el_nino"
+    },
+    {
+      "season": "DJF",
+      "year": 2010,
+      "center_ym": "2010-01",
+      "anom_c": 1.44,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JFM",
+      "year": 2010,
+      "center_ym": "2010-02",
+      "anom_c": 1.11,
+      "phase": "el_nino"
+    },
+    {
+      "season": "FMA",
+      "year": 2010,
+      "center_ym": "2010-03",
+      "anom_c": 0.69,
+      "phase": "el_nino"
+    },
+    {
+      "season": "MAM",
+      "year": 2010,
+      "center_ym": "2010-04",
+      "anom_c": 0.1,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 2010,
+      "center_ym": "2010-05",
+      "anom_c": -0.5,
+      "phase": "la_nina"
+    },
+    {
+      "season": "MJJ",
+      "year": 2010,
+      "center_ym": "2010-06",
+      "anom_c": -0.97,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JJA",
+      "year": 2010,
+      "center_ym": "2010-07",
+      "anom_c": -1.21,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JAS",
+      "year": 2010,
+      "center_ym": "2010-08",
+      "anom_c": -1.39,
+      "phase": "la_nina"
+    },
+    {
+      "season": "ASO",
+      "year": 2010,
+      "center_ym": "2010-09",
+      "anom_c": -1.54,
+      "phase": "la_nina"
+    },
+    {
+      "season": "SON",
+      "year": 2010,
+      "center_ym": "2010-10",
+      "anom_c": -1.61,
+      "phase": "la_nina"
+    },
+    {
+      "season": "OND",
+      "year": 2010,
+      "center_ym": "2010-11",
+      "anom_c": -1.63,
+      "phase": "la_nina"
+    },
+    {
+      "season": "NDJ",
+      "year": 2010,
+      "center_ym": "2010-12",
+      "anom_c": -1.55,
+      "phase": "la_nina"
+    },
+    {
+      "season": "DJF",
+      "year": 2011,
+      "center_ym": "2011-01",
+      "anom_c": -1.42,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JFM",
+      "year": 2011,
+      "center_ym": "2011-02",
+      "anom_c": -1.21,
+      "phase": "la_nina"
+    },
+    {
+      "season": "FMA",
+      "year": 2011,
+      "center_ym": "2011-03",
+      "anom_c": -0.97,
+      "phase": "la_nina"
+    },
+    {
+      "season": "MAM",
+      "year": 2011,
+      "center_ym": "2011-04",
+      "anom_c": -0.76,
+      "phase": "la_nina"
+    },
+    {
+      "season": "AMJ",
+      "year": 2011,
+      "center_ym": "2011-05",
+      "anom_c": -0.52,
+      "phase": "la_nina"
+    },
+    {
+      "season": "MJJ",
+      "year": 2011,
+      "center_ym": "2011-06",
+      "anom_c": -0.29,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 2011,
+      "center_ym": "2011-07",
+      "anom_c": -0.29,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 2011,
+      "center_ym": "2011-08",
+      "anom_c": -0.41,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 2011,
+      "center_ym": "2011-09",
+      "anom_c": -0.7,
+      "phase": "la_nina"
+    },
+    {
+      "season": "SON",
+      "year": 2011,
+      "center_ym": "2011-10",
+      "anom_c": -0.91,
+      "phase": "la_nina"
+    },
+    {
+      "season": "OND",
+      "year": 2011,
+      "center_ym": "2011-11",
+      "anom_c": -1.02,
+      "phase": "la_nina"
+    },
+    {
+      "season": "NDJ",
+      "year": 2011,
+      "center_ym": "2011-12",
+      "anom_c": -0.96,
+      "phase": "la_nina"
+    },
+    {
+      "season": "DJF",
+      "year": 2012,
+      "center_ym": "2012-01",
+      "anom_c": -0.77,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JFM",
+      "year": 2012,
+      "center_ym": "2012-02",
+      "anom_c": -0.6,
+      "phase": "la_nina"
+    },
+    {
+      "season": "FMA",
+      "year": 2012,
+      "center_ym": "2012-03",
+      "anom_c": -0.5,
+      "phase": "la_nina"
+    },
+    {
+      "season": "MAM",
+      "year": 2012,
+      "center_ym": "2012-04",
+      "anom_c": -0.42,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 2012,
+      "center_ym": "2012-05",
+      "anom_c": -0.26,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 2012,
+      "center_ym": "2012-06",
+      "anom_c": 0.01,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 2012,
+      "center_ym": "2012-07",
+      "anom_c": 0.33,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 2012,
+      "center_ym": "2012-08",
+      "anom_c": 0.43,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 2012,
+      "center_ym": "2012-09",
+      "anom_c": 0.37,
+      "phase": "neutral"
+    },
+    {
+      "season": "SON",
+      "year": 2012,
+      "center_ym": "2012-10",
+      "anom_c": 0.21,
+      "phase": "neutral"
+    },
+    {
+      "season": "OND",
+      "year": 2012,
+      "center_ym": "2012-11",
+      "anom_c": -0.03,
+      "phase": "neutral"
+    },
+    {
+      "season": "NDJ",
+      "year": 2012,
+      "center_ym": "2012-12",
+      "anom_c": -0.27,
+      "phase": "neutral"
+    },
+    {
+      "season": "DJF",
+      "year": 2013,
+      "center_ym": "2013-01",
+      "anom_c": -0.55,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JFM",
+      "year": 2013,
+      "center_ym": "2013-02",
+      "anom_c": -0.57,
+      "phase": "la_nina"
+    },
+    {
+      "season": "FMA",
+      "year": 2013,
+      "center_ym": "2013-03",
+      "anom_c": -0.49,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 2013,
+      "center_ym": "2013-04",
+      "anom_c": -0.44,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 2013,
+      "center_ym": "2013-05",
+      "anom_c": -0.48,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 2013,
+      "center_ym": "2013-06",
+      "anom_c": -0.48,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 2013,
+      "center_ym": "2013-07",
+      "anom_c": -0.48,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 2013,
+      "center_ym": "2013-08",
+      "anom_c": -0.38,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 2013,
+      "center_ym": "2013-09",
+      "anom_c": -0.38,
+      "phase": "neutral"
+    },
+    {
+      "season": "SON",
+      "year": 2013,
+      "center_ym": "2013-10",
+      "anom_c": -0.22,
+      "phase": "neutral"
+    },
+    {
+      "season": "OND",
+      "year": 2013,
+      "center_ym": "2013-11",
+      "anom_c": -0.23,
+      "phase": "neutral"
+    },
+    {
+      "season": "NDJ",
+      "year": 2013,
+      "center_ym": "2013-12",
+      "anom_c": -0.27,
+      "phase": "neutral"
+    },
+    {
+      "season": "DJF",
+      "year": 2014,
+      "center_ym": "2014-01",
+      "anom_c": -0.43,
+      "phase": "neutral"
+    },
+    {
+      "season": "JFM",
+      "year": 2014,
+      "center_ym": "2014-02",
+      "anom_c": -0.38,
+      "phase": "neutral"
+    },
+    {
+      "season": "FMA",
+      "year": 2014,
+      "center_ym": "2014-03",
+      "anom_c": -0.15,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 2014,
+      "center_ym": "2014-04",
+      "anom_c": 0.11,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 2014,
+      "center_ym": "2014-05",
+      "anom_c": 0.15,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 2014,
+      "center_ym": "2014-06",
+      "anom_c": 0.0,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 2014,
+      "center_ym": "2014-07",
+      "anom_c": -0.14,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 2014,
+      "center_ym": "2014-08",
+      "anom_c": -0.09,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 2014,
+      "center_ym": "2014-09",
+      "anom_c": 0.06,
+      "phase": "neutral"
+    },
+    {
+      "season": "SON",
+      "year": 2014,
+      "center_ym": "2014-10",
+      "anom_c": 0.35,
+      "phase": "neutral"
+    },
+    {
+      "season": "OND",
+      "year": 2014,
+      "center_ym": "2014-11",
+      "anom_c": 0.54,
+      "phase": "el_nino"
+    },
+    {
+      "season": "NDJ",
+      "year": 2014,
+      "center_ym": "2014-12",
+      "anom_c": 0.62,
+      "phase": "el_nino"
+    },
+    {
+      "season": "DJF",
+      "year": 2015,
+      "center_ym": "2015-01",
+      "anom_c": 0.54,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JFM",
+      "year": 2015,
+      "center_ym": "2015-02",
+      "anom_c": 0.47,
+      "phase": "neutral"
+    },
+    {
+      "season": "FMA",
+      "year": 2015,
+      "center_ym": "2015-03",
+      "anom_c": 0.59,
+      "phase": "el_nino"
+    },
+    {
+      "season": "MAM",
+      "year": 2015,
+      "center_ym": "2015-04",
+      "anom_c": 0.72,
+      "phase": "el_nino"
+    },
+    {
+      "season": "AMJ",
+      "year": 2015,
+      "center_ym": "2015-05",
+      "anom_c": 0.89,
+      "phase": "el_nino"
+    },
+    {
+      "season": "MJJ",
+      "year": 2015,
+      "center_ym": "2015-06",
+      "anom_c": 1.02,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JJA",
+      "year": 2015,
+      "center_ym": "2015-07",
+      "anom_c": 1.27,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JAS",
+      "year": 2015,
+      "center_ym": "2015-08",
+      "anom_c": 1.54,
+      "phase": "el_nino"
+    },
+    {
+      "season": "ASO",
+      "year": 2015,
+      "center_ym": "2015-09",
+      "anom_c": 1.8,
+      "phase": "el_nino"
+    },
+    {
+      "season": "SON",
+      "year": 2015,
+      "center_ym": "2015-10",
+      "anom_c": 2.03,
+      "phase": "el_nino"
+    },
+    {
+      "season": "OND",
+      "year": 2015,
+      "center_ym": "2015-11",
+      "anom_c": 2.18,
+      "phase": "el_nino"
+    },
+    {
+      "season": "NDJ",
+      "year": 2015,
+      "center_ym": "2015-12",
+      "anom_c": 2.25,
+      "phase": "el_nino"
+    },
+    {
+      "season": "DJF",
+      "year": 2016,
+      "center_ym": "2016-01",
+      "anom_c": 2.14,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JFM",
+      "year": 2016,
+      "center_ym": "2016-02",
+      "anom_c": 1.81,
+      "phase": "el_nino"
+    },
+    {
+      "season": "FMA",
+      "year": 2016,
+      "center_ym": "2016-03",
+      "anom_c": 1.3,
+      "phase": "el_nino"
+    },
+    {
+      "season": "MAM",
+      "year": 2016,
+      "center_ym": "2016-04",
+      "anom_c": 0.65,
+      "phase": "el_nino"
+    },
+    {
+      "season": "AMJ",
+      "year": 2016,
+      "center_ym": "2016-05",
+      "anom_c": 0.08,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 2016,
+      "center_ym": "2016-06",
+      "anom_c": -0.43,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 2016,
+      "center_ym": "2016-07",
+      "anom_c": -0.7,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JAS",
+      "year": 2016,
+      "center_ym": "2016-08",
+      "anom_c": -0.81,
+      "phase": "la_nina"
+    },
+    {
+      "season": "ASO",
+      "year": 2016,
+      "center_ym": "2016-09",
+      "anom_c": -0.88,
+      "phase": "la_nina"
+    },
+    {
+      "season": "SON",
+      "year": 2016,
+      "center_ym": "2016-10",
+      "anom_c": -0.96,
+      "phase": "la_nina"
+    },
+    {
+      "season": "OND",
+      "year": 2016,
+      "center_ym": "2016-11",
+      "anom_c": -0.96,
+      "phase": "la_nina"
+    },
+    {
+      "season": "NDJ",
+      "year": 2016,
+      "center_ym": "2016-12",
+      "anom_c": -0.89,
+      "phase": "la_nina"
+    },
+    {
+      "season": "DJF",
+      "year": 2017,
+      "center_ym": "2017-01",
+      "anom_c": -0.6,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JFM",
+      "year": 2017,
+      "center_ym": "2017-02",
+      "anom_c": -0.44,
+      "phase": "neutral"
+    },
+    {
+      "season": "FMA",
+      "year": 2017,
+      "center_ym": "2017-03",
+      "anom_c": -0.18,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 2017,
+      "center_ym": "2017-04",
+      "anom_c": -0.1,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 2017,
+      "center_ym": "2017-05",
+      "anom_c": -0.02,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 2017,
+      "center_ym": "2017-06",
+      "anom_c": -0.04,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 2017,
+      "center_ym": "2017-07",
+      "anom_c": -0.23,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 2017,
+      "center_ym": "2017-08",
+      "anom_c": -0.46,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 2017,
+      "center_ym": "2017-09",
+      "anom_c": -0.62,
+      "phase": "la_nina"
+    },
+    {
+      "season": "SON",
+      "year": 2017,
+      "center_ym": "2017-10",
+      "anom_c": -0.82,
+      "phase": "la_nina"
+    },
+    {
+      "season": "OND",
+      "year": 2017,
+      "center_ym": "2017-11",
+      "anom_c": -0.97,
+      "phase": "la_nina"
+    },
+    {
+      "season": "NDJ",
+      "year": 2017,
+      "center_ym": "2017-12",
+      "anom_c": -1.14,
+      "phase": "la_nina"
+    },
+    {
+      "season": "DJF",
+      "year": 2018,
+      "center_ym": "2018-01",
+      "anom_c": -1.08,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JFM",
+      "year": 2018,
+      "center_ym": "2018-02",
+      "anom_c": -1.04,
+      "phase": "la_nina"
+    },
+    {
+      "season": "FMA",
+      "year": 2018,
+      "center_ym": "2018-03",
+      "anom_c": -0.9,
+      "phase": "la_nina"
+    },
+    {
+      "season": "MAM",
+      "year": 2018,
+      "center_ym": "2018-04",
+      "anom_c": -0.69,
+      "phase": "la_nina"
+    },
+    {
+      "season": "AMJ",
+      "year": 2018,
+      "center_ym": "2018-05",
+      "anom_c": -0.33,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 2018,
+      "center_ym": "2018-06",
+      "anom_c": -0.02,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 2018,
+      "center_ym": "2018-07",
+      "anom_c": 0.08,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 2018,
+      "center_ym": "2018-08",
+      "anom_c": 0.16,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 2018,
+      "center_ym": "2018-09",
+      "anom_c": 0.35,
+      "phase": "neutral"
+    },
+    {
+      "season": "SON",
+      "year": 2018,
+      "center_ym": "2018-10",
+      "anom_c": 0.62,
+      "phase": "el_nino"
+    },
+    {
+      "season": "OND",
+      "year": 2018,
+      "center_ym": "2018-11",
+      "anom_c": 0.82,
+      "phase": "el_nino"
+    },
+    {
+      "season": "NDJ",
+      "year": 2018,
+      "center_ym": "2018-12",
+      "anom_c": 0.78,
+      "phase": "el_nino"
+    },
+    {
+      "season": "DJF",
+      "year": 2019,
+      "center_ym": "2019-01",
+      "anom_c": 0.68,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JFM",
+      "year": 2019,
+      "center_ym": "2019-02",
+      "anom_c": 0.64,
+      "phase": "el_nino"
+    },
+    {
+      "season": "FMA",
+      "year": 2019,
+      "center_ym": "2019-03",
+      "anom_c": 0.57,
+      "phase": "el_nino"
+    },
+    {
+      "season": "MAM",
+      "year": 2019,
+      "center_ym": "2019-04",
+      "anom_c": 0.53,
+      "phase": "el_nino"
+    },
+    {
+      "season": "AMJ",
+      "year": 2019,
+      "center_ym": "2019-05",
+      "anom_c": 0.37,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 2019,
+      "center_ym": "2019-06",
+      "anom_c": 0.24,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 2019,
+      "center_ym": "2019-07",
+      "anom_c": 0.04,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 2019,
+      "center_ym": "2019-08",
+      "anom_c": -0.12,
+      "phase": "neutral"
+    },
+    {
+      "season": "ASO",
+      "year": 2019,
+      "center_ym": "2019-09",
+      "anom_c": -0.01,
+      "phase": "neutral"
+    },
+    {
+      "season": "SON",
+      "year": 2019,
+      "center_ym": "2019-10",
+      "anom_c": 0.15,
+      "phase": "neutral"
+    },
+    {
+      "season": "OND",
+      "year": 2019,
+      "center_ym": "2019-11",
+      "anom_c": 0.29,
+      "phase": "neutral"
+    },
+    {
+      "season": "NDJ",
+      "year": 2019,
+      "center_ym": "2019-12",
+      "anom_c": 0.22,
+      "phase": "neutral"
+    },
+    {
+      "season": "DJF",
+      "year": 2020,
+      "center_ym": "2020-01",
+      "anom_c": 0.14,
+      "phase": "neutral"
+    },
+    {
+      "season": "JFM",
+      "year": 2020,
+      "center_ym": "2020-02",
+      "anom_c": 0.1,
+      "phase": "neutral"
+    },
+    {
+      "season": "FMA",
+      "year": 2020,
+      "center_ym": "2020-03",
+      "anom_c": 0.02,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 2020,
+      "center_ym": "2020-04",
+      "anom_c": -0.25,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 2020,
+      "center_ym": "2020-05",
+      "anom_c": -0.55,
+      "phase": "la_nina"
+    },
+    {
+      "season": "MJJ",
+      "year": 2020,
+      "center_ym": "2020-06",
+      "anom_c": -0.72,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JJA",
+      "year": 2020,
+      "center_ym": "2020-07",
+      "anom_c": -0.76,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JAS",
+      "year": 2020,
+      "center_ym": "2020-08",
+      "anom_c": -0.85,
+      "phase": "la_nina"
+    },
+    {
+      "season": "ASO",
+      "year": 2020,
+      "center_ym": "2020-09",
+      "anom_c": -1.16,
+      "phase": "la_nina"
+    },
+    {
+      "season": "SON",
+      "year": 2020,
+      "center_ym": "2020-10",
+      "anom_c": -1.37,
+      "phase": "la_nina"
+    },
+    {
+      "season": "OND",
+      "year": 2020,
+      "center_ym": "2020-11",
+      "anom_c": -1.46,
+      "phase": "la_nina"
+    },
+    {
+      "season": "NDJ",
+      "year": 2020,
+      "center_ym": "2020-12",
+      "anom_c": -1.39,
+      "phase": "la_nina"
+    },
+    {
+      "season": "DJF",
+      "year": 2021,
+      "center_ym": "2021-01",
+      "anom_c": -1.32,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JFM",
+      "year": 2021,
+      "center_ym": "2021-02",
+      "anom_c": -1.18,
+      "phase": "la_nina"
+    },
+    {
+      "season": "FMA",
+      "year": 2021,
+      "center_ym": "2021-03",
+      "anom_c": -1.08,
+      "phase": "la_nina"
+    },
+    {
+      "season": "MAM",
+      "year": 2021,
+      "center_ym": "2021-04",
+      "anom_c": -0.89,
+      "phase": "la_nina"
+    },
+    {
+      "season": "AMJ",
+      "year": 2021,
+      "center_ym": "2021-05",
+      "anom_c": -0.68,
+      "phase": "la_nina"
+    },
+    {
+      "season": "MJJ",
+      "year": 2021,
+      "center_ym": "2021-06",
+      "anom_c": -0.57,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JJA",
+      "year": 2021,
+      "center_ym": "2021-07",
+      "anom_c": -0.6,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JAS",
+      "year": 2021,
+      "center_ym": "2021-08",
+      "anom_c": -0.76,
+      "phase": "la_nina"
+    },
+    {
+      "season": "ASO",
+      "year": 2021,
+      "center_ym": "2021-09",
+      "anom_c": -0.95,
+      "phase": "la_nina"
+    },
+    {
+      "season": "SON",
+      "year": 2021,
+      "center_ym": "2021-10",
+      "anom_c": -1.08,
+      "phase": "la_nina"
+    },
+    {
+      "season": "OND",
+      "year": 2021,
+      "center_ym": "2021-11",
+      "anom_c": -1.24,
+      "phase": "la_nina"
+    },
+    {
+      "season": "NDJ",
+      "year": 2021,
+      "center_ym": "2021-12",
+      "anom_c": -1.22,
+      "phase": "la_nina"
+    },
+    {
+      "season": "DJF",
+      "year": 2022,
+      "center_ym": "2022-01",
+      "anom_c": -1.18,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JFM",
+      "year": 2022,
+      "center_ym": "2022-02",
+      "anom_c": -1.13,
+      "phase": "la_nina"
+    },
+    {
+      "season": "FMA",
+      "year": 2022,
+      "center_ym": "2022-03",
+      "anom_c": -1.19,
+      "phase": "la_nina"
+    },
+    {
+      "season": "MAM",
+      "year": 2022,
+      "center_ym": "2022-04",
+      "anom_c": -1.26,
+      "phase": "la_nina"
+    },
+    {
+      "season": "AMJ",
+      "year": 2022,
+      "center_ym": "2022-05",
+      "anom_c": -1.17,
+      "phase": "la_nina"
+    },
+    {
+      "season": "MJJ",
+      "year": 2022,
+      "center_ym": "2022-06",
+      "anom_c": -0.95,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JJA",
+      "year": 2022,
+      "center_ym": "2022-07",
+      "anom_c": -0.86,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JAS",
+      "year": 2022,
+      "center_ym": "2022-08",
+      "anom_c": -0.94,
+      "phase": "la_nina"
+    },
+    {
+      "season": "ASO",
+      "year": 2022,
+      "center_ym": "2022-09",
+      "anom_c": -1.07,
+      "phase": "la_nina"
+    },
+    {
+      "season": "SON",
+      "year": 2022,
+      "center_ym": "2022-10",
+      "anom_c": -1.1,
+      "phase": "la_nina"
+    },
+    {
+      "season": "OND",
+      "year": 2022,
+      "center_ym": "2022-11",
+      "anom_c": -1.05,
+      "phase": "la_nina"
+    },
+    {
+      "season": "NDJ",
+      "year": 2022,
+      "center_ym": "2022-12",
+      "anom_c": -0.99,
+      "phase": "la_nina"
+    },
+    {
+      "season": "DJF",
+      "year": 2023,
+      "center_ym": "2023-01",
+      "anom_c": -0.86,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JFM",
+      "year": 2023,
+      "center_ym": "2023-02",
+      "anom_c": -0.68,
+      "phase": "la_nina"
+    },
+    {
+      "season": "FMA",
+      "year": 2023,
+      "center_ym": "2023-03",
+      "anom_c": -0.55,
+      "phase": "la_nina"
+    },
+    {
+      "season": "MAM",
+      "year": 2023,
+      "center_ym": "2023-04",
+      "anom_c": -0.31,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 2023,
+      "center_ym": "2023-05",
+      "anom_c": -0.04,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 2023,
+      "center_ym": "2023-06",
+      "anom_c": 0.28,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 2023,
+      "center_ym": "2023-07",
+      "anom_c": 0.54,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JAS",
+      "year": 2023,
+      "center_ym": "2023-08",
+      "anom_c": 0.79,
+      "phase": "el_nino"
+    },
+    {
+      "season": "ASO",
+      "year": 2023,
+      "center_ym": "2023-09",
+      "anom_c": 1.04,
+      "phase": "el_nino"
+    },
+    {
+      "season": "SON",
+      "year": 2023,
+      "center_ym": "2023-10",
+      "anom_c": 1.3,
+      "phase": "el_nino"
+    },
+    {
+      "season": "OND",
+      "year": 2023,
+      "center_ym": "2023-11",
+      "anom_c": 1.42,
+      "phase": "el_nino"
+    },
+    {
+      "season": "NDJ",
+      "year": 2023,
+      "center_ym": "2023-12",
+      "anom_c": 1.4,
+      "phase": "el_nino"
+    },
+    {
+      "season": "DJF",
+      "year": 2024,
+      "center_ym": "2024-01",
+      "anom_c": 1.13,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JFM",
+      "year": 2024,
+      "center_ym": "2024-02",
+      "anom_c": 0.78,
+      "phase": "el_nino"
+    },
+    {
+      "season": "FMA",
+      "year": 2024,
+      "center_ym": "2024-03",
+      "anom_c": 0.42,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 2024,
+      "center_ym": "2024-04",
+      "anom_c": 0.04,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 2024,
+      "center_ym": "2024-05",
+      "anom_c": -0.28,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 2024,
+      "center_ym": "2024-06",
+      "anom_c": -0.45,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 2024,
+      "center_ym": "2024-07",
+      "anom_c": -0.49,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 2024,
+      "center_ym": "2024-08",
+      "anom_c": -0.56,
+      "phase": "la_nina"
+    },
+    {
+      "season": "ASO",
+      "year": 2024,
+      "center_ym": "2024-09",
+      "anom_c": -0.67,
+      "phase": "la_nina"
+    },
+    {
+      "season": "SON",
+      "year": 2024,
+      "center_ym": "2024-10",
+      "anom_c": -0.76,
+      "phase": "la_nina"
+    },
+    {
+      "season": "OND",
+      "year": 2024,
+      "center_ym": "2024-11",
+      "anom_c": -0.88,
+      "phase": "la_nina"
+    },
+    {
+      "season": "NDJ",
+      "year": 2024,
+      "center_ym": "2024-12",
+      "anom_c": -1.05,
+      "phase": "la_nina"
+    },
+    {
+      "season": "DJF",
+      "year": 2025,
+      "center_ym": "2025-01",
+      "anom_c": -1.1,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JFM",
+      "year": 2025,
+      "center_ym": "2025-02",
+      "anom_c": -0.85,
+      "phase": "la_nina"
+    },
+    {
+      "season": "FMA",
+      "year": 2025,
+      "center_ym": "2025-03",
+      "anom_c": -0.66,
+      "phase": "la_nina"
+    },
+    {
+      "season": "MAM",
+      "year": 2025,
+      "center_ym": "2025-04",
+      "anom_c": -0.5,
+      "phase": "la_nina"
+    },
+    {
+      "season": "AMJ",
+      "year": 2025,
+      "center_ym": "2025-05",
+      "anom_c": -0.48,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 2025,
+      "center_ym": "2025-06",
+      "anom_c": -0.36,
+      "phase": "neutral"
+    },
+    {
+      "season": "JJA",
+      "year": 2025,
+      "center_ym": "2025-07",
+      "anom_c": -0.41,
+      "phase": "neutral"
+    },
+    {
+      "season": "JAS",
+      "year": 2025,
+      "center_ym": "2025-08",
+      "anom_c": -0.59,
+      "phase": "la_nina"
+    },
+    {
+      "season": "ASO",
+      "year": 2025,
+      "center_ym": "2025-09",
+      "anom_c": -0.78,
+      "phase": "la_nina"
+    },
+    {
+      "season": "SON",
+      "year": 2025,
+      "center_ym": "2025-10",
+      "anom_c": -0.93,
+      "phase": "la_nina"
+    },
+    {
+      "season": "OND",
+      "year": 2025,
+      "center_ym": "2025-11",
+      "anom_c": -0.98,
+      "phase": "la_nina"
+    },
+    {
+      "season": "NDJ",
+      "year": 2025,
+      "center_ym": "2025-12",
+      "anom_c": -1.04,
+      "phase": "la_nina"
+    },
+    {
+      "season": "DJF",
+      "year": 2026,
+      "center_ym": "2026-01",
+      "anom_c": -0.91,
+      "phase": "la_nina"
+    },
+    {
+      "season": "JFM",
+      "year": 2026,
+      "center_ym": "2026-02",
+      "anom_c": -0.76,
+      "phase": "la_nina"
+    },
+    {
+      "season": "FMA",
+      "year": 2026,
+      "center_ym": "2026-03",
+      "anom_c": -0.44,
+      "phase": "neutral"
+    },
+    {
+      "season": "MAM",
+      "year": 2026,
+      "center_ym": "2026-04",
+      "anom_c": -0.04,
+      "phase": "neutral"
+    },
+    {
+      "season": "AMJ",
+      "year": 2026,
+      "center_ym": "2026-05",
+      "anom_c": 0.49,
+      "phase": "neutral"
+    },
+    {
+      "season": "MJJ",
+      "year": 2026,
+      "center_ym": "2026-06",
+      "anom_c": 0.97,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JJA",
+      "year": 2026,
+      "center_ym": "2026-07",
+      "anom_c": 1.36,
+      "phase": "el_nino"
+    },
+    {
+      "season": "JAS",
+      "year": 2026,
+      "center_ym": "2026-08",
+      "anom_c": 1.69,
+      "phase": "el_nino"
+    },
+    {
+      "season": "ASO",
+      "year": 2026,
+      "center_ym": "2026-09",
+      "anom_c": 1.97,
+      "phase": "el_nino"
+    }
+  ],
+  "episodes": [
+    {
+      "phase": "la_nina",
+      "start_season": "DJF 1950",
+      "end_season": "MJJ 1950",
+      "start_center_ym": "1950-01",
+      "end_center_ym": "1950-06",
+      "peak_anom_c": -1.19,
+      "peak_center_ym": "1950-01",
+      "n_overlapping_seasons": 6,
+      "strength": "moderate"
+    },
+    {
+      "phase": "el_nino",
+      "start_season": "MAM 1951",
+      "end_season": "DJF 1952",
+      "start_center_ym": "1951-04",
+      "end_center_ym": "1952-01",
+      "peak_anom_c": 1.04,
+      "peak_center_ym": "1951-09",
+      "n_overlapping_seasons": 10,
+      "strength": "moderate"
+    },
+    {
+      "phase": "el_nino",
+      "start_season": "JFM 1953",
+      "end_season": "JFM 1954",
+      "start_center_ym": "1953-02",
+      "end_center_ym": "1954-02",
+      "peak_anom_c": 0.94,
+      "peak_center_ym": "1953-05",
+      "n_overlapping_seasons": 13,
+      "strength": "weak"
+    },
+    {
+      "phase": "la_nina",
+      "start_season": "JAS 1955",
+      "end_season": "DJF 1956",
+      "start_center_ym": "1955-08",
+      "end_center_ym": "1956-01",
+      "peak_anom_c": -1.4,
+      "peak_center_ym": "1955-11",
+      "n_overlapping_seasons": 6,
+      "strength": "moderate"
+    },
+    {
+      "phase": "el_nino",
+      "start_season": "FMA 1957",
+      "end_season": "MJJ 1958",
+      "start_center_ym": "1957-03",
+      "end_center_ym": "1958-06",
+      "peak_anom_c": 1.89,
+      "peak_center_ym": "1958-01",
+      "n_overlapping_seasons": 16,
+      "strength": "strong"
+    },
+    {
+      "phase": "el_nino",
+      "start_season": "JJA 1963",
+      "end_season": "JFM 1964",
+      "start_center_ym": "1963-07",
+      "end_center_ym": "1964-02",
+      "peak_anom_c": 1.11,
+      "peak_center_ym": "1963-11",
+      "n_overlapping_seasons": 8,
+      "strength": "moderate"
+    },
+    {
+      "phase": "la_nina",
+      "start_season": "AMJ 1964",
+      "end_season": "OND 1964",
+      "start_center_ym": "1964-05",
+      "end_center_ym": "1964-11",
+      "peak_anom_c": -0.66,
+      "peak_center_ym": "1964-05",
+      "n_overlapping_seasons": 7,
+      "strength": "weak"
+    },
+    {
+      "phase": "el_nino",
+      "start_season": "AMJ 1965",
+      "end_season": "MAM 1966",
+      "start_center_ym": "1965-05",
+      "end_center_ym": "1966-04",
+      "peak_anom_c": 1.99,
+      "peak_center_ym": "1965-11",
+      "n_overlapping_seasons": 12,
+      "strength": "strong"
+    },
+    {
+      "phase": "el_nino",
+      "start_season": "SON 1968",
+      "end_season": "FMA 1969",
+      "start_center_ym": "1968-10",
+      "end_center_ym": "1969-03",
+      "peak_anom_c": 1.07,
+      "peak_center_ym": "1969-01",
+      "n_overlapping_seasons": 6,
+      "strength": "moderate"
+    },
+    {
+      "phase": "la_nina",
+      "start_season": "JAS 1970",
+      "end_season": "MAM 1971",
+      "start_center_ym": "1970-08",
+      "end_center_ym": "1971-04",
+      "peak_anom_c": -1.0,
+      "peak_center_ym": "1971-02",
+      "n_overlapping_seasons": 9,
+      "strength": "moderate"
+    },
+    {
+      "phase": "el_nino",
+      "start_season": "MAM 1972",
+      "end_season": "FMA 1973",
+      "start_center_ym": "1972-04",
+      "end_center_ym": "1973-03",
+      "peak_anom_c": 1.97,
+      "peak_center_ym": "1972-11",
+      "n_overlapping_seasons": 12,
+      "strength": "strong"
+    },
+    {
+      "phase": "la_nina",
+      "start_season": "AMJ 1973",
+      "end_season": "MJJ 1974",
+      "start_center_ym": "1973-05",
+      "end_center_ym": "1974-06",
+      "peak_anom_c": -1.91,
+      "peak_center_ym": "1973-12",
+      "n_overlapping_seasons": 14,
+      "strength": "strong"
+    },
+    {
+      "phase": "la_nina",
+      "start_season": "AMJ 1975",
+      "end_season": "JFM 1976",
+      "start_center_ym": "1975-05",
+      "end_center_ym": "1976-02",
+      "peak_anom_c": -1.11,
+      "peak_center_ym": "1975-12",
+      "n_overlapping_seasons": 10,
+      "strength": "moderate"
+    },
+    {
+      "phase": "el_nino",
+      "start_season": "JJA 1976",
+      "end_season": "JFM 1977",
+      "start_center_ym": "1976-07",
+      "end_center_ym": "1977-02",
+      "peak_anom_c": 1.08,
+      "peak_center_ym": "1976-12",
+      "n_overlapping_seasons": 8,
+      "strength": "moderate"
+    },
+    {
+      "phase": "el_nino",
+      "start_season": "ASO 1977",
+      "end_season": "JFM 1978",
+      "start_center_ym": "1977-09",
+      "end_center_ym": "1978-02",
+      "peak_anom_c": 1.1,
+      "peak_center_ym": "1977-11",
+      "n_overlapping_seasons": 6,
+      "strength": "moderate"
+    },
+    {
+      "phase": "el_nino",
+      "start_season": "AMJ 1982",
+      "end_season": "AMJ 1983",
+      "start_center_ym": "1982-05",
+      "end_center_ym": "1983-05",
+      "peak_anom_c": 2.4,
+      "peak_center_ym": "1983-01",
+      "n_overlapping_seasons": 13,
+      "strength": "very strong"
+    },
+    {
+      "phase": "la_nina",
+      "start_season": "ASO 1983",
+      "end_season": "JFM 1984",
+      "start_center_ym": "1983-09",
+      "end_center_ym": "1984-02",
+      "peak_anom_c": -1.1,
+      "peak_center_ym": "1983-11",
+      "n_overlapping_seasons": 6,
+      "strength": "moderate"
+    },
+    {
+      "phase": "la_nina",
+      "start_season": "SON 1984",
+      "end_season": "MJJ 1985",
+      "start_center_ym": "1984-10",
+      "end_center_ym": "1985-06",
+      "peak_anom_c": -0.93,
+      "peak_center_ym": "1984-12",
+      "n_overlapping_seasons": 9,
+      "strength": "weak"
+    },
+    {
+      "phase": "el_nino",
+      "start_season": "JAS 1986",
+      "end_season": "NDJ 1987",
+      "start_center_ym": "1986-08",
+      "end_center_ym": "1987-12",
+      "peak_anom_c": 1.46,
+      "peak_center_ym": "1987-01",
+      "n_overlapping_seasons": 17,
+      "strength": "moderate"
+    },
+    {
+      "phase": "la_nina",
+      "start_season": "MAM 1988",
+      "end_season": "AMJ 1989",
+      "start_center_ym": "1988-04",
+      "end_center_ym": "1989-05",
+      "peak_anom_c": -1.95,
+      "peak_center_ym": "1988-11",
+      "n_overlapping_seasons": 14,
+      "strength": "strong"
+    },
+    {
+      "phase": "el_nino",
+      "start_season": "AMJ 1991",
+      "end_season": "JJA 1992",
+      "start_center_ym": "1991-05",
+      "end_center_ym": "1992-07",
+      "peak_anom_c": 2.12,
+      "peak_center_ym": "1992-01",
+      "n_overlapping_seasons": 15,
+      "strength": "very strong"
+    },
+    {
+      "phase": "el_nino",
+      "start_season": "DJF 1993",
+      "end_season": "MJJ 1993",
+      "start_center_ym": "1993-01",
+      "end_center_ym": "1993-06",
+      "peak_anom_c": 1.06,
+      "peak_center_ym": "1993-04",
+      "n_overlapping_seasons": 6,
+      "strength": "moderate"
+    },
+    {
+      "phase": "el_nino",
+      "start_season": "JJA 1994",
+      "end_season": "FMA 1995",
+      "start_center_ym": "1994-07",
+      "end_center_ym": "1995-03",
+      "peak_anom_c": 1.28,
+      "peak_center_ym": "1994-12",
+      "n_overlapping_seasons": 9,
+      "strength": "moderate"
+    },
+    {
+      "phase": "la_nina",
+      "start_season": "JAS 1995",
+      "end_season": "FMA 1996",
+      "start_center_ym": "1995-08",
+      "end_center_ym": "1996-03",
+      "peak_anom_c": -1.02,
+      "peak_center_ym": "1995-11",
+      "n_overlapping_seasons": 8,
+      "strength": "moderate"
+    },
+    {
+      "phase": "el_nino",
+      "start_season": "AMJ 1997",
+      "end_season": "MAM 1998",
+      "start_center_ym": "1997-05",
+      "end_center_ym": "1998-04",
+      "peak_anom_c": 2.28,
+      "peak_center_ym": "1997-12",
+      "n_overlapping_seasons": 12,
+      "strength": "very strong"
+    },
+    {
+      "phase": "la_nina",
+      "start_season": "JJA 1998",
+      "end_season": "MJJ 2000",
+      "start_center_ym": "1998-07",
+      "end_center_ym": "2000-06",
+      "peak_anom_c": -1.61,
+      "peak_center_ym": "1998-12",
+      "n_overlapping_seasons": 24,
+      "strength": "strong"
+    },
+    {
+      "phase": "la_nina",
+      "start_season": "SON 2000",
+      "end_season": "FMA 2001",
+      "start_center_ym": "2000-10",
+      "end_center_ym": "2001-03",
+      "peak_anom_c": -0.82,
+      "peak_center_ym": "2000-12",
+      "n_overlapping_seasons": 6,
+      "strength": "weak"
+    },
+    {
+      "phase": "el_nino",
+      "start_season": "JJA 2002",
+      "end_season": "DJF 2003",
+      "start_center_ym": "2002-07",
+      "end_center_ym": "2003-01",
+      "peak_anom_c": 1.33,
+      "peak_center_ym": "2002-11",
+      "n_overlapping_seasons": 7,
+      "strength": "moderate"
+    },
+    {
+      "phase": "el_nino",
+      "start_season": "JJA 2004",
+      "end_season": "DJF 2005",
+      "start_center_ym": "2004-07",
+      "end_center_ym": "2005-01",
+      "peak_anom_c": 0.71,
+      "peak_center_ym": "2004-09",
+      "n_overlapping_seasons": 7,
+      "strength": "weak"
+    },
+    {
+      "phase": "la_nina",
+      "start_season": "OND 2005",
+      "end_season": "FMA 2006",
+      "start_center_ym": "2005-11",
+      "end_center_ym": "2006-03",
+      "peak_anom_c": -0.9,
+      "peak_center_ym": "2006-01",
+      "n_overlapping_seasons": 5,
+      "strength": "weak"
+    },
+    {
+      "phase": "el_nino",
+      "start_season": "ASO 2006",
+      "end_season": "DJF 2007",
+      "start_center_ym": "2006-09",
+      "end_center_ym": "2007-01",
+      "peak_anom_c": 0.91,
+      "peak_center_ym": "2006-11",
+      "n_overlapping_seasons": 5,
+      "strength": "weak"
+    },
+    {
+      "phase": "la_nina",
+      "start_season": "JJA 2007",
+      "end_season": "AMJ 2008",
+      "start_center_ym": "2007-07",
+      "end_center_ym": "2008-05",
+      "peak_anom_c": -1.73,
+      "peak_center_ym": "2008-01",
+      "n_overlapping_seasons": 11,
+      "strength": "strong"
+    },
+    {
+      "phase": "la_nina",
+      "start_season": "OND 2008",
+      "end_season": "FMA 2009",
+      "start_center_ym": "2008-11",
+      "end_center_ym": "2009-03",
+      "peak_anom_c": -0.96,
+      "peak_center_ym": "2009-01",
+      "n_overlapping_seasons": 5,
+      "strength": "weak"
+    },
+    {
+      "phase": "el_nino",
+      "start_season": "ASO 2009",
+      "end_season": "FMA 2010",
+      "start_center_ym": "2009-09",
+      "end_center_ym": "2010-03",
+      "peak_anom_c": 1.5,
+      "peak_center_ym": "2009-12",
+      "n_overlapping_seasons": 7,
+      "strength": "strong"
+    },
+    {
+      "phase": "la_nina",
+      "start_season": "AMJ 2010",
+      "end_season": "AMJ 2011",
+      "start_center_ym": "2010-05",
+      "end_center_ym": "2011-05",
+      "peak_anom_c": -1.63,
+      "peak_center_ym": "2010-11",
+      "n_overlapping_seasons": 13,
+      "strength": "strong"
+    },
+    {
+      "phase": "la_nina",
+      "start_season": "ASO 2011",
+      "end_season": "FMA 2012",
+      "start_center_ym": "2011-09",
+      "end_center_ym": "2012-03",
+      "peak_anom_c": -1.02,
+      "peak_center_ym": "2011-11",
+      "n_overlapping_seasons": 7,
+      "strength": "moderate"
+    },
+    {
+      "phase": "el_nino",
+      "start_season": "FMA 2015",
+      "end_season": "MAM 2016",
+      "start_center_ym": "2015-03",
+      "end_center_ym": "2016-04",
+      "peak_anom_c": 2.25,
+      "peak_center_ym": "2015-12",
+      "n_overlapping_seasons": 14,
+      "strength": "very strong"
+    },
+    {
+      "phase": "la_nina",
+      "start_season": "JJA 2016",
+      "end_season": "DJF 2017",
+      "start_center_ym": "2016-07",
+      "end_center_ym": "2017-01",
+      "peak_anom_c": -0.96,
+      "peak_center_ym": "2016-10",
+      "n_overlapping_seasons": 7,
+      "strength": "weak"
+    },
+    {
+      "phase": "la_nina",
+      "start_season": "ASO 2017",
+      "end_season": "MAM 2018",
+      "start_center_ym": "2017-09",
+      "end_center_ym": "2018-04",
+      "peak_anom_c": -1.14,
+      "peak_center_ym": "2017-12",
+      "n_overlapping_seasons": 8,
+      "strength": "moderate"
+    },
+    {
+      "phase": "el_nino",
+      "start_season": "SON 2018",
+      "end_season": "MAM 2019",
+      "start_center_ym": "2018-10",
+      "end_center_ym": "2019-04",
+      "peak_anom_c": 0.82,
+      "peak_center_ym": "2018-11",
+      "n_overlapping_seasons": 7,
+      "strength": "weak"
+    },
+    {
+      "phase": "la_nina",
+      "start_season": "AMJ 2020",
+      "end_season": "FMA 2023",
+      "start_center_ym": "2020-05",
+      "end_center_ym": "2023-03",
+      "peak_anom_c": -1.46,
+      "peak_center_ym": "2020-11",
+      "n_overlapping_seasons": 35,
+      "strength": "moderate"
+    },
+    {
+      "phase": "el_nino",
+      "start_season": "JJA 2023",
+      "end_season": "JFM 2024",
+      "start_center_ym": "2023-07",
+      "end_center_ym": "2024-02",
+      "peak_anom_c": 1.42,
+      "peak_center_ym": "2023-11",
+      "n_overlapping_seasons": 8,
+      "strength": "moderate"
+    },
+    {
+      "phase": "la_nina",
+      "start_season": "JAS 2024",
+      "end_season": "MAM 2025",
+      "start_center_ym": "2024-08",
+      "end_center_ym": "2025-04",
+      "peak_anom_c": -1.1,
+      "peak_center_ym": "2025-01",
+      "n_overlapping_seasons": 9,
+      "strength": "moderate"
+    },
+    {
+      "phase": "la_nina",
+      "start_season": "JAS 2025",
+      "end_season": "JFM 2026",
+      "start_center_ym": "2025-08",
+      "end_center_ym": "2026-02",
+      "peak_anom_c": -1.04,
+      "peak_center_ym": "2025-12",
+      "n_overlapping_seasons": 7,
+      "strength": "moderate"
+    }
+  ],
+  "current": {
+    "latest_season": "ASO 2026",
+    "center_ym": "2026-09",
+    "anom_c": 1.97,
+    "phase": "el_nino"
+  },
+  "also_traditional_oni": {
+    "episodes_count": 43,
+    "note": "RONI is NOAA's operational index since 2026; ONI shown for reference"
+  }
+}

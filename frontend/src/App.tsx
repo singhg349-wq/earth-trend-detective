@@ -1,44 +1,61 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import CellCard from './components/CellCard';
-import MapView from './components/MapView';
-import SeriesCard from './components/SeriesCard';
-import Timelapse from './components/Timelapse';
+import GlossaryPage from './pages/GlossaryPage';
+import PresentMode from './present/PresentMode';
+import type { PresentStep } from './present/steps';
+import PlaybackBar from './components/timelapse/PlaybackBar';
+import { metricById } from './lib/metrics';
+import type { EnsoOverlay } from './pages/EnsoPage';
+import './components/results-r4.css';
+import { useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import GlobeView, { type FocusTarget } from './components/GlobeView';
+import Inspector from './components/Inspector';
+import LibraryOverlay from './components/LibraryOverlay';
+import PinRail from './components/PinRail';
+import TopBar from './components/TopBar';
+import EnsoPage from './pages/EnsoPage';
+import LandingHero from './components/landing/LandingHero';
+import RegionRankList from './components/rightbar/RegionRankList';
+import InvestigationPanel, {
+  type WorkflowPlace,
+  type WorkflowSelection,
+} from './components/workflow/InvestigationPanel';
+import PlaceSearch from './components/search/PlaceSearch';
+import { STUDY_REGIONS, type PlaceResult } from './lib/gazetteer';
+import './app-controls.css';
+import { MAX_SLOTS, type SlotSettings } from './data/comparison';
+import { getEnso, type EnsoDoc } from './data/enso';
+import type { ContractResult } from './lib/types';
 import {
-  FDR_Q,
-  getCellSeries,
-  getGridCatalog,
+  deleteInvestigation,
+  loadSaved,
+  saveInvestigation,
+  type SavedInvestigation,
+} from './data/library';
+import {
   getRegionsGeoJson,
   getSeries,
   getTimelapseIndex,
-  getTrendMapCatalog,
   listSeries,
   timelapseFrameUrl,
-  trendMapHatchGeoJsonUrl,
-  trendMapHatchUrl,
-  trendMapUrl,
-  validationLabel,
+  getCellSeries,
+  type CellSeriesRequest,
 } from './data/seriesSource';
-import type { GridCatalog, TrendMapEntry } from './data/seriesSource';
-import type { CellSeriesOutcome } from './lib/tiles';
-import type {
-  RegionsGeoJson,
-  SeriesDoc,
-  SeriesSummary,
-  TimelapseIndex,
-} from './types';
+import {
+  createInitialState,
+  drawerWidth,
+  inspectorItems,
+  investigationReducer,
+  panelStyle,
+  pinnedItems,
+  type AppMode,
+  type ComparisonEntry,
+} from './state/investigation';
+import type { RegionsGeoJson, SeriesDoc, SeriesSummary } from './types';
 
-type Slot = 'A' | 'B';
 type Bbox = [number, number, number, number];
 
-const FALLBACK_EXTENT: Bbox = [-180, -90, 180, 90];
-const SEASONS = ['ANN', 'DJF', 'MAM', 'JJA', 'SON'] as const;
-
-const VARIABLES = [
-  { slug: 'precip', label: 'Rainfall', source: 'GPCP 3.3' },
-  { slug: 't2m', label: '2 m air temperature', source: 'MERRA-2' },
-  { slug: 'aod', label: 'Aerosol optical depth', source: 'MERRA-2' },
-  { slug: 'soil', label: 'Soil moisture', source: 'GLDAS 2.1' },
-] as const;
+function errorText(error: unknown): string {
+  return error instanceof Error ? error.message : 'Unknown error.';
+}
 
 function bboxOf(doc: SeriesDoc | null): Bbox | null {
   const bbox = doc?.region.bbox;
@@ -62,564 +79,865 @@ function mergeBoxes(boxes: Bbox[]): Bbox | null {
   ];
 }
 
-function cellBbox(lon: number, lat: number): Bbox {
-  const lonNorm = ((((lon + 180) % 360) + 360) % 360) - 180;
-  const latClamped = Math.min(89.999999, Math.max(-90, lat));
-  const west = Math.floor(lonNorm);
-  const south = Math.floor(latClamped);
-  return [west, south, west + 1, south + 1];
+/** Convert a grid-cell outcome's contract result into the drawer's `SeriesDoc`. */
+function cellResultToDoc(cellResult: ContractResult): SeriesDoc {
+  return {
+    id: cellResult.id,
+    variable: cellResult.variable,
+    units: metricById(cellResult.variable)?.units ?? cellResult.units,
+    source: {
+      product: cellResult.source.product,
+      version: cellResult.source.version,
+      var: cellResult.source.var,
+      doi_or_url: cellResult.source.doi_or_url,
+    },
+    region: {
+      id: cellResult.region.id,
+      label: cellResult.region.label,
+      geometry: cellResult.geometry_file ?? undefined,
+      bbox: cellResult.region.bbox,
+      cells_used: 1,
+      area_km2: cellResult.region.area_km2,
+    },
+    season: {
+      code: cellResult.season.code,
+      year_label: cellResult.season.year_label,
+      months: cellResult.season.months,
+      aggregation: cellResult.season.aggregation,
+    },
+    years: cellResult.years,
+    values: cellResult.values,
+    coverage: cellResult.coverage,
+    anomaly_baseline: cellResult.anomaly_baseline,
+    geometry_file: cellResult.geometry_file ?? undefined,
+    template_summary: cellResult.template_summary,
+    trend: {
+      sen_slope_per_decade: cellResult.trend.sen_slope_per_decade,
+      intercept: cellResult.trend.intercept,
+      method: cellResult.trend.method,
+      slope_units: cellResult.trend.slope_units,
+      n_valid: cellResult.trend.n_valid,
+      period: cellResult.trend.period,
+      inference: {
+        status: cellResult.trend.inference.status,
+        p_value: cellResult.trend.inference.p_value ?? null,
+        ci: cellResult.trend.inference.ci ?? null,
+        method: cellResult.trend.inference.method,
+        strict_check_pass: cellResult.trend.inference.strict_check_pass ?? null,
+        strict_check_p: cellResult.trend.inference.strict_check_p ?? null,
+        lag1: cellResult.trend.inference.lag1 ?? null,
+        caution: cellResult.trend.inference.caution ?? false,
+        ci_note: cellResult.trend.inference.ci_note ?? null,
+        n: cellResult.trend.inference.n ?? null,
+      },
+    },
+    validation: {
+      reference: cellResult.validation.reference,
+      status: cellResult.validation.status,
+      notes: cellResult.validation.notes,
+    },
+    generated: cellResult.generated,
+    code_version: cellResult.code_version,
+  };
 }
 
-function errorText(error: unknown): string {
-  return error instanceof Error ? error.message : 'Unknown error.';
+interface LoadedRegion {
+  doc: SeriesDoc;
+  enso: EnsoDoc | null;
 }
 
 export default function App() {
+  // One reducer owns the investigation; effects below only fetch and dispatch.
+  const [state, dispatch] = useReducer(investigationReducer, undefined, createInitialState);
+  const { mode, comparison, exploreDoc, pins, addMode, timelapse, status, saved } = state;
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const series = params.get('series');
+    const loadLinkedTimelapse=(variable:string,season:string)=>{if(params.get('timelapse')==='1')void getTimelapseIndex(variable,season).then(index=>{if(index)dispatch({type:'openTimelapse',variable:metricById(variable)?.slug ?? variable,season,index});});};
+    const lat = Number(params.get('lat')), lon = Number(params.get('lon'));
+    let alive = true;
+    if(series) {
+      void getSeries(series).then(doc => {if(alive){dispatch({type:'loadExplore',doc,enso:null});dispatch({type:'applySharedSettings',patch:{variable:doc.variable,season:doc.season.code}});setAutoRotate(false);setSearchOpen(true);loadLinkedTimelapse(doc.variable,doc.season.code);}}).catch(()=>{});
+    } else if(params.has('lat') && params.has('lon') && Number.isFinite(lat) && Number.isFinite(lon) && Math.abs(lat)<=90) {
+      const variable=metricById(params.get('metric') ?? '')?.id ?? 'precipitation', season=params.get('season') ?? 'DJF';
+      dispatch({type:'applySharedSettings',patch:{variable,season}});
+      void getCellSeries({lon,lat,variable,season}).then(outcome=>{if(alive && outcome.status==='ok'){dispatch({type:'loadExplore',doc:cellResultToDoc(outcome.result),enso:null});setPickedPoint({lon,lat});setAutoRotate(false);setSearchOpen(true);loadLinkedTimelapse(variable,season);}}).catch(()=>{});
+    }
+    return ()=>{alive=false;};
+  },[]);
   const [seriesList, setSeriesList] = useState<SeriesSummary[] | null>(null);
   const [regions, setRegions] = useState<RegionsGeoJson | null>(null);
-  const [timelapse, setTimelapse] = useState<TimelapseIndex | null>(null);
-  const [gridCatalog, setGridCatalog] = useState<GridCatalog | null>(null);
-  const [trendMaps, setTrendMaps] = useState<TrendMapEntry[]>([]);
-  const [loadError, setLoadError] = useState<string | null>(null);
-  const [pickError, setPickError] = useState<string | null>(null);
-  const [loadingId, setLoadingId] = useState<string | null>(null);
 
-  const [slotA, setSlotA] = useState<SeriesDoc | null>(null);
-  const [slotB, setSlotB] = useState<SeriesDoc | null>(null);
-  const [activeSlot, setActiveSlot] = useState<Slot>('A');
-
-  const [year, setYear] = useState<number | null>(null);
-  const [playing, setPlaying] = useState(false);
-  const [showTimelapseOnMap, setShowTimelapseOnMap] = useState(true);
-
-  const [variable, setVariable] = useState('precip');
-  const [season, setSeason] = useState('DJF');
-  const [trendMapOn, setTrendMapOn] = useState(false);
-  const [cellOutcome, setCellOutcome] = useState<CellSeriesOutcome | null>(null);
-  const [cellLoading, setCellLoading] = useState(false);
-  const [cellError, setCellError] = useState<string | null>(null);
-  const [pickedPoint, setPickedPoint] = useState<[number, number] | null>(null);
+  const [viewportWidth, setViewportWidth] = useState(() =>
+    typeof window === 'undefined' ? 1440 : window.innerWidth,
+  );
+  useEffect(() => {
+    const onHash = () => {const hash = window.location.hash;setView(hash.startsWith('#glossary') ? 'glossary' : hash.startsWith('#enso') ? 'enso' : 'globe'); if(hash.startsWith('#glossary/')) requestAnimationFrame(() => document.getElementById('term-'+hash.split('/')[1])?.scrollIntoView());};
+    onHash();window.addEventListener('hashchange',onHash);return () => window.removeEventListener('hashchange',onHash);
+  },[]);
+  const [checksOpen, setChecksOpen] = useState(false);
+  const [sourcesOpen, setSourcesOpen] = useState(false);
+  const [autoRotate, setAutoRotate] = useState(true);
+  const [pickedPoint, setPickedPoint] = useState<{ lon: number; lat: number } | null>(null);
+  const [ensoOverlay, setEnsoOverlay] = useState<EnsoOverlay | null>(null);
+  const [view, setView] = useState<'globe' | 'enso' | 'glossary'>(() => window.location.hash.startsWith('#glossary') ? 'glossary' : window.location.hash.startsWith('#enso') ? 'enso' : 'globe');
+  const [workflowOpen, setWorkflowOpen] = useState(false);
+  const [pendingPlace, setPendingPlace] = useState<WorkflowPlace | null>(null);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchFocus, setSearchFocus] = useState<FocusTarget | null>(null);
+  const [rightBarOpen, setRightBarOpen] = useState(true);
+  // Present mode (keyboard-driven talk). Off unless ?present=1 or the top-bar button.
+  const [presenting, setPresenting] = useState(() => new URLSearchParams(window.location.search).get('present') === '1');
+  const [presentStep, setPresentStep] = useState<PresentStep | null>(null);
+  const [ensoKey, setEnsoKey] = useState(0);
+  const demoToken = useRef(0);
+  const presentStepRef = useRef<PresentStep | null>(null);
+  const seriesListRef = useRef<SeriesSummary[] | null>(null);
+  seriesListRef.current = seriesList;
 
   const requestRef = useRef(0);
   const cellRequestRef = useRef(0);
+  const searchFocusSeq = useRef(0);
 
   useEffect(() => {
     let alive = true;
     (async () => {
       try {
-        const [list, regionData, catalog, maps] = await Promise.all([
+        const [list, regionData] = await Promise.all([
           listSeries(),
           getRegionsGeoJson(),
-          getGridCatalog(),
-          getTrendMapCatalog(),
         ]);
         if (!alive) return;
         setSeriesList(list);
         setRegions(regionData);
-        setGridCatalog(catalog);
-        setTrendMaps(maps);
-      } catch (error) {
-        if (alive) setLoadError(errorText(error));
+      } catch (loadError) {
+        if (alive) dispatch({ type: 'setError', message: errorText(loadError) });
       }
     })();
+    dispatch({ type: 'setSaved', saved: loadSaved() });
     return () => {
       alive = false;
     };
   }, []);
 
-  // Time-lapse frames are per variable and season. A missing set is quiet: the
-  // player reports that no frames exist rather than breaking the page.
+
   useEffect(() => {
-    let alive = true;
-    setTimelapse(null);
-    setPlaying(false);
-    getTimelapseIndex(variable, season).then((index) => {
-      if (!alive) return;
-      setTimelapse(index);
-      setYear((current) => {
-        if (!index) return null;
-        if (current !== null && index.years.includes(current)) return current;
-        return index.years[index.years.length - 1];
-      });
+    const onResize = () => setViewportWidth(window.innerWidth);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  // A search-driven fly is a one-shot: once a result loads, drop the pending
+  // centre so closing the drawer does not re-fly to a stale point.
+  useEffect(() => {
+    if (exploreDoc) setSearchFocus(null);
+  }, [exploreDoc]);
+
+  const labels = useMemo(() => {
+    const map: Record<string, string> = {};
+    for (const summary of seriesList ?? []) {
+      map[summary.region_id] = summary.region_label;
+    }
+    return map;
+  }, [seriesList]);
+
+  async function loadRegion(regionId: string, variable = comparison.shared.variable, season = comparison.shared.season): Promise<LoadedRegion> {
+    const point = /^cell_(-?\d+(?:\.\d+)?)_(-?\d+(?:\.\d+)?)$/.exec(regionId);
+    if(point){const outcome=await getCellSeries({lat:Number(point[1]),lon:Number(point[2]),variable,season});if(outcome.status==='no-data')throw new Error(outcome.message);return {doc:cellResultToDoc(outcome.result),enso:null};}
+    const summary = (seriesList ?? []).find((item) => item.region_id === regionId && item.variable === variable && item.season === season);
+    if (!summary) {
+      throw new Error(`No catalogued series for "${regionId}".`);
+    }
+    const [doc, enso] = await Promise.all([
+      getSeries(summary.id),
+      getEnso(regionId),
+    ]);
+    return { doc, enso };
+  }
+
+  function togglePin(id: string) {
+    // A pin outlives the panel it came from, so it stores its own copy of the
+    // result: changing selection or closing the drawer cannot make it vanish.
+    const item = inspectorItems(state).find((entry) => entry.id === id);
+    dispatch({ type: 'togglePin', id, item });
+  }
+
+  function saveResult(id: string) {
+    const slot = comparison.slots.find((entry) => entry.id === id);
+    if (!slot) return;
+    const updated = saveInvestigation({
+      name: `${labels[slot.regionId] ?? slot.regionId} · ${slot.period}`,
+      mode: 'compare',
+      regionIds: [slot.regionId],
+      slots: [
+        {
+          regionId: slot.regionId,
+          variable: slot.variable,
+          season: slot.season,
+          period: slot.period,
+        },
+      ],
     });
-    return () => {
-      alive = false;
-    };
-  }, [variable, season]);
-
-  useEffect(() => {
-    if (!playing || !timelapse || timelapse.years.length < 2) return;
-    const timer = window.setInterval(() => {
-      setYear((current) => {
-        const years = timelapse.years;
-        const index = years.indexOf(current ?? years[0]);
-        return years[(index + 1) % years.length];
-      });
-    }, 900);
-    return () => window.clearInterval(timer);
-  }, [playing, timelapse]);
-
-  const variableMeta = gridCatalog?.index.variables[variable] ?? null;
-  const variableSelection = VARIABLES.find((item) => item.slug === variable);
-  const selectedTrendMap =
-    trendMaps.find((entry) => entry.variable === variable && entry.season === season) ??
-    null;
-  const trendUrl = selectedTrendMap ? trendMapUrl(selectedTrendMap) : null;
-  const trendHatchUrl = selectedTrendMap ? trendMapHatchUrl(selectedTrendMap) : null;
-  const trendHatchGeoJsonUrl = selectedTrendMap
-    ? trendMapHatchGeoJsonUrl(selectedTrendMap)
-    : null;
-  const trendFdrQ = selectedTrendMap?.fdr_q ?? FDR_Q;
-  const hasTrendHatch = Boolean(trendHatchUrl || trendHatchGeoJsonUrl);
-
-  useEffect(() => {
-    if (!trendUrl && trendMapOn) setTrendMapOn(false);
-  }, [trendUrl, trendMapOn]);
-
-  useEffect(() => {
-    // A variable or season change invalidates the clicked cell and any request
-    // still in flight.
-    cellRequestRef.current += 1;
-    setCellOutcome(null);
-    setCellError(null);
-    setCellLoading(false);
-    setPickedPoint(null);
-  }, [variable, season]);
-
-  function chooseVariable(slug: string) {
-    setVariable(slug);
-    const meta = gridCatalog?.index.variables[slug];
-    if (!meta) return;
-    if (!meta.years_by_season?.[season]?.length) {
-      const next = SEASONS.find(
-        (code) => (meta.years_by_season?.[code]?.length ?? 0) > 0,
-      );
-      if (next) setSeason(next);
-    }
+    dispatch({ type: 'setSaved', saved: updated });
+    dispatch({ type: 'setBanner', message: 'Saved this result.' });
   }
 
-  async function pickCell(lon: number, lat: number) {
-    const token = cellRequestRef.current + 1;
-    cellRequestRef.current = token;
-    setPickedPoint([lon, lat]);
-    setCellLoading(true);
-    setCellError(null);
+  async function addRegionById(regionId: string) {
     try {
-      const outcome = await getCellSeries({ lon, lat, variable, season });
-      if (cellRequestRef.current !== token) return;
-      setCellOutcome(outcome);
-    } catch (error) {
-      if (cellRequestRef.current === token) setCellError(errorText(error));
-    } finally {
-      if (cellRequestRef.current === token) setCellLoading(false);
+      const loaded = await loadRegion(regionId);
+      dispatch({
+        type: 'addSlot',
+        doc: loaded.doc,
+        enso: loaded.enso,
+        settings: comparison.shared,
+      });
+    } catch (loadError) {
+      dispatch({ type: 'setError', message: errorText(loadError) });
     }
   }
 
-  async function chooseSeries(summary: SeriesSummary) {
+  async function openTimelapse(variable: string, season: string) {
+    const index = await getTimelapseIndex(variable, season);
+    dispatch({ type: 'openTimelapse', variable, season, index });
+  }
+
+  async function selectRegion(regionId: string) {
+    setAutoRotate(false);
+    dispatch({ type: 'setError', message: null });
     const token = requestRef.current + 1;
     requestRef.current = token;
-    setLoadingId(summary.id);
-    setPickError(null);
+    dispatch({ type: 'setLoading', loading: true });
     try {
-      const doc = await getSeries(summary.id);
+      const loaded = await loadRegion(regionId);
       if (requestRef.current !== token) return;
-      if (activeSlot === 'A') {
-        setSlotA(doc);
-        if (!slotB) setActiveSlot('B');
+      if (mode === 'compare' || addMode.active) {
+        dispatch({
+          type: 'addSlot',
+          doc: loaded.doc,
+          enso: loaded.enso,
+          settings: comparison.shared,
+        });
       } else {
-        setSlotB(doc);
+        dispatch({ type: 'loadExplore', doc: loaded.doc, enso: loaded.enso });
       }
-    } catch (error) {
-      if (requestRef.current === token) setPickError(errorText(error));
+    } catch (loadError) {
+      if (requestRef.current === token) {
+        dispatch({ type: 'setError', message: errorText(loadError) });
+      }
     } finally {
-      if (requestRef.current === token) setLoadingId(null);
+      if (requestRef.current === token) dispatch({ type: 'setLoading', loading: false });
     }
   }
 
-  function pinTo(doc: SeriesDoc, target: Slot) {
-    if (target === 'A') {
-      if (slotA?.id === doc.id) return;
-      const displaced = slotA;
-      setSlotA(doc);
-      if (slotB?.id === doc.id) setSlotB(displaced);
+  async function handlePickLocation(lon: number, lat: number, _hitRegionId: string | null) {
+    setPickedPoint({ lon, lat });
+    setAutoRotate(false);
+    dispatch({ type: 'setError', message: null });
+
+    // Use the current shared variable and season for the cell series query.
+    const variable = comparison.shared.variable;
+    const season = comparison.shared.season;
+
+    const token = cellRequestRef.current + 1;
+    cellRequestRef.current = token;
+    dispatch({ type: 'setLoading', loading: true });
+
+    try {
+      const request: CellSeriesRequest = { lon, lat, variable, season };
+      const outcome = await getCellSeries(request);
+      if (cellRequestRef.current !== token) return;
+
+      if (outcome.status === 'no-data') {
+        dispatch({ type: 'setError', message: outcome.message });
+        dispatch({ type: 'setLoading', loading: false });
+        return;
+      }
+
+      // Convert ContractResult to SeriesDoc format.
+      const doc = cellResultToDoc(outcome.result);
+
+      if (mode === 'compare' || addMode.active) {
+        dispatch({
+          type: 'addSlot',
+          doc,
+          enso: null, // No ENSO for arbitrary grid cells
+          settings: comparison.shared,
+        });
+      } else {
+        dispatch({ type: 'loadExplore', doc, enso: null });
+      }
+    } catch (loadError) {
+      if (cellRequestRef.current === token) {
+        dispatch({ type: 'setError', message: errorText(loadError) });
+      }
+    } finally {
+      if (cellRequestRef.current === token) dispatch({ type: 'setLoading', loading: false });
+    }
+  }
+
+  function navigate(next: AppMode) {
+    window.location.hash='';
+    setView('globe');
+    dispatch({ type: 'navigate', mode: next });
+    if (next !== 'explore') setAutoRotate(false);
+    else if (!exploreDoc) setAutoRotate(true);
+  }
+
+  function handleSave() {
+    const regionIds =
+      mode === 'compare'
+        ? comparison.slots.map((slot) => slot.regionId)
+        : exploreDoc
+          ? [exploreDoc.region.id]
+          : [];
+    if (regionIds.length === 0) return;
+    const firstName = labels[regionIds[0]] ?? regionIds[0];
+    const name =
+      regionIds.length > 1 ? `${firstName} +${regionIds.length - 1} more` : firstName;
+    const updated = saveInvestigation({
+      name,
+      mode: mode === 'compare' ? 'compare' : 'explore',
+      regionIds,
+      slots:
+        mode === 'compare'
+          ? comparison.slots.map(({ regionId, variable, season, period }) => ({
+              regionId,
+              variable,
+              season,
+              period,
+            }))
+          : exploreDoc ? [{regionId:exploreDoc.region.id,variable:exploreDoc.variable,season:exploreDoc.season.code,period:state.explorePeriod}] : undefined,
+    });
+    dispatch({ type: 'setSaved', saved: updated });
+    dispatch({ type: 'setBanner', message: 'Saved to this browser.' });
+  }
+
+  function openSaved(item: SavedInvestigation) {
+    dispatch({ type: 'setBanner', message: null });
+    if (item.mode === 'compare') {
+      dispatch({ type: 'navigate', mode: 'compare' });
+      void (async () => {
+        // allSettled: one missing region must not discard the slots that do load.
+        // Each result keeps its original index so stored settings stay aligned.
+        const settled = await Promise.allSettled(item.regionIds.map((id,i) => loadRegion(id,item.slots?.[i]?.variable,item.slots?.[i]?.season)));
+        const entries: ComparisonEntry[] = [];
+        const missing: string[] = [];
+        settled.forEach((outcome, index) => {
+          if (outcome.status === 'rejected') {
+            missing.push(item.regionIds[index]);
+            return;
+          }
+          const stored = item.slots?.[index];
+          entries.push({
+            doc: outcome.value.doc,
+            enso: outcome.value.enso,
+            settings: stored
+              ? {
+                  variable: stored.variable,
+                  season: stored.season,
+                  period: stored.period as SlotSettings['period'],
+                }
+              : undefined,
+          });
+        });
+        dispatch({ type: 'restoreComparison', entries, missing });
+      })();
     } else {
-      if (slotB?.id === doc.id) return;
-      const displaced = slotB;
-      setSlotB(doc);
-      if (slotA?.id === doc.id) setSlotA(displaced);
+      const id = item.regionIds[0];
+      dispatch({ type: 'navigate', mode: 'explore' });
+      void (async () => {
+        try {
+          const loaded = await loadRegion(id,item.slots?.[0]?.variable,item.slots?.[0]?.season);
+          dispatch({ type: 'loadExplore', doc: loaded.doc, enso: loaded.enso });
+          dispatch({type:'applySharedSettings',patch:{variable:loaded.doc.variable,season:loaded.doc.season.code}});
+          dispatch({type:'setExplorePeriod',period:(item.slots?.[0]?.period ?? 'full') as SlotSettings['period']});
+        } catch (loadError) {
+          dispatch({ type: 'setError', message: errorText(loadError) });
+        }
+      })();
     }
   }
 
-  function removeSlot(slot: Slot) {
-    if (slot === 'A') setSlotA(null);
-    else setSlotB(null);
-    setActiveSlot(slot);
+  function openDataset(id: string) {
+    const summary = (seriesList ?? []).find((item) => item.id === id);
+    if (!summary) return;
+    setAutoRotate(false);
+    dispatch({ type: 'navigate', mode: 'explore' });
+    dispatch({ type: 'applySharedSettings', patch: {variable: summary.variable, season: summary.season} });
+    void Promise.all([getSeries(id), getEnso(summary.region_id)]).then(([doc, enso]) => dispatch({type:'loadExplore', doc, enso})).catch(e => dispatch({type:'setError', message:errorText(e)}));
   }
 
-  function selectFromMap(regionId: string) {
-    const summary = seriesList?.find((item) => item.region_id === regionId);
-    if (summary) void chooseSeries(summary);
+  function handleRegionSelect(regionId: string) {
+    if (workflowOpen) {
+      const region = STUDY_REGIONS.find((entry) => entry.id === regionId);
+      setPendingPlace({
+        name: region?.label ?? labels[regionId] ?? regionId,
+        lon: region?.lon ?? 0,
+        lat: region?.lat ?? 0,
+        regionId,
+      });
+      return;
+    }
+    setSearchOpen(true);
+    void selectRegion(regionId);
   }
 
-  function clearCell() {
+  function handleGlobePick(lon: number, lat: number, hitRegionId: string | null) {
+    if (workflowOpen) {
+      if (hitRegionId) {
+        handleRegionSelect(hitRegionId);
+      } else {
+        setPendingPlace({
+          name: `${lat.toFixed(2)}\u00b0, ${lon.toFixed(2)}\u00b0`,
+          lon,
+          lat,
+          regionId: null,
+        });
+      }
+      return;
+    }
+    setSearchOpen(true);
+    void handlePickLocation(lon, lat, hitRegionId);
+  }
+
+  async function runInvestigation(selection: WorkflowSelection, list: SeriesSummary[] = seriesList ?? [], stale: () => boolean = () => false) {
+    setWorkflowOpen(false);
+    setSearchOpen(true);
+    setAutoRotate(false);
+    dispatch({ type: 'setError', message: null });
+    dispatch({
+      type: 'applySharedSettings',
+      patch: {
+        variable: selection.variable,
+        season: selection.season,
+        period: selection.period,
+      },
+    });
+    dispatch({ type: 'setExplorePeriod', period: selection.period });
+    try {
+      if (selection.place.regionId) {
+        const summary = list.find(
+          (item) =>
+            item.region_id === selection.place.regionId &&
+            item.variable === selection.variable,
+        );
+        if (!summary) {
+          dispatch({
+            type: 'setError',
+            message: `No ${selection.variable} series for that region.`,
+          });
+          return;
+        }
+        const [doc, enso] = await Promise.all([
+          getSeries(summary.id),
+          getEnso(summary.region_id),
+        ]);
+        if (stale()) return;
+        dispatch({ type: 'loadExplore', doc, enso });
+      } else {
+        const outcome = await getCellSeries({
+          lon: selection.place.lon,
+          lat: selection.place.lat,
+          variable: selection.variable,
+          season: selection.season,
+        });
+        if (outcome.status === 'no-data') {
+          dispatch({ type: 'setError', message: outcome.message });
+          return;
+        }
+        if (stale()) return;
+        setPickedPoint({ lon: selection.place.lon, lat: selection.place.lat });
+        dispatch({ type: 'loadExplore', doc: cellResultToDoc(outcome.result), enso: null });
+      }
+    } catch (loadError) {
+      dispatch({ type: 'setError', message: errorText(loadError) });
+    }
+  }
+
+  /** Put the app into its pristine landing state (used by every Present step). */
+  function resetApp() {
+    requestRef.current += 1;
     cellRequestRef.current += 1;
-    setCellOutcome(null);
-    setCellError(null);
-    setCellLoading(false);
+    dispatch({ type: 'setError', message: null });
+    dispatch({ type: 'setLoading', loading: false });
+    dispatch({ type: 'setBanner', message: null });
+    dispatch({ type: 'closeTimelapse' });
+    dispatch({ type: 'clearExplore' });
+    dispatch({ type: 'navigate', mode: 'explore' });
+    dispatch({ type: 'applySharedSettings', patch: { variable: 'precipitation', season: 'DJF', period: 'full' } });
+    dispatch({ type: 'setExplorePeriod', period: 'full' });
+    window.location.hash = '';
+    setView('globe');
+    setEnsoOverlay(null);
+    setWorkflowOpen(false);
+    setSearchOpen(false);
+    setPendingPlace(null);
     setPickedPoint(null);
+    setSearchFocus(null);
+    setChecksOpen(false);
+    setSourcesOpen(false);
+    setAutoRotate(true);
   }
 
-  const pickedCellBbox = useMemo<Bbox | null>(
-    () => (pickedPoint ? cellBbox(pickedPoint[0], pickedPoint[1]) : null),
-    [pickedPoint],
-  );
+  /** Drive the real app into the state a Present step needs. Idempotent. */
+  async function runDemo(step: PresentStep) {
+    const token = ++demoToken.current;
+    const stale = () => demoToken.current !== token;
+    const wasDemo = presentStepRef.current?.kind === 'demo';
+    presentStepRef.current = step;
+    setPresentStep(step);
+    const action = step.kind === 'demo' ? step.demo : undefined;
+    if (!action) {
+      // Story slide: let the black stage fade in before the app resets behind it.
+      if (wasDemo) await new Promise((resolve) => setTimeout(resolve, 420));
+      if (!stale()) resetApp();
+      return;
+    }
+    resetApp();
+    if (action.type === 'landing') return;
+    if (action.type === 'enso') {
+      window.location.hash = action.hash;
+      setEnsoKey((key) => key + 1);
+      setView('enso');
+      return;
+    }
+    const waitFor = async <T,>(read: () => T | null | undefined, ms = 12000): Promise<T | null> => {
+      const end = Date.now() + ms;
+      while (Date.now() < end) {
+        if (stale()) return null;
+        const value = read();
+        if (value) return value;
+        await new Promise((resolve) => setTimeout(resolve, 150));
+      }
+      return null;
+    };
+    const list = await waitFor(() => seriesListRef.current);
+    if (!list || stale()) return;
+    await runInvestigation(
+      { place: action.place, variable: action.variable, season: action.season, period: 'full' },
+      list,
+      stale,
+    );
+  }
+  const demoRef = useRef(runDemo);
+  demoRef.current = runDemo;
+  const exitRef = useRef(() => {});
+  exitRef.current = () => {
+    demoToken.current += 1;
+    setPresenting(false);
+    presentStepRef.current = null;
+    setPresentStep(null);
+    resetApp();
+    const url = new URL(window.location.href);
+    if (url.searchParams.has('present')) {
+      url.searchParams.delete('present');
+      window.history.replaceState(null, '', url.pathname + url.search + url.hash);
+    }
+  };
 
-  const gridFixture =
-    Boolean(gridCatalog?.fixture) || Boolean(selectedTrendMap?.fixture);
-  const fixtureData =
-    [slotA, slotB].some((doc) => doc?.validation.status === 'fixture') ||
-    Boolean(
-      timelapse && (timelapse.fixture || /fixture/i.test(timelapse.source)),
-    ) ||
-    gridFixture;
-  const validationFailed = [slotA, slotB].some(
-    (doc) => doc?.validation.status === 'failed',
-  );
+  function chooseSearchPlace(result: PlaceResult) {
+    setSearchOpen(false);
+    if (result.regionId) {
+      void selectRegion(result.regionId);
+      return;
+    }
+    searchFocusSeq.current += 1;
+    setSearchFocus({
+      kind: 'center',
+      key: `search_${searchFocusSeq.current}`,
+      center: [result.lon, result.lat],
+      zoom: 2.5,
+    });
+    void handlePickLocation(result.lon, result.lat, null);
+  }
 
-  const focus = mergeBoxes(
-    [bboxOf(slotA), bboxOf(slotB)].filter((box): box is Bbox => box !== null),
-  );
-  const selectedRegionIds = [slotA?.region.id, slotB?.region.id].filter(
-    (id): id is string => typeof id === 'string',
-  );
+  const items = inspectorItems(state);
+
+  const focus = useMemo<FocusTarget | null>(() => {
+    // A search-chosen point flies the globe before any result has loaded.
+    if (mode === 'explore' && !exploreDoc && searchFocus) {
+      return searchFocus;
+    }
+    const boxes: Bbox[] = [];
+    if (mode === 'explore' && exploreDoc) {
+      const box = bboxOf(exploreDoc);
+      if (box) boxes.push(box);
+    }
+    if (mode === 'compare') {
+      for (const slot of comparison.slots) {
+        const box = bboxOf(slot.doc);
+        if (box) boxes.push(box);
+      }
+    }
+    if (boxes.length === 0) return null;
+    const merged = mergeBoxes(boxes);
+    if (!merged) return null;
+    const key = boxes.map((box) => box.join(',')).join('|');
+    return { kind: 'bounds', key, bounds: merged };
+  }, [mode, exploreDoc, comparison.slots, searchFocus]);
+
+  const selectedIds = useMemo(() => {
+    const ids: string[] = [];
+    if (mode === 'explore' && exploreDoc) ids.push(exploreDoc.region.id);
+    if (mode === 'compare') {
+      for (const slot of comparison.slots) ids.push(slot.regionId);
+    }
+    return ids;
+  }, [mode, exploreDoc, comparison.slots]);
+
+  const timelapseFrame = timelapse
+    ? {
+        url: timelapseFrameUrl(timelapse.variable, timelapse.season, timelapse.year),
+        extent: timelapse.index.extent,
+      }
+    : null;
+
+  const compareHint = addMode.active
+    ? `Pick a region on the globe to add it (${comparison.slots.length} of ${MAX_SLOTS} used)`
+    : mode === 'compare' && comparison.slots.length === 0
+      ? 'Pick a region on the globe to start a comparison'
+      : null;
+
+  const landing = mode === 'explore' && !exploreDoc && !status.loading;
 
   return (
-    <div className="app">
-      <header className="masthead">
-        <p className="eyebrow">Seasonal climate comparison</p>
-        <h1>Earth System Trend Detective</h1>
-        <p className="lede">
-          Compare seasonal trends for regions of the world, or click any spot for one
-          1 degree cell. DJF is December, January and February, labelled by the
-          January year.
-        </p>
-      </header>
+    <div className={`app${presenting ? ' is-presenting' : ''}${presenting && presentStep?.kind === 'story' ? ' is-present-story' : ''}`} style={panelStyle(state, viewportWidth)}>
+      <TopBar
+        mode={mode}
+        onNavigate={navigate}
+        view={view}
+        onShowEnso={() => {window.location.hash='enso';setView('enso');}}
+        onBackToGlobe={() => {window.location.hash='';setView('globe');}}
+        onPresent={() => setPresenting(true)}
+      />
 
-      {fixtureData && (
-        <div className="banner banner-fixture">
-          <strong>FIXTURE DATA</strong>
-          <span>
-            Grid cells, trend maps and series shown are placeholders for interface
-            testing. They are not climate results.
-          </span>
-        </div>
-      )}
-      {validationFailed && (
-        <div className="banner banner-error">
-          <strong>Validation failed</strong>
-          <span>These values did not pass an independent reference check.</span>
-        </div>
-      )}
-      {loadError && (
-        <div className="banner banner-error">
-          <strong>Data could not be loaded</strong>
-          <span>{loadError}</span>
-        </div>
-      )}
+      <div className="stage">
+        <GlobeView
+          regions={regions}
+          labels={labels}
+          selectedRegionIds={selectedIds}
+          focus={view === 'enso' ? (window.location.hash.includes('region=') ? {kind:'center',key:window.location.hash,center:[STUDY_REGIONS.find(r=>r.id===new URLSearchParams(window.location.hash.split('?')[1]).get('region'))?.lon ?? -160,STUDY_REGIONS.find(r=>r.id===new URLSearchParams(window.location.hash.split('?')[1]).get('region'))?.lat ?? 0],zoom:2} : {kind:'center', key:'enso-pacific', center:[-160,0], zoom:1.65}) : timelapse ? {kind:'center',key:'timelapse-'+timelapse.variable+'-'+timelapse.season,center:[pickedPoint?.lon ?? 30,pickedPoint?.lat ?? 0],zoom:1.9} : focus}
+          autoRotate={view !== 'enso' && autoRotate && mode !== 'library'}
+          onSelectRegion={(id) => handleRegionSelect(id)}
+          onUserInteract={() => setAutoRotate(false)}
+          onPickLocation={(lon, lat, hitRegionId) => handleGlobePick(lon, lat, hitRegionId)}
+          pickedPoint={pickedPoint}
+          drawerWidth={view === 'enso' ? 420 : timelapse ? 0 : drawerWidth(state, viewportWidth)}
+          timelapseFrame={view === 'enso' ? ensoOverlay : timelapseFrame}
+        />
 
-      <div className="layout">
-        <aside className="panel sidebar">
-          <h2>Choose a region</h2>
-          <p className="muted">
-            Pick from the list or click a region on the map. The next pick fills result{' '}
-            <strong>{activeSlot}</strong>. A region whose check failed or is not listed
-            is hidden.
-          </p>
+        {view === 'glossary' ? <GlossaryPage /> : view === 'enso' ? <EnsoPage key={ensoKey} onOverlay={setEnsoOverlay} /> : <>
+        {landing && !workflowOpen && !timelapse && !(presenting && presentStep?.kind === 'story') && <LandingHero onStart={() => setWorkflowOpen(true)} />}
 
-          <div className="slot-switch" role="group" aria-label="Result slot to fill">
-            <button
-              type="button"
-              className={activeSlot === 'A' ? 'slot active' : 'slot'}
-              onClick={() => setActiveSlot('A')}
-              aria-pressed={activeSlot === 'A'}
-            >
-              <span className="slot-name">A</span>
-              <span>{slotA ? slotA.region.label : 'empty'}</span>
-            </button>
-            <button
-              type="button"
-              className={activeSlot === 'B' ? 'slot active' : 'slot'}
-              onClick={() => setActiveSlot('B')}
-              aria-pressed={activeSlot === 'B'}
-            >
-              <span className="slot-name">B</span>
-              <span>{slotB ? slotB.region.label : 'empty'}</span>
-            </button>
-          </div>
-
-          {pickError && <p className="error">{pickError}</p>}
-          {loadingId && <p className="muted">Loading {loadingId}&hellip;</p>}
-
-          <div className="region-list">
-            {seriesList === null && !loadError && (
-              <p className="muted">Loading regions&hellip;</p>
-            )}
-            {seriesList?.length === 0 && (
-              <p className="muted">No series were found. Add JSON files to data/artifacts.</p>
-            )}
-            {seriesList?.map((summary) => {
-              const pinned = [
-                slotA?.id === summary.id ? 'A' : null,
-                slotB?.id === summary.id ? 'B' : null,
-              ]
-                .filter(Boolean)
-                .join('/');
-              return (
-                <button
-                  key={summary.id}
-                  type="button"
-                  className={
-                    [slotA?.id, slotB?.id].includes(summary.id)
-                      ? 'region selected'
-                      : 'region'
-                  }
-                  onClick={() => void chooseSeries(summary)}
-                  disabled={loadingId !== null}
-                >
-                  <span className="region-top">
-                    <span className="region-name">{summary.region_label}</span>
-                    {pinned && <span className="pin-mark">{pinned}</span>}
-                  </span>
-                  <span className="region-meta">
-                    {summary.season} &middot; {summary.variable} &middot; {summary.units}
-                  </span>
-                  {(() => {
-                    const label = validationLabel(summary.validation_status);
-                    return label ? (
-                      <span className={`tag tag-${summary.validation_status}`}>
-                        {label}
-                      </span>
-                    ) : null;
-                  })()}
-                  {summary.fixture && <span className="tag tag-fixture">fixture</span>}
-                </button>
-              );
-            })}
-          </div>
-        </aside>
-
-        <main className="content">
-          <section className="panel controls-panel" aria-label="Variable, season and map layers">
-            <div className="control-groups">
-              <div className="control-group">
-                <h2>Variable</h2>
-                <div className="chips">
-                  {VARIABLES.map((option) => {
-                    const ready = Boolean(gridCatalog?.index.variables[option.slug]);
-                    return (
-                      <button
-                        key={option.slug}
-                        type="button"
-                        className={variable === option.slug ? 'chip active' : 'chip'}
-                        onClick={() => chooseVariable(option.slug)}
-                        disabled={!ready}
-                        aria-pressed={variable === option.slug}
-                        title={ready ? option.source : `${option.label}: not ready`}
-                      >
-                        <span>{option.label}</span>
-                        <span className="chip-sub">
-                          {ready ? option.source : 'not ready'}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="control-group">
-                <h2>Season</h2>
-                <div className="chips season-chips">
-                  {SEASONS.map((code) => {
-                    const ready = Boolean(
-                      variableMeta?.years_by_season?.[code]?.length,
-                    );
-                    return (
-                      <button
-                        key={code}
-                        type="button"
-                        className={season === code ? 'chip active' : 'chip'}
-                        onClick={() => setSeason(code)}
-                        disabled={!ready}
-                        aria-pressed={season === code}
-                        title={ready ? `${code} available` : `${code}: not ready`}
-                      >
-                        {code}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="control-group layer-group">
-                <h2>Trend map</h2>
-                <label className="check">
-                  <input
-                    type="checkbox"
-                    checked={trendMapOn}
-                    disabled={!trendUrl}
-                    onChange={(event) => setTrendMapOn(event.target.checked)}
-                  />
-                  Show Sen slope layer
-                </label>
-                <div className="trend-legend">
-                  <span className="trend-legend-bar" />
-                  <span className="trend-legend-labels">
-                    <span>negative</span>
-                    <span>zero</span>
-                    <span>positive</span>
-                  </span>
-                </div>
-                {hasTrendHatch && (
-                  <div className="trend-hatch-legend">
-                    <span className="trend-hatch-swatch" aria-hidden="true" />
-                    <span>
-                      hatched = passes FDR q = {trendFdrQ.toFixed(2)}
-                    </span>
-                  </div>
-                )}
-                <p className="muted control-note">
-                  {trendUrl
-                    ? 'Every valid cell is coloured by its full-period Sen slope. ' +
-                      (hasTrendHatch
-                        ? `Hatched cells pass the false-discovery-rate test at q = ${trendFdrQ.toFixed(2)}. Significant cells can cluster in space, so a cluster is not independent confirmation.`
-                        : 'No FDR hatch mask is available for this layer.') +
-                      (selectedTrendMap?.fixture ? ' Fixture layer.' : '')
-                    : 'No trend map for this variable and season yet.'}
-                </p>
-              </div>
-            </div>
-            <p className="muted grid-note">
-              {gridCatalog
-                ? `Grid catalog format v${gridCatalog.index.format_version}; ${
-                    Object.keys(gridCatalog.index.variables).length
-                  } variable(s) ready.`
-                : 'Global grid artifacts are not present; clicked-cell results are unavailable.'}
-            </p>
-          </section>
-
-          <section className="panel map-panel">
-            <div className="panel-head">
-              <h2>Map</h2>
-              <p className="muted">Local outlines and local raster layers.</p>
-            </div>
-            <MapView
-              regions={regions}
-              selectedRegionIds={selectedRegionIds}
-              focusBbox={focus}
-              timelapseUrl={
-                timelapse && year !== null
-                  ? timelapseFrameUrl(variable, season, year)
-                  : null
-              }
-              timelapseExtent={timelapse?.extent ?? FALLBACK_EXTENT}
-              showTimelapse={showTimelapseOnMap}
-              trendMapUrl={trendMapOn ? trendUrl : null}
-              trendMapHatchUrl={
-                trendMapOn && !trendHatchGeoJsonUrl ? trendHatchUrl : null
-              }
-              trendMapHatchGeoJsonUrl={trendMapOn ? trendHatchGeoJsonUrl : null}
-              trendMapExtent={FALLBACK_EXTENT}
-              pickedCellBbox={pickedCellBbox}
-              onSelectRegion={selectFromMap}
-              onPickCell={(lon, lat) => void pickCell(lon, lat)}
-            />
-          </section>
-
-          <section className="panel cell-panel" aria-label="Clicked cell result">
-            <div className="panel-head">
-              <div>
-                <h2>Clicked cell</h2>
-                <p className="muted">
-                  {variableSelection?.label ?? variable} &middot; {season}. One 10 x 10
-                  degree tile is fetched per click.
-                </p>
-              </div>
-              {gridFixture && <span className="tag tag-fixture">fixture grid</span>}
-            </div>
-            <CellCard
-              outcome={cellOutcome}
-              loading={cellLoading}
-              error={cellError}
-              fixture={gridFixture}
-              onClear={clearCell}
-            />
-          </section>
-
-          <Timelapse
-            index={timelapse}
-            year={year}
-            playing={playing}
-            showOnMap={showTimelapseOnMap}
-            season={season}
-            variableLabel={variableSelection?.label ?? variable}
-            onChangeYear={setYear}
-            onTogglePlay={() => setPlaying((value) => !value)}
-            onToggleMap={setShowTimelapseOnMap}
+        {workflowOpen && mode === 'explore' && !exploreDoc && (
+          <InvestigationPanel
+            place={pendingPlace}
+            initialVariable={comparison.shared.variable}
+            initialSeason={comparison.shared.season}
+            initialPeriod={comparison.shared.period}
+            onChooseRegion={(regionId) => handleRegionSelect(regionId)}
+            onChoosePoint={(lon, lat) =>
+              setPendingPlace({
+                name: `${lat.toFixed(2)}\u00b0, ${lon.toFixed(2)}\u00b0`,
+                lon,
+                lat,
+                regionId: null,
+              })
+            }
+            onRun={(selection) => void runInvestigation(selection)}
+            onClose={() => setWorkflowOpen(false)}
           />
+        )}
 
-          <section className="results" aria-label="Comparison results">
-            <div className="results-head">
-              <h2>Comparison</h2>
-              <p className="muted">Pin up to two regions and compare them side by side.</p>
-            </div>
-            <div className="cards">
-              {slotA ? (
-                <SeriesCard
-                  slot="A"
-                  doc={slotA}
-                  highlightYear={year}
-                  onPin={(target) => pinTo(slotA, target)}
-                  onRemove={() => removeSlot('A')}
-                />
-              ) : (
-                <div className={activeSlot === 'A' ? 'card empty active' : 'card empty'}>
-                  <p className="card-slot">Result A</p>
-                  <p>Pick a region to fill result A.</p>
-                  <button type="button" className="pin" onClick={() => setActiveSlot('A')}>
-                    Choose for A
-                  </button>
-                </div>
-              )}
+        {mode === 'explore' && exploreDoc && searchOpen && !timelapse && (
+          <div className="search-popup">
+            <span className="search-popup-label">Jump to another place</span>
+            <PlaceSearch
+              autoFocus
+              onChoose={chooseSearchPlace}
+              onClose={() => setSearchOpen(false)}
+            />
+          </div>
+        )}
 
-              {slotB ? (
-                <SeriesCard
-                  slot="B"
-                  doc={slotB}
-                  highlightYear={year}
-                  onPin={(target) => pinTo(slotB, target)}
-                  onRemove={() => removeSlot('B')}
+        {mode === 'explore' && items.length === 0 && !timelapse && !workflowOpen &&
+          (rightBarOpen ? (
+            <>
+              <div className="rightbar">
+                <RegionRankList
+                  variable={metricById(comparison.shared.variable)?.id ?? 'precipitation'}
+                  season={comparison.shared.season}
+                  selectedRegionId={pendingPlace?.regionId ?? null}
+                  onSelectRegion={(regionId) => handleRegionSelect(regionId)}
                 />
-              ) : (
-                <div className={activeSlot === 'B' ? 'card empty active' : 'card empty'}>
-                  <p className="card-slot">Result B</p>
-                  <p>Pick a second region to compare.</p>
-                  <button type="button" className="pin" onClick={() => setActiveSlot('B')}>
-                    Choose for B
-                  </button>
-                </div>
-              )}
-            </div>
-          </section>
-        </main>
+              </div>
+              <button
+                type="button"
+                className="rightbar-toggle"
+                onClick={() => setRightBarOpen(false)}
+                aria-label="Collapse regions"
+              >
+                &rsaquo;
+              </button>
+            </>
+          ) : (
+            <button
+              type="button"
+              className="rightbar-toggle rightbar-toggle-closed"
+              onClick={() => setRightBarOpen(true)}
+              aria-label="Show regions"
+            >
+              &lsaquo;
+            </button>
+          ))}
+
+        {mode === 'compare' && !addMode.active && (
+          <button
+            type="button"
+            className="add-region-btn"
+            disabled={comparison.slots.length >= MAX_SLOTS}
+            onClick={() => dispatch({ type: 'openAddMode' })}
+          >
+            &#65291; Add region
+            <span className="add-region-count">
+              {comparison.slots.length}/{MAX_SLOTS}
+            </span>
+          </button>
+        )}
+
+        {addMode.active && (
+          <div className="banner banner-add" role="status">
+            <span>Choose a region on the globe, or type one:</span>
+            <input
+              className="add-region-input"
+              list="region-options"
+              value={addMode.query}
+              placeholder="Region name"
+              onChange={(event) =>
+                dispatch({ type: 'setAddQuery', query: event.target.value })
+              }
+              onKeyDown={(event) => {
+                if (event.key !== 'Enter') return;
+                const match = (seriesList ?? []).find(
+                  (item) => item.region_label.toLowerCase() === addMode.query.trim().toLowerCase(),
+                );
+                if (match) void selectRegion(match.region_id);
+              }}
+            />
+            <datalist id="region-options">
+              {(seriesList ?? []).map((item) => (
+                <option key={item.id} value={item.region_label} />
+              ))}
+            </datalist>
+            <button
+              type="button"
+              className="ghost-btn"
+              onClick={() => dispatch({ type: 'closeAddMode' })}
+            >
+              Cancel
+            </button>
+          </div>
+        )}
+
+        {(mode === 'explore' ? exploreDoc !== null : comparison.slots.length > 0) &&
+          mode !== 'library' &&
+          !timelapse && (
+            <button
+              type="button"
+              className="timelapse-open"
+              onClick={() => void openTimelapse(metricById(exploreDoc?.variable ?? comparison.shared.variable)?.slug ?? 'precip', comparison.shared.season)}
+            >
+              Timelapse
+            </button>
+          )}
+
+        {timelapse && <PlaybackBar index={timelapse.index} variable={timelapse.variable} season={timelapse.season} year={timelapse.year} playing={timelapse.playing}
+          onSet={(variable,season) => void openTimelapse(variable,season)} onAdvance={() => dispatch({type:'advanceTimelapse'})} onYear={year => dispatch({type:'setTimelapseYear',year})} onToggle={() => dispatch({type:'togglePlay'})} onClose={() => dispatch({type:'closeTimelapse'})} />}
+
+        {timelapse?.playing && (
+          <div className="globe-live" role="status">
+            <span className="globe-live-dot" />
+            playing {timelapse.season} {timelapse.year}
+          </div>
+        )}
+
+        {compareHint && <div className="compare-hint">{compareHint}</div>}
+
+        {status.loading && <div className="loading-chip">Loading&hellip;</div>}
+        {status.error && (
+          <div className="banner banner-error" role="alert">
+            <strong>
+              {/^(A comparison|That region)/.test(status.error) ? 'Limit reached' : 'Could not load'}
+            </strong>
+            <span>{status.error}</span>
+          </div>
+        )}
+        {status.banner && (
+          <div className="banner banner-ok">
+            <span>{status.banner}</span>
+          </div>
+        )}
+
+        {items.length > 0 && mode !== 'library' && !timelapse && (
+          <Inspector
+            mode={mode === 'compare' ? 'compare' : 'explore'}
+            items={items}
+            checksOpen={checksOpen}
+            sourcesOpen={sourcesOpen}
+            onToggleChecks={() => setChecksOpen((value) => !value)}
+            onToggleSources={() => setSourcesOpen((value) => !value)}
+            onClose={() => {
+              if (mode === 'compare') {
+                dispatch({ type: 'resetComparison' });
+              } else {
+                dispatch({ type: 'clearExplore' });
+                setAutoRotate(true);
+              }
+            }}
+            onSave={handleSave}
+            onRemove={(id) => dispatch({ type: 'removeSlot', id })}
+            onPin={togglePin}
+            pinnedIds={pins.ids}
+            onSaveResult={saveResult}
+            onCompareSuggestion={(regionId) => void addRegionById(regionId)}
+            onOpenTimelapse={(variable, season) => void openTimelapse(variable, season)}
+            onOverride={(id, patch) => dispatch({ type: 'overrideSlot', id, patch })}
+            onClearOverride={(id) => dispatch({ type: 'clearOverride', id })}
+            onPeriodChange={(_id, period) => {
+              if (mode === 'explore') dispatch({ type: 'setExplorePeriod', period });
+            }}
+            catalog={(seriesList ?? []).map((item) => ({
+              regionId: item.region_id,
+              label: item.region_label,
+              variable: item.variable,
+              season: item.season,
+            }))}
+          />
+        )}
+
+        {pins.ids.length > 0 && (
+          <PinRail
+            items={pinnedItems(state)}
+            onUnpin={togglePin}
+          />
+        )}
+
+        {mode === 'library' && (
+          <LibraryOverlay
+            datasets={seriesList ?? []}
+            saved={saved}
+            onClose={() => navigate('explore')}
+            onOpenDataset={openDataset}
+            onOpenSaved={openSaved}
+            onDeleteSaved={(id) =>
+              dispatch({ type: 'setSaved', saved: deleteInvestigation(id) })
+            }
+          />
+        )}
+      </>}
       </div>
-
-      <footer className="footer">
-        <p>
-          Time-lapse year {year ?? '--'}
-          {timelapse ? ` of ${timelapse.years.length} frames` : ''}. Cell results
-          show the validation label carried by their grid tile.
-        </p>
-      </footer>
+      {presenting && <PresentMode onStep={(step) => void demoRef.current(step)} onExit={() => exitRef.current()} />}
     </div>
   );
 }

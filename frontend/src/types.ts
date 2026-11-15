@@ -41,6 +41,8 @@ export interface SeriesTrend {
   intercept: number | null;
   method?: string;
   slope_units?: string;
+  n_valid?: number;
+  period?: [number, number] | null;
   inference: SeriesInference;
 }
 
@@ -87,11 +89,12 @@ export interface SeriesSummary {
 }
 
 export interface TimelapseIndex {
+  anomaly_baseline?: string;
   years: number[];
   units: string;
   vmin: number;
   vmax: number;
-  colormap: string;
+  colormap: string | { name: string; stops: [number, string][] };
   extent: [number, number, number, number];
   source: string;
   fixture?: boolean;

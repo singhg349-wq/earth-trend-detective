@@ -1,9 +1,24 @@
 # DEPLOYMENT GUIDE
 
-Current deployment information for Earth System Trend Detective (NASA Space Apps 2026)
+Current deployment information for **TrendTrace** (`https://trendtrace.earth-trend-detective-frontend.workers.dev`, `trendtrace.earth` custom domain coming).
 
-## Overview
-This project provides a fallback deployment using Streamlit for comparing DJF rainfall trends between Indonesia and Coastal Peru. For the online build, only the frontend is deployed to Vercel as a static site.
+## Live Production Hosting — Cloudflare Workers (Static Assets via `frontend/wrangler.jsonc`)
+
+Cloudflare Pages now deploys static sites as Cloudflare Workers using `frontend/wrangler.jsonc`.
+
+1. Build the static frontend bundle (`frontend/dist/`, `12,592` files, `297,944,548` bytes).
+2. Deploy via Wrangler (supervisor deploys):
+   ```powershell
+   npx wrangler deploy
+   ```
+   *(Configured via `frontend/wrangler.jsonc` — Pages now deploys as Workers.)*
+3. Live URL: `https://trendtrace.earth-trend-detective-frontend.workers.dev` (`trendtrace.earth` custom domain coming).
+
+---
+
+## Legacy Notes (Pre-Rename Reference)
+
+Previously considered fallback deployment notes for the earlier prototype:
 
 ## Online Build (Static Only - Recommended)
 

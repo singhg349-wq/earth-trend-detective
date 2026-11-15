@@ -1,0 +1,249 @@
+/* Landing hero and right-hand region bar. Imported by App after styles.css /
+   editorial.css, so these rules win where they overlap. */
+
+.landing-hero {
+  position: absolute;
+  top: 72px;
+  left: 16px;
+  z-index: 14;
+  width: min(460px, calc(100vw - 32px));
+  padding: 22px 24px 18px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  pointer-events: auto;
+}
+
+.landing-hero > * { min-width: 0; }
+
+.landing-hero .ed-h1 {
+  font-size: clamp(28px, 3.2vw, 42px);
+}
+
+.landing-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.landing-or {
+  color: var(--ed-text-3);
+  font-size: 13px;
+  font-family: var(--ed-mono);
+}
+
+.landing-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.landing-facts > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.landing-facts dt {
+  font: 600 10px/1 var(--ed-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ed-text-3);
+}
+
+.landing-facts dd {
+  margin: 0;
+  font: 500 12px/1.4 var(--ed-mono);
+  color: var(--ed-text-2);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Fade / translate in once; honours reduced motion. */
+@keyframes landing-hero-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.landing-hero {
+  animation: landing-hero-in 240ms var(--ed-ease) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-hero {
+    animation: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .landing-hero {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    border-radius: 16px 16px 0 0;
+    border-bottom: none;
+  }
+}
+
+/* Right-hand region list: a flat, solid dashboard column (NOT glassy). */
+.region-rank {
+  position: absolute;
+  top: 60px;
+  right: 16px;
+  bottom: 16px;
+  z-index: 12;
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  padding: 14px 0;
+  overflow: hidden;
+}
+
+.region-rank-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0 16px 10px;
+  border-bottom: 1px solid var(--ed-line);
+}
+
+.region-rank-count {
+  font: 600 11px/1 var(--ed-mono);
+  color: var(--ed-text-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.region-rank-list {
+  list-style: none;
+  margin: 0;
+  padding: 8px 0;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.region-rank-item {
+  appearance: none;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-left: 2px solid transparent;
+  color: var(--ed-text-2);
+  font: 500 13.5px/1.4 var(--ed-sans);
+  padding: 9px 16px 9px 14px;
+  cursor: pointer;
+  transition: background 140ms var(--ed-ease), color 140ms var(--ed-ease),
+    border-color 140ms var(--ed-ease);
+}
+
+.region-rank-item:hover {
+  background: var(--ed-panel-bg-2);
+  color: var(--ed-text);
+}
+
+.region-rank-item.is-active {
+  color: var(--ed-text);
+  border-left-color: var(--ed-accent);
+  background: var(--ed-panel-bg-2);
+}
+
+.region-rank-item:focus-visible {
+  outline: 2px solid var(--ed-accent);
+  outline-offset: -2px;
+}
+
+@media (max-width: 720px) {
+  .region-rank {
+    display: none;
+  }
+}
+
+/* Right-hand region bar wrapper: a flat, solid dashboard column (NOT glassy). */
+.rightbar {
+  position: absolute;
+  top: 60px;
+  right: 16px;
+  bottom: 16px;
+  width: 320px;
+  z-index: 12;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.rightbar .rb {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.rightbar .rb-list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* Collapse toggle for the right-hand region bar. */
+.rightbar-toggle {
+  position: absolute;
+  top: 60px;
+  right: 340px;
+  z-index: 13;
+  appearance: none;
+  width: 26px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--ed-line);
+  border-right: none;
+  border-radius: 8px 0 0 8px;
+  background: var(--ed-panel-bg);
+  color: var(--ed-text-2);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.rightbar-toggle:hover {
+  color: var(--ed-text);
+}
+
+.rightbar-toggle-closed {
+  right: 16px;
+  border-right: 1px solid var(--ed-line);
+  border-radius: 8px;
+}
+
+.rightbar-toggle:focus-visible {
+  outline: 2px solid var(--ed-accent);
+  outline-offset: 2px;
+}
+
+@media (max-width: 720px) {
+  .rightbar-toggle {
+    display: none;
+  }
+
+  .rightbar {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .region-rank-item {
+    transition: none;
+  }
+}

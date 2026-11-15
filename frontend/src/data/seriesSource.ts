@@ -1,9 +1,11 @@
+import { metricById } from '../lib/metrics';
 import { fetchCellSeries } from '../lib/tiles';
 import type {
   CellSeriesOutcome,
   CellSeriesRequest,
   GridIndex,
 } from '../lib/tiles';
+export type { CellSeriesRequest };
 import type { RegionsGeoJson, SeriesDoc, SeriesSummary, TimelapseIndex } from '../types';
 import {
   normalizeTrendMapEntry,
@@ -125,7 +127,7 @@ export async function getSeries(id: string): Promise<SeriesDoc> {
   if (!doc || doc.id !== id) {
     throw new Error(`Series ${id} is not valid.`);
   }
-  return doc;
+  return {...doc, units: metricById(doc.variable)?.units ?? doc.units};
 }
 
 // Region outlines are local. Try the artifact outline first, then the bundled
@@ -152,7 +154,8 @@ export async function getRegionsGeoJson(): Promise<RegionsGeoJson> {
  * only set the interface can currently show.
  */
 export function timelapseKey(variable: string, season: string): string {
-  const safeVariable = VARIABLE_KEY.test(variable) ? variable : 'precip';
+  const slug = metricById(variable)?.slug ?? variable;
+  const safeVariable = VARIABLE_KEY.test(slug) ? slug : 'precip';
   const safeSeason = SEASON_KEY.test(season) ? season : 'DJF';
   return `${safeVariable}_${safeSeason}`;
 }

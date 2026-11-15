@@ -1,0 +1,135 @@
+/* Editorial top bar. `ed-` prefixed classes so they never collide with the
+   legacy `styles.css` (which loads after component CSS in main.tsx). */
+
+.ed-topbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 10px 16px;
+  background: linear-gradient(
+    rgba(6, 10, 20, 0.96),
+    rgba(6, 10, 20, 0.72) 70%,
+    rgba(6, 10, 20, 0)
+  );
+}
+
+.ed-brand {
+  display: flex;
+  align-items: baseline;
+  min-width: 0;
+}
+
+.ed-brand-name {
+  font-family: var(--ed-serif);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  color: var(--ed-text);
+}
+
+.ed-nav {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  margin-left: auto;
+  padding: 0;
+}
+
+.ed-nav-item {
+  appearance: none;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 6px 12px;
+  background: transparent;
+  border: 0;
+  color: var(--ed-text-3);
+  font: 500 14px/1.2 var(--ed-sans);
+  cursor: pointer;
+  transition: color 140ms var(--ed-ease);
+}
+
+.ed-nav-item::after {
+  content: '';
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 2px;
+  height: 2px;
+  background: transparent;
+  border-radius: 1px;
+}
+
+.ed-nav-item:hover {
+  color: var(--ed-text);
+}
+
+.ed-nav-item.is-active {
+  color: var(--ed-text);
+}
+
+.ed-nav-item.is-active::after {
+  background: var(--ed-accent);
+}
+
+.ed-nav-item:focus-visible {
+  outline: 2px solid var(--ed-accent);
+  outline-offset: 2px;
+}
+
+.ed-topbar .ed-enso-btn {
+  flex-shrink: 0;
+  height: 36px;
+  font-size: 13px;
+}
+
+.ed-enso-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.ed-topbar .ed-enso-back {
+  margin-left: auto;
+  height: 36px;
+}
+
+@media (max-width: 720px) {
+  .ed-topbar {
+    gap: 8px;
+    padding: 8px 10px;
+  }
+
+  .ed-brand-name {
+    font-size: 14px;
+  }
+
+  .ed-nav-item {
+    padding: 6px 9px;
+    font-size: 13px;
+  }
+
+  .ed-nav-item::after {
+    left: 9px;
+    right: 9px;
+  }
+
+  .ed-topbar .ed-enso-btn {
+    font-size: 12px;
+    padding: 0 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ed-nav-item {
+    transition: none;
+  }
+}

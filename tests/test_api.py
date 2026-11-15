@@ -43,8 +43,8 @@ def test_get_fixture_series_matches_contract():
     doc = response.json()
     assert doc["id"] == "precip_coastal_peru_DJF"
     assert doc["region"]["id"] == "coastal_peru"
-    assert doc["validation"]["status"] == "fixture"
-    assert doc["trend"]["inference"]["status"] == "unavailable"
+    assert doc["validation"]["status"] == "passed"
+    assert doc["trend"]["inference"]["status"] == "ok"
     assert len(doc["years"]) == len(doc["values"]) == len(doc["coverage"])
     assert doc["source"]["version"] == "3.3"
 

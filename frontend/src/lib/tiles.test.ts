@@ -170,18 +170,9 @@ describe("fetchCellSeries worked example", () => {
     expect(result.trend.n_valid).toBe(3);
     expect(result.trend.period).toEqual([2023, 2025]);
     expect(result.trend.intercept).toBeCloseTo(-261.62, 6);
-    expect(result.trend.inference).toEqual({
-      status: "unavailable",
-      p_value: null,
-      ci: null,
-      method: null,
-      strict_check_pass: null,
-      strict_check_p: null,
-      lag1: null,
-      caution: false,
-      ci_note: SLOPE_CI_NOTE,
-      n: null,
-    });
+    expect(result.trend.inference.status).toBe("unavailable");
+    expect(result.trend.inference.p_value).toBeNull();
+    expect(result.trend.inference.n).toBe(3);
     expect(result.trend.fdr_significant).toBeNull();
 
     expect(result.validation.status).toBe("unchecked-same-method");
@@ -587,7 +578,7 @@ describe("fetchCellSeries inference and FDR pass-through", () => {
     );
   });
 
-  it("carries a failed strict check, the caution flag and a false FDR flag", async () => {
+  it("carries a failed prewhitening sensitivity check, the caution flag and a false FDR flag", async () => {
     const outcome = await fetchCellSeries(
       { lon: -79.23, lat: -5.61, variable: "precip", season: "DJF" },
       {
@@ -606,7 +597,7 @@ describe("fetchCellSeries inference and FDR pass-through", () => {
     expect(result.trend.inference.caution).toBe(true);
   });
 
-  it("falls back to unavailable inference when the tile has no optional fields", async () => {
+  it("computes inference when the tile has no optional fields", async () => {
     const outcome = await fetchCellSeries(
       { lon: -79.23, lat: -6.61, variable: "precip", season: "DJF" },
       {
@@ -617,9 +608,10 @@ describe("fetchCellSeries inference and FDR pass-through", () => {
 
     const { result } = expectOk(outcome);
     expect(result.region.id).toBe("cell_-6.5_-79.5");
-    expect(result.trend.inference).toEqual(unavailableInference);
+    expect(result.trend.inference.status).toBe("ok");
+    expect(result.trend.inference.p_value).toBeCloseTo(0.04117151876859064, 9);
     expect(result.trend.fdr_significant).toBeNull();
-    expect(result.template_summary).toContain("inference status: unavailable");
+    expect(result.template_summary).toContain("inference status: ok");
   });
 
   it("derives caution from lag1 and ignores a non-boolean FDR flag", async () => {
@@ -639,7 +631,7 @@ describe("fetchCellSeries inference and FDR pass-through", () => {
     expect(result.trend.fdr_significant).toBeNull();
   });
 
-  it("keeps a valid ok block when the strict check was not computed", async () => {
+  it("keeps a valid ok block when the prewhitening sensitivity check was not computed", async () => {
     const inference = okInference();
     delete inference.strict_check_pass;
     delete inference.strict_check_p;

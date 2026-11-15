@@ -1,76 +1,14 @@
 {
   "artifacts": [
     {
-      "id": "precip_indonesia_DJF",
-      "label": "Indonesia",
-      "variable": "precipitation",
+      "id": "aod_alberta_prairies_DJF",
+      "label": "Alberta / Prairies",
+      "variable": "aerosol_optical_depth",
+      "units": "1",
       "season": "DJF",
-      "region_id": "indonesia",
-      "validation_status": "passed",
-      "file": "precip_indonesia_DJF.json"
-    },
-    {
-      "id": "precip_coastal_peru_DJF",
-      "label": "Coastal Peru",
-      "variable": "precipitation",
-      "season": "DJF",
-      "region_id": "coastal_peru",
-      "validation_status": "passed",
-      "file": "precip_peru_DJF.json"
-    },
-    {
-      "id": "precip_amazon_DJF",
-      "label": "Amazon",
-      "variable": "precipitation",
-      "season": "DJF",
-      "region_id": "amazon",
-      "validation_status": "unchecked-same-method",
-      "file": "precip_amazon_DJF.json"
-    },
-    {
-      "id": "precip_sahel_DJF",
-      "label": "Sahel",
-      "variable": "precipitation",
-      "season": "DJF",
-      "region_id": "sahel",
-      "validation_status": "unchecked-same-method",
-      "file": "precip_sahel_DJF.json"
-    },
-    {
-      "id": "precip_east_africa_DJF",
-      "label": "East Africa",
-      "variable": "precipitation",
-      "season": "DJF",
-      "region_id": "east_africa",
-      "validation_status": "unchecked-same-method",
-      "file": "precip_east_africa_DJF.json"
-    },
-    {
-      "id": "precip_india_DJF",
-      "label": "India",
-      "variable": "precipitation",
-      "season": "DJF",
-      "region_id": "india",
-      "validation_status": "unchecked-same-method",
-      "file": "precip_india_DJF.json"
-    },
-    {
-      "id": "precip_australia_DJF",
-      "label": "Australia",
-      "variable": "precipitation",
-      "season": "DJF",
-      "region_id": "australia",
-      "validation_status": "unchecked-same-method",
-      "file": "precip_australia_DJF.json"
-    },
-    {
-      "id": "precip_california_DJF",
-      "label": "California",
-      "variable": "precipitation",
-      "season": "DJF",
-      "region_id": "california",
-      "validation_status": "unchecked-same-method",
-      "file": "precip_california_DJF.json"
+      "region_id": "alberta_prairies",
+      "validation_status": "pending",
+      "file": "aod_alberta_prairies_DJF.json"
     },
     {
       "id": "precip_alberta_prairies_DJF",
@@ -82,6 +20,348 @@
       "file": "precip_alberta_prairies_DJF.json"
     },
     {
+      "id": "sm_alberta_prairies_DJF",
+      "label": "Alberta / Prairies",
+      "variable": "soil_moisture",
+      "units": "kg/m²",
+      "season": "DJF",
+      "region_id": "alberta_prairies",
+      "validation_status": "pending",
+      "file": "sm_alberta_prairies_DJF.json"
+    },
+    {
+      "id": "t2m_alberta_prairies_DJF",
+      "label": "Alberta / Prairies",
+      "variable": "temperature",
+      "units": "degC",
+      "season": "DJF",
+      "region_id": "alberta_prairies",
+      "validation_status": "pending",
+      "file": "t2m_alberta_prairies_DJF.json"
+    },
+    {
+      "id": "aod_amazon_DJF",
+      "label": "Amazon",
+      "variable": "aerosol_optical_depth",
+      "units": "1",
+      "season": "DJF",
+      "region_id": "amazon",
+      "validation_status": "pending",
+      "file": "aod_amazon_DJF.json"
+    },
+    {
+      "id": "precip_amazon_DJF",
+      "label": "Amazon",
+      "variable": "precipitation",
+      "season": "DJF",
+      "region_id": "amazon",
+      "validation_status": "unchecked-same-method",
+      "file": "precip_amazon_DJF.json"
+    },
+    {
+      "id": "sm_amazon_DJF",
+      "label": "Amazon",
+      "variable": "soil_moisture",
+      "units": "kg/m²",
+      "season": "DJF",
+      "region_id": "amazon",
+      "validation_status": "pending",
+      "file": "sm_amazon_DJF.json"
+    },
+    {
+      "id": "t2m_amazon_DJF",
+      "label": "Amazon",
+      "variable": "temperature",
+      "units": "degC",
+      "season": "DJF",
+      "region_id": "amazon",
+      "validation_status": "pending",
+      "file": "t2m_amazon_DJF.json"
+    },
+    {
+      "id": "aod_australia_DJF",
+      "label": "Australia",
+      "variable": "aerosol_optical_depth",
+      "units": "1",
+      "season": "DJF",
+      "region_id": "australia",
+      "validation_status": "pending",
+      "file": "aod_australia_DJF.json"
+    },
+    {
+      "id": "precip_australia_DJF",
+      "label": "Australia",
+      "variable": "precipitation",
+      "season": "DJF",
+      "region_id": "australia",
+      "validation_status": "unchecked-same-method",
+      "file": "precip_australia_DJF.json"
+    },
+    {
+      "id": "sm_australia_DJF",
+      "label": "Australia",
+      "variable": "soil_moisture",
+      "units": "kg/m²",
+      "season": "DJF",
+      "region_id": "australia",
+      "validation_status": "pending",
+      "file": "sm_australia_DJF.json"
+    },
+    {
+      "id": "t2m_australia_DJF",
+      "label": "Australia",
+      "variable": "temperature",
+      "units": "degC",
+      "season": "DJF",
+      "region_id": "australia",
+      "validation_status": "pending",
+      "file": "t2m_australia_DJF.json"
+    },
+    {
+      "id": "aod_california_DJF",
+      "label": "California",
+      "variable": "aerosol_optical_depth",
+      "units": "1",
+      "season": "DJF",
+      "region_id": "california",
+      "validation_status": "pending",
+      "file": "aod_california_DJF.json"
+    },
+    {
+      "id": "precip_california_DJF",
+      "label": "California",
+      "variable": "precipitation",
+      "season": "DJF",
+      "region_id": "california",
+      "validation_status": "unchecked-same-method",
+      "file": "precip_california_DJF.json"
+    },
+    {
+      "id": "sm_california_DJF",
+      "label": "California",
+      "variable": "soil_moisture",
+      "units": "kg/m²",
+      "season": "DJF",
+      "region_id": "california",
+      "validation_status": "pending",
+      "file": "sm_california_DJF.json"
+    },
+    {
+      "id": "t2m_california_DJF",
+      "label": "California",
+      "variable": "temperature",
+      "units": "degC",
+      "season": "DJF",
+      "region_id": "california",
+      "validation_status": "pending",
+      "file": "t2m_california_DJF.json"
+    },
+    {
+      "id": "aod_coastal_peru_DJF",
+      "label": "Coastal Peru",
+      "variable": "aerosol_optical_depth",
+      "units": "1",
+      "season": "DJF",
+      "region_id": "coastal_peru",
+      "validation_status": "pending",
+      "file": "aod_coastal_peru_DJF.json"
+    },
+    {
+      "id": "precip_coastal_peru_DJF",
+      "label": "Coastal Peru",
+      "variable": "precipitation",
+      "season": "DJF",
+      "region_id": "coastal_peru",
+      "validation_status": "passed",
+      "file": "precip_coastal_peru_DJF.json"
+    },
+    {
+      "id": "sm_coastal_peru_DJF",
+      "label": "Coastal Peru",
+      "variable": "soil_moisture",
+      "units": "kg/m²",
+      "season": "DJF",
+      "region_id": "coastal_peru",
+      "validation_status": "pending",
+      "file": "sm_coastal_peru_DJF.json"
+    },
+    {
+      "id": "t2m_coastal_peru_DJF",
+      "label": "Coastal Peru",
+      "variable": "temperature",
+      "units": "degC",
+      "season": "DJF",
+      "region_id": "coastal_peru",
+      "validation_status": "pending",
+      "file": "t2m_coastal_peru_DJF.json"
+    },
+    {
+      "id": "aod_east_africa_DJF",
+      "label": "East Africa",
+      "variable": "aerosol_optical_depth",
+      "units": "1",
+      "season": "DJF",
+      "region_id": "east_africa",
+      "validation_status": "pending",
+      "file": "aod_east_africa_DJF.json"
+    },
+    {
+      "id": "precip_east_africa_DJF",
+      "label": "East Africa",
+      "variable": "precipitation",
+      "season": "DJF",
+      "region_id": "east_africa",
+      "validation_status": "unchecked-same-method",
+      "file": "precip_east_africa_DJF.json"
+    },
+    {
+      "id": "sm_east_africa_DJF",
+      "label": "East Africa",
+      "variable": "soil_moisture",
+      "units": "kg/m²",
+      "season": "DJF",
+      "region_id": "east_africa",
+      "validation_status": "pending",
+      "file": "sm_east_africa_DJF.json"
+    },
+    {
+      "id": "t2m_east_africa_DJF",
+      "label": "East Africa",
+      "variable": "temperature",
+      "units": "degC",
+      "season": "DJF",
+      "region_id": "east_africa",
+      "validation_status": "pending",
+      "file": "t2m_east_africa_DJF.json"
+    },
+    {
+      "id": "aod_india_DJF",
+      "label": "India",
+      "variable": "aerosol_optical_depth",
+      "units": "1",
+      "season": "DJF",
+      "region_id": "india",
+      "validation_status": "pending",
+      "file": "aod_india_DJF.json"
+    },
+    {
+      "id": "precip_india_DJF",
+      "label": "India",
+      "variable": "precipitation",
+      "season": "DJF",
+      "region_id": "india",
+      "validation_status": "unchecked-same-method",
+      "file": "precip_india_DJF.json"
+    },
+    {
+      "id": "sm_india_DJF",
+      "label": "India",
+      "variable": "soil_moisture",
+      "units": "kg/m²",
+      "season": "DJF",
+      "region_id": "india",
+      "validation_status": "pending",
+      "file": "sm_india_DJF.json"
+    },
+    {
+      "id": "t2m_india_DJF",
+      "label": "India",
+      "variable": "temperature",
+      "units": "degC",
+      "season": "DJF",
+      "region_id": "india",
+      "validation_status": "pending",
+      "file": "t2m_india_DJF.json"
+    },
+    {
+      "id": "aod_indonesia_DJF",
+      "label": "Indonesia",
+      "variable": "aerosol_optical_depth",
+      "units": "1",
+      "season": "DJF",
+      "region_id": "indonesia",
+      "validation_status": "pending",
+      "file": "aod_indonesia_DJF.json"
+    },
+    {
+      "id": "precip_indonesia_DJF",
+      "label": "Indonesia",
+      "variable": "precipitation",
+      "season": "DJF",
+      "region_id": "indonesia",
+      "validation_status": "passed",
+      "file": "precip_indonesia_DJF.json"
+    },
+    {
+      "id": "sm_indonesia_DJF",
+      "label": "Indonesia",
+      "variable": "soil_moisture",
+      "units": "kg/m²",
+      "season": "DJF",
+      "region_id": "indonesia",
+      "validation_status": "pending",
+      "file": "sm_indonesia_DJF.json"
+    },
+    {
+      "id": "t2m_indonesia_DJF",
+      "label": "Indonesia",
+      "variable": "temperature",
+      "units": "degC",
+      "season": "DJF",
+      "region_id": "indonesia",
+      "validation_status": "pending",
+      "file": "t2m_indonesia_DJF.json"
+    },
+    {
+      "id": "aod_sahel_DJF",
+      "label": "Sahel",
+      "variable": "aerosol_optical_depth",
+      "units": "1",
+      "season": "DJF",
+      "region_id": "sahel",
+      "validation_status": "pending",
+      "file": "aod_sahel_DJF.json"
+    },
+    {
+      "id": "precip_sahel_DJF",
+      "label": "Sahel",
+      "variable": "precipitation",
+      "season": "DJF",
+      "region_id": "sahel",
+      "validation_status": "unchecked-same-method",
+      "file": "precip_sahel_DJF.json"
+    },
+    {
+      "id": "sm_sahel_DJF",
+      "label": "Sahel",
+      "variable": "soil_moisture",
+      "units": "kg/m²",
+      "season": "DJF",
+      "region_id": "sahel",
+      "validation_status": "pending",
+      "file": "sm_sahel_DJF.json"
+    },
+    {
+      "id": "t2m_sahel_DJF",
+      "label": "Sahel",
+      "variable": "temperature",
+      "units": "degC",
+      "season": "DJF",
+      "region_id": "sahel",
+      "validation_status": "pending",
+      "file": "t2m_sahel_DJF.json"
+    },
+    {
+      "id": "aod_southern_africa_DJF",
+      "label": "Southern Africa",
+      "variable": "aerosol_optical_depth",
+      "units": "1",
+      "season": "DJF",
+      "region_id": "southern_africa",
+      "validation_status": "pending",
+      "file": "aod_southern_africa_DJF.json"
+    },
+    {
       "id": "precip_southern_africa_DJF",
       "label": "Southern Africa",
       "variable": "precipitation",
@@ -89,6 +369,26 @@
       "region_id": "southern_africa",
       "validation_status": "unchecked-same-method",
       "file": "precip_southern_africa_DJF.json"
+    },
+    {
+      "id": "sm_southern_africa_DJF",
+      "label": "Southern Africa",
+      "variable": "soil_moisture",
+      "units": "kg/m²",
+      "season": "DJF",
+      "region_id": "southern_africa",
+      "validation_status": "pending",
+      "file": "sm_southern_africa_DJF.json"
+    },
+    {
+      "id": "t2m_southern_africa_DJF",
+      "label": "Southern Africa",
+      "variable": "temperature",
+      "units": "degC",
+      "season": "DJF",
+      "region_id": "southern_africa",
+      "validation_status": "pending",
+      "file": "t2m_southern_africa_DJF.json"
     }
   ]
 }

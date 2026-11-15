@@ -1,0 +1,332 @@
+/* Investigation workflow panel and its place search. Flat, solid dashboard
+   styling — the data views are NOT glassy (per the design spec). */
+
+.investigation-panel {
+  position: absolute;
+  top: 60px;
+  left: 16px;
+  z-index: 15;
+  width: min(400px, calc(100vw - 32px));
+  max-height: calc(100vh - 76px);
+  overflow-y: auto;
+  display: grid;
+  gap: 18px;
+  padding: 18px;
+}
+
+.inv-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.inv-close {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--ed-text-3);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+.inv-close:hover {
+  color: var(--ed-text);
+}
+
+.inv-close:focus-visible {
+  outline: 2px solid var(--ed-accent);
+  outline-offset: 2px;
+}
+
+.inv-step {
+  display: grid;
+  gap: 8px;
+}
+
+.inv-step-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font: 600 13px/1.2 var(--ed-sans);
+  color: var(--ed-text);
+}
+
+.inv-step-no {
+  font: 600 10px/1 var(--ed-mono);
+  color: var(--ed-text-3);
+  letter-spacing: 0.08em;
+}
+
+.inv-hint {
+  margin: 0;
+  font: 400 11.5px/1.4 var(--ed-mono);
+  color: var(--ed-text-3);
+}
+
+.inv-place {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-height: 20px;
+}
+
+.inv-place-name {
+  font: 600 13px/1.4 var(--ed-sans);
+  color: var(--ed-text);
+}
+
+.inv-place-coord {
+  font: 400 11.5px/1.4 var(--ed-mono);
+  color: var(--ed-text-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.inv-place-empty {
+  color: var(--ed-text-3);
+  font-size: 12.5px;
+}
+
+.inv-seg {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.inv-seg-btn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--ed-line);
+  background: var(--ed-panel-bg-2);
+  color: var(--ed-text-2);
+  font: 500 13px/1.2 var(--ed-sans);
+  padding: 7px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 140ms var(--ed-ease), color 140ms var(--ed-ease),
+    border-color 140ms var(--ed-ease);
+}
+
+.inv-seg-btn:hover {
+  color: var(--ed-text);
+  border-color: var(--ed-line-strong);
+}
+
+.inv-seg-btn.is-active {
+  background: var(--ed-accent);
+  border-color: transparent;
+  color: var(--ed-accent-ink);
+}
+
+.inv-seg-btn:focus-visible {
+  outline: 2px solid var(--ed-accent);
+  outline-offset: 2px;
+}
+
+.inv-seg-sub {
+  font: 500 10px/1 var(--ed-mono);
+  opacity: 0.75;
+}
+
+.inv-custom {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.inv-custom label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font: 500 11px/1.2 var(--ed-sans);
+  color: var(--ed-text-3);
+}
+
+.inv-custom input {
+  font: 500 13px/1.4 var(--ed-mono);
+  color: var(--ed-text);
+  background: var(--ed-bg-2);
+  border: 1px solid var(--ed-line-strong);
+  border-radius: 7px;
+  padding: 6px 8px;
+  width: 96px;
+  font-variant-numeric: tabular-nums;
+}
+
+.inv-custom input:focus-visible {
+  outline: 2px solid var(--ed-accent);
+  outline-offset: 1px;
+}
+
+.inv-error {
+  margin: 0;
+  width: 100%;
+  color: var(--ed-warn);
+  font-size: 12px;
+}
+
+.inv-note {
+  margin: 0;
+  width: 100%;
+  color: var(--ed-text-3);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.inv-run {
+  justify-content: center;
+  width: 100%;
+}
+
+.inv-run:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 720px) {
+  .investigation-panel {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-height: calc(100vh - 52px);
+    border-radius: 16px 16px 0 0;
+    border-bottom: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .inv-seg-btn,
+  .inv-close {
+    transition: none;
+  }
+}
+
+/* Place search (compact, used in the workflow and as the top-left popup). */
+.place-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.place-search-input {
+  flex: 1;
+  font: 500 13px/1.4 var(--ed-sans);
+  color: var(--ed-text);
+  background: var(--ed-bg-2);
+  border: 1px solid var(--ed-line-strong);
+  border-radius: 8px;
+  padding: 8px 10px;
+  min-width: 0;
+}
+
+.place-search-input:focus-visible {
+  outline: 2px solid var(--ed-accent);
+  outline-offset: 1px;
+}
+
+.place-search-close {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--ed-text-3);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+}
+
+.place-search-close:hover {
+  color: var(--ed-text);
+}
+
+.place-search-close:focus-visible {
+  outline: 2px solid var(--ed-accent);
+  outline-offset: 2px;
+}
+
+.place-search-results {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  list-style: none;
+  margin: 0;
+  padding: 4px;
+  background: var(--ed-panel-bg);
+  border: 1px solid var(--ed-line);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.place-search-result {
+  appearance: none;
+  width: 100%;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  color: var(--ed-text);
+  font: 500 13px/1.4 var(--ed-sans);
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.place-search-result:hover {
+  background: var(--ed-panel-bg-2);
+}
+
+.place-search-result:focus-visible {
+  outline: 2px solid var(--ed-accent);
+  outline-offset: -2px;
+}
+
+.place-search-result-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.place-search-result-kind {
+  font: 500 10px/1 var(--ed-mono);
+  color: var(--ed-text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Compact search popup pinned under the top bar (task 4). */
+.search-popup {
+  position: absolute;
+  top: 60px;
+  left: 16px;
+  z-index: 16;
+  width: min(360px, calc(100vw - 32px));
+  display: grid;
+  gap: 8px;
+}
+
+.search-popup-label {
+  display: block;
+  margin: 0;
+  font: 600 10.5px/1 var(--ed-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ed-text-3);
+}

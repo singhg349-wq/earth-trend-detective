@@ -17,10 +17,10 @@ describe('InferenceBlock', () => {
   it('shows both tests, the interval label, lag-1 and the caution badge', () => {
     const html = render(okCaution.trend.inference);
 
-    expect(html).toContain('Mann-Kendall with Hamed-Rao correction (3 lags)');
+    expect(html).toContain('Mann–Kendall trend test (Hamed–Rao autocorrelation-corrected)');
     expect(html).toContain('p = 0.042');
-    expect(html).toContain('Yue-Wang prewhitening');
-    expect(html).toContain('Also passes the strict check');
+    expect(html).toContain('Yue–Wang');
+    expect(html).toContain('Statistically significant at the 5% level, with the same direction');
     expect(html).toContain('p = 0.031');
     expect(html).toContain(CI_LABEL);
     expect(html).toContain('-0.231 to -0.021 mm/day per decade');
@@ -32,10 +32,10 @@ describe('InferenceBlock', () => {
     }
   });
 
-  it('says when the strict check does not pass', () => {
+  it('says when the prewhitening sensitivity check does not pass', () => {
     const html = render(okStrictFail.trend.inference);
 
-    expect(html).toContain('Does not pass the strict check');
+    expect(html).toContain('Does not confirm significance in the same direction');
     expect(html).not.toContain('tag-caution');
   });
 

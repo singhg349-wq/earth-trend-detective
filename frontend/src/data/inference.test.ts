@@ -26,15 +26,15 @@ describe('inference block reader', () => {
     expect(view.lag1).toBe(0.41);
     expect(view.caution).toBe(true);
     expect(view.n).toBe(10);
-    expect(strictCheckVerdict(view)).toBe('Also passes the strict check');
+    expect(strictCheckVerdict(view)).toBe('Statistically significant at the 5% level, with the same direction');
   });
 
-  it('reports the strict check fail without adding a caution badge', () => {
+  it('reports the prewhitening sensitivity check fail without adding a caution badge', () => {
     const view = readInference(okStrictFail.trend.inference);
 
     expect(view.status).toBe('ok');
     expect(view.strictCheckPass).toBe(false);
-    expect(strictCheckVerdict(view)).toBe('Does not pass the strict check');
+    expect(strictCheckVerdict(view)).toBe('Does not confirm significance in the same direction');
     expect(view.caution).toBe(false);
     expect(cautionText(view)).toBeNull();
   });
@@ -80,7 +80,7 @@ describe('inference block reader', () => {
 describe('inference wording and formatting', () => {
   it('uses the exact requested interval label', () => {
     expect(CI_LABEL).toBe(
-      '95% slope interval (assumes independent years; narrower than true uncertainty when years correlate)',
+      '95% confidence interval (assumes independent years; narrower than true uncertainty when years correlate)',
     );
   });
 

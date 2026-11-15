@@ -1,0 +1,162 @@
+{
+  "kind": "absolute",
+  "units": "°C",
+  "baseline": "1991–2020",
+  "vmin": -2.0,
+  "vmax": 32.0,
+  "colormap": {
+    "name": "RdYlBu_r",
+    "stops": [
+      [
+        -2.0,
+        "#313695"
+      ],
+      [
+        0.8333,
+        "#4169ae"
+      ],
+      [
+        3.6667,
+        "#6399c6"
+      ],
+      [
+        6.5,
+        "#90c3dd"
+      ],
+      [
+        9.3333,
+        "#bce1ee"
+      ],
+      [
+        12.1667,
+        "#e4f4ef"
+      ],
+      [
+        15.0,
+        "#fefebe"
+      ],
+      [
+        17.8333,
+        "#fee497"
+      ],
+      [
+        20.6667,
+        "#fdbe70"
+      ],
+      [
+        23.5,
+        "#f88b51"
+      ],
+      [
+        26.3333,
+        "#e95739"
+      ],
+      [
+        29.1667,
+        "#ce2726"
+      ],
+      [
+        32.0,
+        "#a50026"
+      ]
+    ]
+  },
+  "bbox": [
+    -180,
+    -90,
+    180,
+    90
+  ],
+  "width": 720,
+  "height": 360,
+  "source": "NOAA ERSST v6",
+  "method": "1991–2020 monthly mean sea surface temperature (°C) from NOAA ERSST v6 (2° grid), nearest-neighbor mapped to 720×360 equirectangular with Natural Earth 10m land and missing/sea-ice cells transparent.",
+  "frame_count": 12,
+  "total_size_bytes": 155769,
+  "frames": [
+    {
+      "month": 1,
+      "ym": "01",
+      "label": "January",
+      "file": "01.png",
+      "nino34_sst_c": 26.61
+    },
+    {
+      "month": 2,
+      "ym": "02",
+      "label": "February",
+      "file": "02.png",
+      "nino34_sst_c": 26.8
+    },
+    {
+      "month": 3,
+      "ym": "03",
+      "label": "March",
+      "file": "03.png",
+      "nino34_sst_c": 27.31
+    },
+    {
+      "month": 4,
+      "ym": "04",
+      "label": "April",
+      "file": "04.png",
+      "nino34_sst_c": 27.9
+    },
+    {
+      "month": 5,
+      "ym": "05",
+      "label": "May",
+      "file": "05.png",
+      "nino34_sst_c": 27.98
+    },
+    {
+      "month": 6,
+      "ym": "06",
+      "label": "June",
+      "file": "06.png",
+      "nino34_sst_c": 27.76
+    },
+    {
+      "month": 7,
+      "ym": "07",
+      "label": "July",
+      "file": "07.png",
+      "nino34_sst_c": 27.31
+    },
+    {
+      "month": 8,
+      "ym": "08",
+      "label": "August",
+      "file": "08.png",
+      "nino34_sst_c": 26.9
+    },
+    {
+      "month": 9,
+      "ym": "09",
+      "label": "September",
+      "file": "09.png",
+      "nino34_sst_c": 26.74
+    },
+    {
+      "month": 10,
+      "ym": "10",
+      "label": "October",
+      "file": "10.png",
+      "nino34_sst_c": 26.75
+    },
+    {
+      "month": 11,
+      "ym": "11",
+      "label": "November",
+      "file": "11.png",
+      "nino34_sst_c": 26.77
+    },
+    {
+      "month": 12,
+      "ym": "12",
+      "label": "December",
+      "file": "12.png",
+      "nino34_sst_c": 26.62
+    }
+  ]
+}

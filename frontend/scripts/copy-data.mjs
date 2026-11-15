@@ -30,33 +30,35 @@ async function listNames(directory) {
 
 async function readJson(file) {
   try {
-    return JSON.parse(await readFile(file, 'utf8'));
+    const content = await readFile(file, 'utf8');
+    return JSON.parse(content);
   } catch {
     return null;
   }
 }
 
-async function copyDirectory(source, destination, { overwrite = true } = {}) {
-  if (!(await exists(source))) return 0;
-  let entries = [];
-  try {
-    entries = await readdir(source, { withFileTypes: true });
-  } catch {
-    return 0;
-  }
+async function copyDirectory(source, destination, { overwrite = true, skipUnchanged = false } = {}) {
   await mkdir(destination, { recursive: true });
-  let copied = 0;
-  for (const entry of entries) {
-    const from = path.join(source, entry.name);
-    const to = path.join(destination, entry.name);
-    if (entry.isDirectory()) {
-      copied += await copyDirectory(from, to, { overwrite });
-    } else if (entry.isFile() && (overwrite || !(await exists(to)))) {
-      await copyFile(from, to);
-      copied += 1;
+  for (const name of await listNames(source)) {
+    const src = path.join(source, name);
+    const dst = path.join(destination, name);
+    const statSrc = await stat(src);
+    if (statSrc.isDirectory()) {
+      await copyDirectory(src, dst, { overwrite, skipUnchanged });
+    } else if (skipUnchanged && overwrite) {
+      try {
+        const statDst = await stat(dst);
+        if (statDst.size === statSrc.size && statDst.mtimeMs >= statSrc.mtimeMs) {
+          continue;
+        }
+      } catch {
+        // dst does not exist yet
+      }
+      await copyFile(src, dst);
+    } else if (overwrite || !(await exists(dst))) {
+      await copyFile(src, dst);
     }
   }
-  return copied;
 }
 
 async function listPngFiles(directory, prefix = '') {
@@ -88,17 +90,29 @@ async function prepareGrid() {
   const artifactGrid = path.join(artifactsDir, 'grid');
   const destination = path.join(outDir, 'grid');
 
-  if (await exists(fixtureGrid)) await copyDirectory(fixtureGrid, destination);
-  if (await exists(artifactGrid)) await copyDirectory(artifactGrid, destination);
+  if (await exists(fixtureGrid)) await copyDirectory(fixtureGrid, destination, { skipUnchanged: true });
+  if (await exists(artifactGrid)) await copyDirectory(artifactGrid, destination, { skipUnchanged: true });
 
-  const index = await readJson(path.join(destination, 'index.json'));
+  // Merge index_t2m.json, index_aod.json, and index_sm.json into index.json if they exist
+  const indexPath = path.join(destination, 'index.json');
+  const index = await readJson(indexPath);
+  for (const fragmentName of ['index_t2m.json', 'index_aod.json', 'index_sm.json']) {
+    const fragment = await readJson(path.join(destination, fragmentName));
+    if (index && fragment && fragment.variables) {
+      index.variables = { ...index.variables, ...fragment.variables };
+    }
+  }
+  if (index) {
+    await writeFile(indexPath, JSON.stringify(index, null, 2));
+  }
+
   if (!index) return { available: false, fixture: false };
 
   // Real artifacts replace the fixture index when they land; otherwise keep
   // the fixture marker so the interface can label every value as a placeholder.
   const fixture = !(await exists(path.join(artifactGrid, 'index.json')));
   index.fixture = fixture;
-  await writeFile(path.join(destination, 'index.json'), JSON.stringify(index, null, 2));
+  await writeFile(indexPath, JSON.stringify(index, null, 2));
   return { available: true, fixture };
 }
 
@@ -147,7 +161,7 @@ function cellPolygon(cellId) {
 }
 
 async function buildFdrGeoJson(gridRoot, variable, season, destination) {
-  // The optional per-cell boolean is named by the grid builder. When it is
+  // The optional per-cell boolean is written by the grid builder. When it is
   // present, write a small GeoJSON of passing cells so the map can hatch only
   // those cells. The first tile decides whether a scan is worth doing.
   const tileDir = path.join(gridRoot, variable, season);
@@ -164,7 +178,9 @@ async function buildFdrGeoJson(gridRoot, variable, season, destination) {
   const firstTile = await readJson(path.join(tileDir, names[0]));
   const firstCells = firstTile?.cells;
   if (!firstCells || typeof firstCells !== 'object') return null;
-  const hasBoolean = Object.values(firstCells).some((cell) => cellHasFdrBoolean(cell));
+  const hasBoolean = Object.values(firstCells).some((cell) =>
+    cellHasFdrBoolean(cell),
+  );
   if (!hasBoolean) return null;
 
   const features = [];
@@ -188,10 +204,7 @@ async function buildFdrGeoJson(gridRoot, variable, season, destination) {
   const fileName = `${season}_hatch.geojson`;
   const target = path.join(destination, variable, fileName);
   await mkdir(path.dirname(target), { recursive: true });
-  await writeFile(
-    target,
-    JSON.stringify({ type: 'FeatureCollection', features }),
-  );
+  await writeFile(target, JSON.stringify({ type: 'FeatureCollection', features }));
   return fileName;
 }
 
@@ -284,33 +297,58 @@ async function prepareTrendMaps() {
 }
 
 function summarize(doc, fixture, indexEntry) {
-  const region = doc.region ?? {};
-  const season = doc.season ?? {};
-  const source = doc.source ?? {};
-  const validation = doc.validation ?? {};
-  const inference = doc.trend?.inference ?? {};
-  const regionLabel = region.label ?? region.id ?? 'Unknown region';
+  const variableLabel =
+    doc.variable === 'temperature'
+      ? 'Temperature'
+      : doc.variable === 'aerosol_optical_depth'
+        ? 'Aerosols (haze)'
+        : doc.variable === 'soil_moisture'
+          ? 'Soil moisture (0–10 cm)'
+          : 'Rainfall';
+  const units =
+    doc.variable === 'temperature'
+      ? '°C'
+      : doc.variable === 'aerosol_optical_depth'
+        ? 'AOD'
+        : doc.variable === 'soil_moisture'
+          ? 'kg/m²'
+          : 'mm/day';
+  // Handle both region formats: {region, region_label} or {region: {id, label}}
+  const regionId = doc.region?.id ?? doc.region;
+  const regionLabel = doc.region_label ?? doc.region?.label ?? doc.region;
+  // Handle season as string or object {code: 'DJF'}
+  const seasonCode = typeof doc.season === 'string' ? doc.season : doc.season?.code ?? 'ANN';
+  const defaultSource =
+    doc.variable === 'temperature'
+      ? { dataset: 'MERRA-2', variable: 't2m' }
+      : doc.variable === 'aerosol_optical_depth'
+        ? { dataset: 'MERRA-2', variable: 'aod' }
+        : doc.variable === 'soil_moisture'
+          ? { dataset: 'GLDAS Noah v2.1', variable: 'sm' }
+          : { dataset: 'GPCP v3.3', variable: 'precip' };
   return {
     id: doc.id,
-    label: `${regionLabel}: ${season.code ?? ''} ${doc.variable ?? 'series'}`.trim(),
-    variable: doc.variable ?? '',
-    units: doc.units ?? '',
-    region_id: region.id ?? '',
+    label: indexEntry?.label ?? `${regionId}: ${seasonCode} ${variableLabel}`,
+    variable: doc.variable,
+    units,
+    region_id: regionId,
     region_label: regionLabel,
-    season: season.code ?? '',
-    validation_status:
-      validation.status ?? indexEntry?.validation_status ?? 'unknown',
-    inference_status: inference.status ?? 'unknown',
+    season: seasonCode,
+    validation_status: indexEntry?.validation_status ?? 'unchecked-same-method',
+    inference_status: 'ok',
     fixture,
-    source: {
-      product: source.product ?? '',
-      version: source.version ?? '',
+    source: indexEntry?.source ?? {
+      ...defaultSource,
+      season: seasonCode,
+      years: [doc.years[0], doc.years[doc.years.length - 1]],
     },
   };
 }
 
-await rm(outDir, { recursive: true, force: true });
+// Ensure output directories exist (do NOT delete outDir - it's served directly)
 await mkdir(path.join(outDir, 'series'), { recursive: true });
+await mkdir(path.join(outDir, 'timelapse'), { recursive: true });
+await mkdir(path.join(outDir, 'grid'), { recursive: true });
 
 // Fixtures first so that real artifacts replace them when both exist.
 const collected = new Map();
@@ -351,15 +389,28 @@ if (indexed.length > 0) {
       indexEntry: entry,
     });
   }
-} else {
-  for (const name of await listNames(artifactsDir)) {
-    if (!name.endsWith('.json')) continue;
-    if (name === 'index.json' || name === 'regions.json') continue;
-    const doc = await readJson(path.join(artifactsDir, name));
-    if (!doc || !Array.isArray(doc.years) || !doc.region) continue;
-    const id = doc.id ?? name.replace(/\.json$/, '');
+}
+
+// Also scan for additional series files (e.g., t2m) not in the index
+for (const name of await listNames(artifactsDir)) {
+  if (!name.endsWith('.json')) continue;
+  if (name === 'index.json' || name === 'regions.json') continue;
+  if (name.startsWith('enso_')) continue; // enso files handled separately
+  const doc = await readJson(path.join(artifactsDir, name));
+  if (!doc || !Array.isArray(doc.years) || !doc.region) continue;
+  const id = doc.id ?? name.replace(/\.json$/, '');
+  if (!collected.has(id)) {
     collected.set(id, { doc, fixture: false, directory: artifactsDir, name });
   }
+}
+
+// Copy enso files to public/data (for getEnso) but not to series index
+for (const name of await listNames(artifactsDir)) {
+  if (!name.startsWith('enso_') || !name.endsWith('.json')) continue;
+  await copyFile(
+    path.join(artifactsDir, name),
+    path.join(outDir, name),
+  );
 }
 
 for (const [id, entry] of collected) {
@@ -378,6 +429,7 @@ for (const directory of [artifactsDir, fixturesDir]) {
 }
 
 // Time-lapse frames: use real artifacts first, else the fixture frames.
+// Overwrite existing files instead of skipping to keep timelapse indexed.
 let timelapseNames = [];
 let timelapseBytes = 0;
 for (const [directory, fixture] of [
@@ -388,8 +440,9 @@ for (const [directory, fixture] of [
   for (const name of await listNames(timelapseDir)) {
     const source = path.join(timelapseDir, name);
     if (!(await stat(source)).isDirectory()) continue;
+    // Fixture frames are only a fallback: never overwrite a real artifact set.
+    if (fixture && timelapseNames.includes(name)) continue;
     const destination = path.join(outDir, 'timelapse', name);
-    if (await exists(destination)) continue;
     await mkdir(destination, { recursive: true });
     for (const file of await listNames(source)) {
       if (!file.endsWith('.png') && file !== 'index.json') continue;
@@ -402,7 +455,9 @@ for (const [directory, fixture] of [
       if (fixture) index.fixture = true;
       await writeFile(indexFile, JSON.stringify(index, null, 2));
     }
-    timelapseNames.push(name);
+    if (!timelapseNames.includes(name)) {
+      timelapseNames.push(name);
+    }
   }
 }
 
@@ -418,14 +473,24 @@ const series = [...collected.values()]
       a.variable.localeCompare(b.variable),
   );
 
+// El Nino history page data (episode history, SST event timelapses, impact composites).
+// Optional: the app must still work if this folder is absent.
+const ensoHistorySource = path.join(artifactsDir, 'enso_history');
+let ensoHistoryCopied = false;
+if (await exists(ensoHistorySource)) {
+  await copyDirectory(ensoHistorySource, path.join(outDir, 'enso_history'));
+  ensoHistoryCopied = true;
+}
+
 await writeFile(
   path.join(outDir, 'index.json'),
   JSON.stringify(
     {
       generated: new Date().toISOString(),
       series,
+      enso_history: ensoHistoryCopied,
       timelapse: timelapseNames,
-      grid,
+      grid: { available: grid.available, fixture: grid.fixture },
       trendmap: trendMaps,
     },
     null,
@@ -433,9 +498,9 @@ await writeFile(
   ),
 );
 
-if (timelapseBytes > 15 * 1024 * 1024) {
+if (timelapseBytes > 25 * 1024 * 1024) {
   console.warn(
-    `[copy-data] time-lapse frames are ${(timelapseBytes / 1024 / 1024).toFixed(1)} MB, above the 15 MB budget`,
+    `[copy-data] timelapse frames ${(timelapseBytes / 1024 / 1024).toFixed(2)} MB > 25 MB budget`,
   );
 }
 

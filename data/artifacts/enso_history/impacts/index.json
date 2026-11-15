@@ -1,0 +1,1155 @@
+{
+  "bbox": [
+    -180,
+    -90,
+    180,
+    90
+  ],
+  "width": 1440,
+  "height": 720,
+  "total_size_bytes": 1517413,
+  "maps": [
+    {
+      "id": "precip_DJF",
+      "variable": "precipitation",
+      "slug": "precip",
+      "season": "DJF",
+      "label": "Rainfall, Dec–Feb: El Niño minus La Niña",
+      "units": "mm/day",
+      "file": "precip_DJF.png",
+      "overlay_file": "precip_DJF_overlay.png",
+      "sig_file": "precip_DJF_sig.png",
+      "vmin": -2.5,
+      "vmax": 2.5,
+      "colormap": {
+        "name": "BrBG",
+        "stops": [
+          [
+            -2.5,
+            "#543005"
+          ],
+          [
+            -2.0,
+            "#8a5009"
+          ],
+          [
+            -1.5,
+            "#bf812d"
+          ],
+          [
+            -1.0,
+            "#dec07b"
+          ],
+          [
+            -0.5,
+            "#f6e8c3"
+          ],
+          [
+            0.0,
+            "#f4f4f4"
+          ],
+          [
+            0.5,
+            "#c7eae5"
+          ],
+          [
+            1.0,
+            "#7ecbc0"
+          ],
+          [
+            1.5,
+            "#35978f"
+          ],
+          [
+            2.0,
+            "#00655d"
+          ],
+          [
+            2.5,
+            "#003c30"
+          ]
+        ],
+        "alpha_rule": "Transparent (alpha = 0) for |diff| <= 0.208 mm/day; smooth ramp to fully opaque (alpha = 255) for |diff| >= 0.833 mm/day."
+      },
+      "years_el_nino": [
+        1987,
+        1991,
+        1992,
+        1993,
+        1995,
+        1998,
+        2003,
+        2005,
+        2007,
+        2010,
+        2015,
+        2016,
+        2019,
+        2024
+      ],
+      "years_la_nina": [
+        1984,
+        1985,
+        1989,
+        1996,
+        1999,
+        2000,
+        2001,
+        2006,
+        2008,
+        2009,
+        2011,
+        2012,
+        2013,
+        2017,
+        2018,
+        2021,
+        2022,
+        2023,
+        2025
+      ],
+      "n_el_nino": 14,
+      "n_la_nina": 19,
+      "method": "Linearly detrended 1° seasonal series classified by NOAA CPC RONI (±0.5 °C); composite El Niño minus La Niña; two-sided permutation test (2000 permutations, seed 20261115) with Benjamini–Hochberg false discovery rate at q = 0.10; region CIs from stratified bootstrap (2000 resamples).",
+      "fdr_q": 0.1,
+      "significant_fraction": 0.111,
+      "region_summaries": [
+        {
+          "region_id": "indonesia",
+          "label": "Indonesia",
+          "diff": -1.1,
+          "ci_low": -1.48,
+          "ci_high": -0.72,
+          "significant": true,
+          "units": "mm/day"
+        },
+        {
+          "region_id": "coastal_peru",
+          "label": "Coastal Peru",
+          "diff": -0.36,
+          "ci_low": -0.91,
+          "ci_high": 0.3,
+          "significant": false,
+          "units": "mm/day"
+        },
+        {
+          "region_id": "amazon",
+          "label": "Amazon",
+          "diff": -0.95,
+          "ci_low": -1.27,
+          "ci_high": -0.65,
+          "significant": true,
+          "units": "mm/day"
+        },
+        {
+          "region_id": "sahel",
+          "label": "Sahel",
+          "diff": 0.0,
+          "ci_low": -0.01,
+          "ci_high": 0.01,
+          "significant": false,
+          "units": "mm/day"
+        },
+        {
+          "region_id": "east_africa",
+          "label": "East Africa",
+          "diff": 0.59,
+          "ci_low": 0.28,
+          "ci_high": 0.99,
+          "significant": true,
+          "units": "mm/day"
+        },
+        {
+          "region_id": "india",
+          "label": "India",
+          "diff": -0.27,
+          "ci_low": -0.46,
+          "ci_high": -0.09,
+          "significant": true,
+          "units": "mm/day"
+        },
+        {
+          "region_id": "australia",
+          "label": "Australia",
+          "diff": -0.68,
+          "ci_low": -1.01,
+          "ci_high": -0.36,
+          "significant": true,
+          "units": "mm/day"
+        },
+        {
+          "region_id": "california",
+          "label": "California",
+          "diff": 0.52,
+          "ci_low": 0.04,
+          "ci_high": 1.01,
+          "significant": true,
+          "units": "mm/day"
+        },
+        {
+          "region_id": "alberta_prairies",
+          "label": "Alberta / Prairies",
+          "diff": -0.02,
+          "ci_low": -0.08,
+          "ci_high": 0.05,
+          "significant": false,
+          "units": "mm/day"
+        },
+        {
+          "region_id": "southern_africa",
+          "label": "Southern Africa",
+          "diff": -0.71,
+          "ci_low": -0.96,
+          "ci_high": -0.46,
+          "significant": true,
+          "units": "mm/day"
+        }
+      ]
+    },
+    {
+      "id": "t2m_DJF",
+      "variable": "temperature",
+      "slug": "t2m",
+      "season": "DJF",
+      "label": "Temperature, Dec–Feb: El Niño minus La Niña",
+      "units": "°C",
+      "file": "t2m_DJF.png",
+      "overlay_file": "t2m_DJF_overlay.png",
+      "sig_file": "t2m_DJF_sig.png",
+      "vmin": -1.5,
+      "vmax": 1.5,
+      "colormap": {
+        "name": "RdBu_r",
+        "stops": [
+          [
+            -1.5,
+            "#053061"
+          ],
+          [
+            -1.2,
+            "#2064aa"
+          ],
+          [
+            -0.9,
+            "#4393c3"
+          ],
+          [
+            -0.6,
+            "#90c4dd"
+          ],
+          [
+            -0.3,
+            "#d1e5f0"
+          ],
+          [
+            0.0,
+            "#f7f6f6"
+          ],
+          [
+            0.3,
+            "#fddbc7"
+          ],
+          [
+            0.6,
+            "#f3a380"
+          ],
+          [
+            0.9,
+            "#d6604d"
+          ],
+          [
+            1.2,
+            "#b0172a"
+          ],
+          [
+            1.5,
+            "#67001f"
+          ]
+        ],
+        "alpha_rule": "Transparent (alpha = 0) for |diff| <= 0.125 °C; smooth ramp to fully opaque (alpha = 255) for |diff| >= 0.5 °C."
+      },
+      "years_el_nino": [
+        1983,
+        1987,
+        1991,
+        1992,
+        1993,
+        1995,
+        1998,
+        2003,
+        2005,
+        2007,
+        2010,
+        2015,
+        2016,
+        2019,
+        2024
+      ],
+      "years_la_nina": [
+        1984,
+        1985,
+        1989,
+        1996,
+        1999,
+        2000,
+        2001,
+        2006,
+        2008,
+        2009,
+        2011,
+        2012,
+        2013,
+        2017,
+        2018,
+        2021,
+        2022,
+        2023,
+        2025,
+        2026
+      ],
+      "n_el_nino": 15,
+      "n_la_nina": 20,
+      "method": "Linearly detrended 1° seasonal series classified by NOAA CPC RONI (±0.5 °C); composite El Niño minus La Niña; two-sided permutation test (2000 permutations, seed 20261115) with Benjamini–Hochberg false discovery rate at q = 0.10; region CIs from stratified bootstrap (2000 resamples).",
+      "fdr_q": 0.1,
+      "significant_fraction": 0.2024,
+      "region_summaries": [
+        {
+          "region_id": "indonesia",
+          "label": "Indonesia",
+          "diff": 0.36,
+          "ci_low": 0.21,
+          "ci_high": 0.51,
+          "significant": true,
+          "units": "°C"
+        },
+        {
+          "region_id": "coastal_peru",
+          "label": "Coastal Peru",
+          "diff": 1.04,
+          "ci_low": 0.66,
+          "ci_high": 1.41,
+          "significant": true,
+          "units": "°C"
+        },
+        {
+          "region_id": "amazon",
+          "label": "Amazon",
+          "diff": 0.82,
+          "ci_low": 0.53,
+          "ci_high": 1.12,
+          "significant": true,
+          "units": "°C"
+        },
+        {
+          "region_id": "sahel",
+          "label": "Sahel",
+          "diff": -0.19,
+          "ci_low": -0.75,
+          "ci_high": 0.42,
+          "significant": false,
+          "units": "°C"
+        },
+        {
+          "region_id": "east_africa",
+          "label": "East Africa",
+          "diff": -0.08,
+          "ci_low": -0.39,
+          "ci_high": 0.21,
+          "significant": false,
+          "units": "°C"
+        },
+        {
+          "region_id": "india",
+          "label": "India",
+          "diff": 0.06,
+          "ci_low": -0.18,
+          "ci_high": 0.29,
+          "significant": false,
+          "units": "°C"
+        },
+        {
+          "region_id": "australia",
+          "label": "Australia",
+          "diff": 0.25,
+          "ci_low": 0.01,
+          "ci_high": 0.49,
+          "significant": true,
+          "units": "°C"
+        },
+        {
+          "region_id": "california",
+          "label": "California",
+          "diff": 0.4,
+          "ci_low": -0.19,
+          "ci_high": 0.99,
+          "significant": false,
+          "units": "°C"
+        },
+        {
+          "region_id": "alberta_prairies",
+          "label": "Alberta / Prairies",
+          "diff": 1.51,
+          "ci_low": 0.37,
+          "ci_high": 2.69,
+          "significant": true,
+          "units": "°C"
+        },
+        {
+          "region_id": "southern_africa",
+          "label": "Southern Africa",
+          "diff": 0.67,
+          "ci_low": 0.47,
+          "ci_high": 0.87,
+          "significant": true,
+          "units": "°C"
+        }
+      ]
+    },
+    {
+      "id": "aod_SON",
+      "variable": "aerosol_optical_depth",
+      "slug": "aod",
+      "season": "SON",
+      "label": "Aerosols (haze), Sep–Nov: El Niño minus La Niña",
+      "units": "AOD",
+      "file": "aod_SON.png",
+      "overlay_file": "aod_SON_overlay.png",
+      "sig_file": "aod_SON_sig.png",
+      "vmin": -0.08,
+      "vmax": 0.08,
+      "colormap": {
+        "name": "PuOr_r",
+        "stops": [
+          [
+            -0.08,
+            "#2d004b"
+          ],
+          [
+            -0.064,
+            "#532686"
+          ],
+          [
+            -0.048,
+            "#8073ac"
+          ],
+          [
+            -0.032,
+            "#b1a9d1"
+          ],
+          [
+            -0.016,
+            "#d8daeb"
+          ],
+          [
+            0.0,
+            "#f7f6f5"
+          ],
+          [
+            0.016,
+            "#fee0b6"
+          ],
+          [
+            0.032,
+            "#fcb661"
+          ],
+          [
+            0.048,
+            "#e08214"
+          ],
+          [
+            0.064,
+            "#b15706"
+          ],
+          [
+            0.08,
+            "#7f3b08"
+          ]
+        ],
+        "alpha_rule": "Transparent (alpha = 0) for |diff| <= 0.00667 AOD; smooth ramp to fully opaque (alpha = 255) for |diff| >= 0.0267 AOD."
+      },
+      "years_el_nino": [
+        1982,
+        1986,
+        1987,
+        1991,
+        1994,
+        1997,
+        2002,
+        2004,
+        2006,
+        2009,
+        2015,
+        2018,
+        2023
+      ],
+      "years_la_nina": [
+        1983,
+        1984,
+        1988,
+        1995,
+        1998,
+        1999,
+        2000,
+        2007,
+        2010,
+        2011,
+        2016,
+        2017,
+        2020,
+        2021,
+        2022,
+        2024,
+        2025
+      ],
+      "n_el_nino": 13,
+      "n_la_nina": 17,
+      "method": "Linearly detrended 1° seasonal series classified by NOAA CPC RONI (±0.5 °C); composite El Niño minus La Niña; two-sided permutation test (2000 permutations, seed 20261115) with Benjamini–Hochberg false discovery rate at q = 0.10; region CIs from stratified bootstrap (2000 resamples).",
+      "fdr_q": 0.1,
+      "significant_fraction": 0.0314,
+      "region_summaries": [
+        {
+          "region_id": "indonesia",
+          "label": "Indonesia",
+          "diff": 0.28,
+          "ci_low": 0.16,
+          "ci_high": 0.409,
+          "significant": true,
+          "units": "AOD"
+        },
+        {
+          "region_id": "coastal_peru",
+          "label": "Coastal Peru",
+          "diff": 0.012,
+          "ci_low": -0.025,
+          "ci_high": 0.046,
+          "significant": false,
+          "units": "AOD"
+        },
+        {
+          "region_id": "amazon",
+          "label": "Amazon",
+          "diff": 0.013,
+          "ci_low": -0.033,
+          "ci_high": 0.062,
+          "significant": false,
+          "units": "AOD"
+        },
+        {
+          "region_id": "sahel",
+          "label": "Sahel",
+          "diff": 0.021,
+          "ci_low": -0.025,
+          "ci_high": 0.076,
+          "significant": false,
+          "units": "AOD"
+        },
+        {
+          "region_id": "east_africa",
+          "label": "East Africa",
+          "diff": 0.006,
+          "ci_low": -0.025,
+          "ci_high": 0.048,
+          "significant": false,
+          "units": "AOD"
+        },
+        {
+          "region_id": "india",
+          "label": "India",
+          "diff": 0.039,
+          "ci_low": 0.002,
+          "ci_high": 0.088,
+          "significant": true,
+          "units": "AOD"
+        },
+        {
+          "region_id": "australia",
+          "label": "Australia",
+          "diff": 0.023,
+          "ci_low": 0.008,
+          "ci_high": 0.039,
+          "significant": true,
+          "units": "AOD"
+        },
+        {
+          "region_id": "california",
+          "label": "California",
+          "diff": 0.004,
+          "ci_low": -0.026,
+          "ci_high": 0.04,
+          "significant": false,
+          "units": "AOD"
+        },
+        {
+          "region_id": "alberta_prairies",
+          "label": "Alberta / Prairies",
+          "diff": 0.001,
+          "ci_low": -0.022,
+          "ci_high": 0.027,
+          "significant": false,
+          "units": "AOD"
+        },
+        {
+          "region_id": "southern_africa",
+          "label": "Southern Africa",
+          "diff": -0.001,
+          "ci_low": -0.017,
+          "ci_high": 0.018,
+          "significant": false,
+          "units": "AOD"
+        }
+      ]
+    },
+    {
+      "id": "precip_JJA",
+      "variable": "precipitation",
+      "slug": "precip",
+      "season": "JJA",
+      "label": "Rainfall, Jun–Aug: El Niño minus La Niña",
+      "units": "mm/day",
+      "file": "precip_JJA.png",
+      "overlay_file": "precip_JJA_overlay.png",
+      "sig_file": "precip_JJA_sig.png",
+      "vmin": -2.5,
+      "vmax": 2.5,
+      "colormap": {
+        "name": "BrBG",
+        "stops": [
+          [
+            -2.5,
+            "#543005"
+          ],
+          [
+            -2.0,
+            "#8a5009"
+          ],
+          [
+            -1.5,
+            "#bf812d"
+          ],
+          [
+            -1.0,
+            "#dec07b"
+          ],
+          [
+            -0.5,
+            "#f6e8c3"
+          ],
+          [
+            0.0,
+            "#f4f4f4"
+          ],
+          [
+            0.5,
+            "#c7eae5"
+          ],
+          [
+            1.0,
+            "#7ecbc0"
+          ],
+          [
+            1.5,
+            "#35978f"
+          ],
+          [
+            2.0,
+            "#00655d"
+          ],
+          [
+            2.5,
+            "#003c30"
+          ]
+        ],
+        "alpha_rule": "Transparent (alpha = 0) for |diff| <= 0.208 mm/day; smooth ramp to fully opaque (alpha = 255) for |diff| >= 0.833 mm/day."
+      },
+      "years_el_nino": [
+        1987,
+        1991,
+        1992,
+        1994,
+        1997,
+        2002,
+        2004,
+        2015,
+        2023
+      ],
+      "years_la_nina": [
+        1988,
+        1998,
+        1999,
+        2007,
+        2010,
+        2016,
+        2020,
+        2021,
+        2022
+      ],
+      "n_el_nino": 9,
+      "n_la_nina": 9,
+      "method": "Linearly detrended 1° seasonal series classified by NOAA CPC RONI (±0.5 °C); composite El Niño minus La Niña; two-sided permutation test (2000 permutations, seed 20261115) with Benjamini–Hochberg false discovery rate at q = 0.10; region CIs from stratified bootstrap (2000 resamples).",
+      "fdr_q": 0.1,
+      "significant_fraction": 0.0317,
+      "region_summaries": [
+        {
+          "region_id": "indonesia",
+          "label": "Indonesia",
+          "diff": -2.98,
+          "ci_low": -3.7,
+          "ci_high": -2.28,
+          "significant": true,
+          "units": "mm/day"
+        },
+        {
+          "region_id": "coastal_peru",
+          "label": "Coastal Peru",
+          "diff": 0.13,
+          "ci_low": -0.13,
+          "ci_high": 0.38,
+          "significant": false,
+          "units": "mm/day"
+        },
+        {
+          "region_id": "amazon",
+          "label": "Amazon",
+          "diff": -0.17,
+          "ci_low": -0.43,
+          "ci_high": 0.11,
+          "significant": false,
+          "units": "mm/day"
+        },
+        {
+          "region_id": "sahel",
+          "label": "Sahel",
+          "diff": -0.33,
+          "ci_low": -0.58,
+          "ci_high": -0.08,
+          "significant": true,
+          "units": "mm/day"
+        },
+        {
+          "region_id": "east_africa",
+          "label": "East Africa",
+          "diff": -0.24,
+          "ci_low": -0.43,
+          "ci_high": -0.05,
+          "significant": true,
+          "units": "mm/day"
+        },
+        {
+          "region_id": "india",
+          "label": "India",
+          "diff": -0.42,
+          "ci_low": -0.94,
+          "ci_high": 0.14,
+          "significant": false,
+          "units": "mm/day"
+        },
+        {
+          "region_id": "australia",
+          "label": "Australia",
+          "diff": -0.36,
+          "ci_low": -0.57,
+          "ci_high": -0.16,
+          "significant": true,
+          "units": "mm/day"
+        },
+        {
+          "region_id": "california",
+          "label": "California",
+          "diff": -0.03,
+          "ci_low": -0.11,
+          "ci_high": 0.06,
+          "significant": false,
+          "units": "mm/day"
+        },
+        {
+          "region_id": "alberta_prairies",
+          "label": "Alberta / Prairies",
+          "diff": -0.09,
+          "ci_low": -0.31,
+          "ci_high": 0.12,
+          "significant": false,
+          "units": "mm/day"
+        },
+        {
+          "region_id": "southern_africa",
+          "label": "Southern Africa",
+          "diff": 0.07,
+          "ci_low": -0.02,
+          "ci_high": 0.17,
+          "significant": false,
+          "units": "mm/day"
+        }
+      ]
+    },
+    {
+      "id": "t2m_JJA",
+      "variable": "temperature",
+      "slug": "t2m",
+      "season": "JJA",
+      "label": "Temperature, Jun–Aug: El Niño minus La Niña",
+      "units": "°C",
+      "file": "t2m_JJA.png",
+      "overlay_file": "t2m_JJA_overlay.png",
+      "sig_file": "t2m_JJA_sig.png",
+      "vmin": -2.0,
+      "vmax": 2.0,
+      "colormap": {
+        "name": "RdBu_r",
+        "stops": [
+          [
+            -2.0,
+            "#053061"
+          ],
+          [
+            -1.6,
+            "#2064aa"
+          ],
+          [
+            -1.2,
+            "#4393c3"
+          ],
+          [
+            -0.8,
+            "#90c4dd"
+          ],
+          [
+            -0.4,
+            "#d1e5f0"
+          ],
+          [
+            0.0,
+            "#f7f6f6"
+          ],
+          [
+            0.4,
+            "#fddbc7"
+          ],
+          [
+            0.8,
+            "#f3a380"
+          ],
+          [
+            1.2,
+            "#d6604d"
+          ],
+          [
+            1.6,
+            "#b0172a"
+          ],
+          [
+            2.0,
+            "#67001f"
+          ]
+        ],
+        "alpha_rule": "Transparent (alpha = 0) for |diff| <= 0.167 °C; smooth ramp to fully opaque (alpha = 255) for |diff| >= 0.667 °C."
+      },
+      "years_el_nino": [
+        1982,
+        1987,
+        1991,
+        1992,
+        1994,
+        1997,
+        2002,
+        2004,
+        2015,
+        2023,
+        2026
+      ],
+      "years_la_nina": [
+        1988,
+        1998,
+        1999,
+        2007,
+        2010,
+        2016,
+        2020,
+        2021,
+        2022
+      ],
+      "n_el_nino": 11,
+      "n_la_nina": 9,
+      "method": "Linearly detrended 1° seasonal series classified by NOAA CPC RONI (±0.5 °C); composite El Niño minus La Niña; two-sided permutation test (2000 permutations, seed 20261115) with Benjamini–Hochberg false discovery rate at q = 0.10; region CIs from stratified bootstrap (2000 resamples).",
+      "fdr_q": 0.1,
+      "significant_fraction": 0.1307,
+      "region_summaries": [
+        {
+          "region_id": "indonesia",
+          "label": "Indonesia",
+          "diff": -0.17,
+          "ci_low": -0.38,
+          "ci_high": 0.02,
+          "significant": false,
+          "units": "°C"
+        },
+        {
+          "region_id": "coastal_peru",
+          "label": "Coastal Peru",
+          "diff": 0.7,
+          "ci_low": 0.21,
+          "ci_high": 1.24,
+          "significant": true,
+          "units": "°C"
+        },
+        {
+          "region_id": "amazon",
+          "label": "Amazon",
+          "diff": 0.12,
+          "ci_low": -0.29,
+          "ci_high": 0.5,
+          "significant": false,
+          "units": "°C"
+        },
+        {
+          "region_id": "sahel",
+          "label": "Sahel",
+          "diff": 0.47,
+          "ci_low": 0.09,
+          "ci_high": 0.83,
+          "significant": true,
+          "units": "°C"
+        },
+        {
+          "region_id": "east_africa",
+          "label": "East Africa",
+          "diff": 0.48,
+          "ci_low": 0.1,
+          "ci_high": 0.85,
+          "significant": true,
+          "units": "°C"
+        },
+        {
+          "region_id": "india",
+          "label": "India",
+          "diff": 0.09,
+          "ci_low": -0.1,
+          "ci_high": 0.27,
+          "significant": false,
+          "units": "°C"
+        },
+        {
+          "region_id": "australia",
+          "label": "Australia",
+          "diff": -0.09,
+          "ci_low": -0.35,
+          "ci_high": 0.16,
+          "significant": false,
+          "units": "°C"
+        },
+        {
+          "region_id": "california",
+          "label": "California",
+          "diff": 0.06,
+          "ci_low": -0.41,
+          "ci_high": 0.56,
+          "significant": false,
+          "units": "°C"
+        },
+        {
+          "region_id": "alberta_prairies",
+          "label": "Alberta / Prairies",
+          "diff": -0.23,
+          "ci_low": -0.85,
+          "ci_high": 0.39,
+          "significant": false,
+          "units": "°C"
+        },
+        {
+          "region_id": "southern_africa",
+          "label": "Southern Africa",
+          "diff": -0.05,
+          "ci_low": -0.29,
+          "ci_high": 0.18,
+          "significant": false,
+          "units": "°C"
+        }
+      ]
+    },
+    {
+      "id": "sm_DJF",
+      "variable": "soil_moisture",
+      "slug": "sm",
+      "season": "DJF",
+      "label": "Soil moisture (0–10 cm), Dec–Feb: El Niño minus La Niña",
+      "units": "kg/m²",
+      "file": "sm_DJF.png",
+      "overlay_file": "sm_DJF_overlay.png",
+      "sig_file": "sm_DJF_sig.png",
+      "vmin": -5.0,
+      "vmax": 5.0,
+      "colormap": {
+        "name": "BrBG",
+        "stops": [
+          [
+            -5.0,
+            "#543005"
+          ],
+          [
+            -4.0,
+            "#8a5009"
+          ],
+          [
+            -3.0,
+            "#bf812d"
+          ],
+          [
+            -2.0,
+            "#dec07b"
+          ],
+          [
+            -1.0,
+            "#f6e8c3"
+          ],
+          [
+            0.0,
+            "#f4f4f4"
+          ],
+          [
+            1.0,
+            "#c7eae5"
+          ],
+          [
+            2.0,
+            "#7ecbc0"
+          ],
+          [
+            3.0,
+            "#35978f"
+          ],
+          [
+            4.0,
+            "#00655d"
+          ],
+          [
+            5.0,
+            "#003c30"
+          ]
+        ],
+        "alpha_rule": "Transparent (alpha = 0) for |diff| <= 0.417 kg/m²; smooth ramp to fully opaque (alpha = 255) for |diff| >= 1.67 kg/m²."
+      },
+      "years_el_nino": [
+        2003,
+        2005,
+        2007,
+        2010,
+        2015,
+        2016,
+        2019,
+        2024
+      ],
+      "years_la_nina": [
+        2001,
+        2006,
+        2008,
+        2009,
+        2011,
+        2012,
+        2013,
+        2017,
+        2018,
+        2021,
+        2022,
+        2023,
+        2025,
+        2026
+      ],
+      "n_el_nino": 8,
+      "n_la_nina": 14,
+      "method": "Linearly detrended 1° seasonal series classified by NOAA CPC RONI (±0.5 °C); composite El Niño minus La Niña; two-sided permutation test (2000 permutations, seed 20261115) with Benjamini–Hochberg false discovery rate at q = 0.10; region CIs from stratified bootstrap (2000 resamples).",
+      "fdr_q": 0.1,
+      "significant_fraction": 0.0503,
+      "region_summaries": [
+        {
+          "region_id": "indonesia",
+          "label": "Indonesia",
+          "diff": -0.51,
+          "ci_low": -0.76,
+          "ci_high": -0.29,
+          "significant": true,
+          "units": "kg/m²"
+        },
+        {
+          "region_id": "coastal_peru",
+          "label": "Coastal Peru",
+          "diff": -0.51,
+          "ci_low": -1.05,
+          "ci_high": -0.01,
+          "significant": true,
+          "units": "kg/m²"
+        },
+        {
+          "region_id": "amazon",
+          "label": "Amazon",
+          "diff": -1.5,
+          "ci_low": -2.45,
+          "ci_high": -0.64,
+          "significant": true,
+          "units": "kg/m²"
+        },
+        {
+          "region_id": "sahel",
+          "label": "Sahel",
+          "diff": -0.02,
+          "ci_low": -0.3,
+          "ci_high": 0.24,
+          "significant": false,
+          "units": "kg/m²"
+        },
+        {
+          "region_id": "east_africa",
+          "label": "East Africa",
+          "diff": 1.38,
+          "ci_low": 0.28,
+          "ci_high": 2.45,
+          "significant": true,
+          "units": "kg/m²"
+        },
+        {
+          "region_id": "india",
+          "label": "India",
+          "diff": 0.25,
+          "ci_low": -0.41,
+          "ci_high": 0.85,
+          "significant": false,
+          "units": "kg/m²"
+        },
+        {
+          "region_id": "australia",
+          "label": "Australia",
+          "diff": -1.88,
+          "ci_low": -2.91,
+          "ci_high": -0.87,
+          "significant": true,
+          "units": "kg/m²"
+        },
+        {
+          "region_id": "california",
+          "label": "California",
+          "diff": -0.15,
+          "ci_low": -2.11,
+          "ci_high": 1.87,
+          "significant": false,
+          "units": "kg/m²"
+        },
+        {
+          "region_id": "alberta_prairies",
+          "label": "Alberta / Prairies",
+          "diff": 0.46,
+          "ci_low": -1.07,
+          "ci_high": 1.86,
+          "significant": false,
+          "units": "kg/m²"
+        },
+        {
+          "region_id": "southern_africa",
+          "label": "Southern Africa",
+          "diff": -2.1,
+          "ci_low": -3.16,
+          "ci_high": -0.97,
+          "significant": true,
+          "units": "kg/m²"
+        }
+      ]
+    }
+  ]
+}

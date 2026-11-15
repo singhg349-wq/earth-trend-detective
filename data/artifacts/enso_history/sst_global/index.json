@@ -1,0 +1,3634 @@
+{
+  "units": "°C",
+  "baseline": "1991–2020",
+  "vmin": -3.0,
+  "vmax": 3.0,
+  "colormap": {
+    "name": "sst_diverging_dark",
+    "stops": [
+      [
+        -3.0,
+        "#0b3d91"
+      ],
+      [
+        -2.5,
+        "#0e519a"
+      ],
+      [
+        -2.0,
+        "#1266a4"
+      ],
+      [
+        -1.5,
+        "#157aad"
+      ],
+      [
+        -1.0,
+        "#1a98bb"
+      ],
+      [
+        -0.5,
+        "#1fb5c9"
+      ],
+      [
+        0.0,
+        "#0f172a"
+      ],
+      [
+        0.5,
+        "#f2a541"
+      ],
+      [
+        1.0,
+        "#f78b3f"
+      ],
+      [
+        1.5,
+        "#fc6a3d"
+      ],
+      [
+        2.0,
+        "#f04c39"
+      ],
+      [
+        2.5,
+        "#d12f34"
+      ],
+      [
+        3.0,
+        "#b3122e"
+      ]
+    ],
+    "alpha_rule": "Transparent (alpha = 0) for |anom| <= 0.25 °C; smooth ramp to fully opaque (alpha = 255) for |anom| >= 1.0 °C; land and missing/sea-ice cells transparent."
+  },
+  "bbox": [
+    -180,
+    -90,
+    180,
+    90
+  ],
+  "width": 720,
+  "height": 360,
+  "source": "NOAA ERSST v6",
+  "method": "Monthly sea surface temperature minus 1991–2020 monthly climatology from NOAA ERSST v6 (2° grid), nearest-neighbor mapped to 720×360 equirectangular with Natural Earth 10m land, missing/sea-ice, and near-normal water (|anom| <= 0.25 °C) transparent (smooth fade to full opacity by |anom| >= 1.0 °C). Niño-3.4 area mean (5°S–5°N, 170°W–120°W) cosine-latitude weighted; chapters follow NOAA CPC RONI.",
+  "frame_count": 574,
+  "total_size_bytes": 7980380,
+  "frames": [
+    {
+      "ym": "1979-01",
+      "file": "1979-01.png",
+      "nino34_anom_c": -0.07,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1979-02",
+      "file": "1979-02.png",
+      "nino34_anom_c": -0.02,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1979-03",
+      "file": "1979-03.png",
+      "nino34_anom_c": 0.02,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1979-04",
+      "file": "1979-04.png",
+      "nino34_anom_c": -0.07,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1979-05",
+      "file": "1979-05.png",
+      "nino34_anom_c": -0.21,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1979-06",
+      "file": "1979-06.png",
+      "nino34_anom_c": -0.16,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1979-07",
+      "file": "1979-07.png",
+      "nino34_anom_c": -0.4,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1979-08",
+      "file": "1979-08.png",
+      "nino34_anom_c": -0.2,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1979-09",
+      "file": "1979-09.png",
+      "nino34_anom_c": 0.37,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1979-10",
+      "file": "1979-10.png",
+      "nino34_anom_c": 0.03,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1979-11",
+      "file": "1979-11.png",
+      "nino34_anom_c": 0.23,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1979-12",
+      "file": "1979-12.png",
+      "nino34_anom_c": 0.51,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1980-01",
+      "file": "1980-01.png",
+      "nino34_anom_c": 0.49,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1980-02",
+      "file": "1980-02.png",
+      "nino34_anom_c": 0.26,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1980-03",
+      "file": "1980-03.png",
+      "nino34_anom_c": -0.03,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1980-04",
+      "file": "1980-04.png",
+      "nino34_anom_c": -0.11,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1980-05",
+      "file": "1980-05.png",
+      "nino34_anom_c": -0.04,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1980-06",
+      "file": "1980-06.png",
+      "nino34_anom_c": 0.21,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1980-07",
+      "file": "1980-07.png",
+      "nino34_anom_c": -0.16,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1980-08",
+      "file": "1980-08.png",
+      "nino34_anom_c": -0.52,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1980-09",
+      "file": "1980-09.png",
+      "nino34_anom_c": -0.39,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1980-10",
+      "file": "1980-10.png",
+      "nino34_anom_c": -0.4,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1980-11",
+      "file": "1980-11.png",
+      "nino34_anom_c": -0.18,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1980-12",
+      "file": "1980-12.png",
+      "nino34_anom_c": 0.1,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1981-01",
+      "file": "1981-01.png",
+      "nino34_anom_c": -0.58,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1981-02",
+      "file": "1981-02.png",
+      "nino34_anom_c": -0.61,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1981-03",
+      "file": "1981-03.png",
+      "nino34_anom_c": -0.32,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1981-04",
+      "file": "1981-04.png",
+      "nino34_anom_c": -0.8,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1981-05",
+      "file": "1981-05.png",
+      "nino34_anom_c": -0.44,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1981-06",
+      "file": "1981-06.png",
+      "nino34_anom_c": -0.48,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1981-07",
+      "file": "1981-07.png",
+      "nino34_anom_c": -0.75,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1981-08",
+      "file": "1981-08.png",
+      "nino34_anom_c": -0.44,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1981-09",
+      "file": "1981-09.png",
+      "nino34_anom_c": -0.23,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1981-10",
+      "file": "1981-10.png",
+      "nino34_anom_c": -0.24,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1981-11",
+      "file": "1981-11.png",
+      "nino34_anom_c": -0.64,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1981-12",
+      "file": "1981-12.png",
+      "nino34_anom_c": -0.25,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1982-01",
+      "file": "1982-01.png",
+      "nino34_anom_c": 0.09,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1982-02",
+      "file": "1982-02.png",
+      "nino34_anom_c": -0.21,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1982-03",
+      "file": "1982-03.png",
+      "nino34_anom_c": -0.09,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1982-04",
+      "file": "1982-04.png",
+      "nino34_anom_c": -0.0,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1982-05",
+      "file": "1982-05.png",
+      "nino34_anom_c": 0.36,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1982-06",
+      "file": "1982-06.png",
+      "nino34_anom_c": 0.71,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1982-07",
+      "file": "1982-07.png",
+      "nino34_anom_c": 0.26,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1982-08",
+      "file": "1982-08.png",
+      "nino34_anom_c": 0.54,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1982-09",
+      "file": "1982-09.png",
+      "nino34_anom_c": 1.41,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1982-10",
+      "file": "1982-10.png",
+      "nino34_anom_c": 1.73,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1982-11",
+      "file": "1982-11.png",
+      "nino34_anom_c": 1.7,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1982-12",
+      "file": "1982-12.png",
+      "nino34_anom_c": 2.11,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1983-01",
+      "file": "1983-01.png",
+      "nino34_anom_c": 2.18,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1983-02",
+      "file": "1983-02.png",
+      "nino34_anom_c": 1.92,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1983-03",
+      "file": "1983-03.png",
+      "nino34_anom_c": 1.38,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1983-04",
+      "file": "1983-04.png",
+      "nino34_anom_c": 0.76,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1983-05",
+      "file": "1983-05.png",
+      "nino34_anom_c": 0.79,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1983-06",
+      "file": "1983-06.png",
+      "nino34_anom_c": 0.41,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1983-07",
+      "file": "1983-07.png",
+      "nino34_anom_c": -0.21,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1983-08",
+      "file": "1983-08.png",
+      "nino34_anom_c": -0.28,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1983-09",
+      "file": "1983-09.png",
+      "nino34_anom_c": -0.43,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1983-10",
+      "file": "1983-10.png",
+      "nino34_anom_c": -1.26,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1983-11",
+      "file": "1983-11.png",
+      "nino34_anom_c": -1.23,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1983-12",
+      "file": "1983-12.png",
+      "nino34_anom_c": -0.96,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1984-01",
+      "file": "1984-01.png",
+      "nino34_anom_c": -0.86,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1984-02",
+      "file": "1984-02.png",
+      "nino34_anom_c": -0.29,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1984-03",
+      "file": "1984-03.png",
+      "nino34_anom_c": -0.65,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1984-04",
+      "file": "1984-04.png",
+      "nino34_anom_c": -0.72,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1984-05",
+      "file": "1984-05.png",
+      "nino34_anom_c": -0.81,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1984-06",
+      "file": "1984-06.png",
+      "nino34_anom_c": -0.99,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1984-07",
+      "file": "1984-07.png",
+      "nino34_anom_c": -0.63,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1984-08",
+      "file": "1984-08.png",
+      "nino34_anom_c": -0.37,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1984-09",
+      "file": "1984-09.png",
+      "nino34_anom_c": -0.41,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1984-10",
+      "file": "1984-10.png",
+      "nino34_anom_c": -0.85,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1984-11",
+      "file": "1984-11.png",
+      "nino34_anom_c": -1.22,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1984-12",
+      "file": "1984-12.png",
+      "nino34_anom_c": -1.34,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1985-01",
+      "file": "1985-01.png",
+      "nino34_anom_c": -0.99,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1985-02",
+      "file": "1985-02.png",
+      "nino34_anom_c": -0.92,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1985-03",
+      "file": "1985-03.png",
+      "nino34_anom_c": -0.93,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1985-04",
+      "file": "1985-04.png",
+      "nino34_anom_c": -1.2,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1985-05",
+      "file": "1985-05.png",
+      "nino34_anom_c": -1.03,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1985-06",
+      "file": "1985-06.png",
+      "nino34_anom_c": -1.01,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1985-07",
+      "file": "1985-07.png",
+      "nino34_anom_c": -0.64,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1985-08",
+      "file": "1985-08.png",
+      "nino34_anom_c": -0.51,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1985-09",
+      "file": "1985-09.png",
+      "nino34_anom_c": -0.57,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1985-10",
+      "file": "1985-10.png",
+      "nino34_anom_c": -0.52,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1985-11",
+      "file": "1985-11.png",
+      "nino34_anom_c": -0.46,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1985-12",
+      "file": "1985-12.png",
+      "nino34_anom_c": -0.41,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1986-01",
+      "file": "1986-01.png",
+      "nino34_anom_c": -0.67,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1986-02",
+      "file": "1986-02.png",
+      "nino34_anom_c": -0.47,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1986-03",
+      "file": "1986-03.png",
+      "nino34_anom_c": -0.41,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1986-04",
+      "file": "1986-04.png",
+      "nino34_anom_c": -0.45,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1986-05",
+      "file": "1986-05.png",
+      "nino34_anom_c": -0.41,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1986-06",
+      "file": "1986-06.png",
+      "nino34_anom_c": -0.28,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1986-07",
+      "file": "1986-07.png",
+      "nino34_anom_c": -0.08,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1986-08",
+      "file": "1986-08.png",
+      "nino34_anom_c": 0.28,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1986-09",
+      "file": "1986-09.png",
+      "nino34_anom_c": 0.53,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1986-10",
+      "file": "1986-10.png",
+      "nino34_anom_c": 0.53,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1986-11",
+      "file": "1986-11.png",
+      "nino34_anom_c": 0.96,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1986-12",
+      "file": "1986-12.png",
+      "nino34_anom_c": 1.1,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1987-01",
+      "file": "1987-01.png",
+      "nino34_anom_c": 1.04,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1987-02",
+      "file": "1987-02.png",
+      "nino34_anom_c": 1.01,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1987-03",
+      "file": "1987-03.png",
+      "nino34_anom_c": 0.92,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1987-04",
+      "file": "1987-04.png",
+      "nino34_anom_c": 0.54,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1987-05",
+      "file": "1987-05.png",
+      "nino34_anom_c": 0.62,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1987-06",
+      "file": "1987-06.png",
+      "nino34_anom_c": 0.81,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1987-07",
+      "file": "1987-07.png",
+      "nino34_anom_c": 1.04,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1987-08",
+      "file": "1987-08.png",
+      "nino34_anom_c": 1.24,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1987-09",
+      "file": "1987-09.png",
+      "nino34_anom_c": 1.46,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1987-10",
+      "file": "1987-10.png",
+      "nino34_anom_c": 1.21,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1987-11",
+      "file": "1987-11.png",
+      "nino34_anom_c": 0.98,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1987-12",
+      "file": "1987-12.png",
+      "nino34_anom_c": 0.82,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1988-01",
+      "file": "1988-01.png",
+      "nino34_anom_c": 0.68,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1988-02",
+      "file": "1988-02.png",
+      "nino34_anom_c": 0.0,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1988-03",
+      "file": "1988-03.png",
+      "nino34_anom_c": 0.0,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1988-04",
+      "file": "1988-04.png",
+      "nino34_anom_c": -0.67,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1988-05",
+      "file": "1988-05.png",
+      "nino34_anom_c": -1.42,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1988-06",
+      "file": "1988-06.png",
+      "nino34_anom_c": -1.75,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1988-07",
+      "file": "1988-07.png",
+      "nino34_anom_c": -1.6,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1988-08",
+      "file": "1988-08.png",
+      "nino34_anom_c": -1.37,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1988-09",
+      "file": "1988-09.png",
+      "nino34_anom_c": -1.11,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1988-10",
+      "file": "1988-10.png",
+      "nino34_anom_c": -1.89,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1988-11",
+      "file": "1988-11.png",
+      "nino34_anom_c": -2.21,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1988-12",
+      "file": "1988-12.png",
+      "nino34_anom_c": -1.92,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1989-01",
+      "file": "1989-01.png",
+      "nino34_anom_c": -1.94,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1989-02",
+      "file": "1989-02.png",
+      "nino34_anom_c": -1.42,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1989-03",
+      "file": "1989-03.png",
+      "nino34_anom_c": -1.18,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1989-04",
+      "file": "1989-04.png",
+      "nino34_anom_c": -1.24,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1989-05",
+      "file": "1989-05.png",
+      "nino34_anom_c": -0.87,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1989-06",
+      "file": "1989-06.png",
+      "nino34_anom_c": -0.58,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1989-07",
+      "file": "1989-07.png",
+      "nino34_anom_c": -0.6,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1989-08",
+      "file": "1989-08.png",
+      "nino34_anom_c": -0.76,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1989-09",
+      "file": "1989-09.png",
+      "nino34_anom_c": -0.37,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1989-10",
+      "file": "1989-10.png",
+      "nino34_anom_c": -0.43,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1989-11",
+      "file": "1989-11.png",
+      "nino34_anom_c": -0.53,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1989-12",
+      "file": "1989-12.png",
+      "nino34_anom_c": 0.0,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1990-01",
+      "file": "1990-01.png",
+      "nino34_anom_c": -0.12,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1990-02",
+      "file": "1990-02.png",
+      "nino34_anom_c": 0.28,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1990-03",
+      "file": "1990-03.png",
+      "nino34_anom_c": -0.02,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1990-04",
+      "file": "1990-04.png",
+      "nino34_anom_c": 0.06,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1990-05",
+      "file": "1990-05.png",
+      "nino34_anom_c": 0.02,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1990-06",
+      "file": "1990-06.png",
+      "nino34_anom_c": -0.21,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1990-07",
+      "file": "1990-07.png",
+      "nino34_anom_c": 0.09,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1990-08",
+      "file": "1990-08.png",
+      "nino34_anom_c": 0.08,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1990-09",
+      "file": "1990-09.png",
+      "nino34_anom_c": 0.14,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1990-10",
+      "file": "1990-10.png",
+      "nino34_anom_c": 0.14,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1990-11",
+      "file": "1990-11.png",
+      "nino34_anom_c": -0.04,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1990-12",
+      "file": "1990-12.png",
+      "nino34_anom_c": 0.23,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1991-01",
+      "file": "1991-01.png",
+      "nino34_anom_c": 0.47,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1991-02",
+      "file": "1991-02.png",
+      "nino34_anom_c": 0.25,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1991-03",
+      "file": "1991-03.png",
+      "nino34_anom_c": 0.07,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1991-04",
+      "file": "1991-04.png",
+      "nino34_anom_c": 0.17,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1991-05",
+      "file": "1991-05.png",
+      "nino34_anom_c": 0.28,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1991-06",
+      "file": "1991-06.png",
+      "nino34_anom_c": 0.55,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1991-07",
+      "file": "1991-07.png",
+      "nino34_anom_c": 0.66,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1991-08",
+      "file": "1991-08.png",
+      "nino34_anom_c": 0.75,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1991-09",
+      "file": "1991-09.png",
+      "nino34_anom_c": 0.44,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1991-10",
+      "file": "1991-10.png",
+      "nino34_anom_c": 0.91,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1991-11",
+      "file": "1991-11.png",
+      "nino34_anom_c": 1.11,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1991-12",
+      "file": "1991-12.png",
+      "nino34_anom_c": 1.51,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1992-01",
+      "file": "1992-01.png",
+      "nino34_anom_c": 1.68,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1992-02",
+      "file": "1992-02.png",
+      "nino34_anom_c": 1.5,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1992-03",
+      "file": "1992-03.png",
+      "nino34_anom_c": 1.3,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1992-04",
+      "file": "1992-04.png",
+      "nino34_anom_c": 1.21,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1992-05",
+      "file": "1992-05.png",
+      "nino34_anom_c": 1.02,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1992-06",
+      "file": "1992-06.png",
+      "nino34_anom_c": 0.54,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1992-07",
+      "file": "1992-07.png",
+      "nino34_anom_c": 0.2,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1992-08",
+      "file": "1992-08.png",
+      "nino34_anom_c": -0.04,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1992-09",
+      "file": "1992-09.png",
+      "nino34_anom_c": -0.1,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1992-10",
+      "file": "1992-10.png",
+      "nino34_anom_c": -0.37,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1992-11",
+      "file": "1992-11.png",
+      "nino34_anom_c": -0.22,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1992-12",
+      "file": "1992-12.png",
+      "nino34_anom_c": -0.14,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1993-01",
+      "file": "1993-01.png",
+      "nino34_anom_c": 0.22,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1993-02",
+      "file": "1993-02.png",
+      "nino34_anom_c": 0.37,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1993-03",
+      "file": "1993-03.png",
+      "nino34_anom_c": 0.33,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1993-04",
+      "file": "1993-04.png",
+      "nino34_anom_c": 0.6,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1993-05",
+      "file": "1993-05.png",
+      "nino34_anom_c": 0.92,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1993-06",
+      "file": "1993-06.png",
+      "nino34_anom_c": 0.29,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1993-07",
+      "file": "1993-07.png",
+      "nino34_anom_c": 0.07,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1993-08",
+      "file": "1993-08.png",
+      "nino34_anom_c": 0.12,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1993-09",
+      "file": "1993-09.png",
+      "nino34_anom_c": 0.28,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1993-10",
+      "file": "1993-10.png",
+      "nino34_anom_c": 0.16,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1993-11",
+      "file": "1993-11.png",
+      "nino34_anom_c": 0.15,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1993-12",
+      "file": "1993-12.png",
+      "nino34_anom_c": 0.27,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1994-01",
+      "file": "1994-01.png",
+      "nino34_anom_c": 0.16,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1994-02",
+      "file": "1994-02.png",
+      "nino34_anom_c": -0.14,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1994-03",
+      "file": "1994-03.png",
+      "nino34_anom_c": -0.01,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1994-04",
+      "file": "1994-04.png",
+      "nino34_anom_c": 0.08,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1994-05",
+      "file": "1994-05.png",
+      "nino34_anom_c": 0.09,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1994-06",
+      "file": "1994-06.png",
+      "nino34_anom_c": 0.13,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1994-07",
+      "file": "1994-07.png",
+      "nino34_anom_c": 0.07,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1994-08",
+      "file": "1994-08.png",
+      "nino34_anom_c": 0.35,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1994-09",
+      "file": "1994-09.png",
+      "nino34_anom_c": 0.3,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1994-10",
+      "file": "1994-10.png",
+      "nino34_anom_c": 0.7,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1994-11",
+      "file": "1994-11.png",
+      "nino34_anom_c": 0.95,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1994-12",
+      "file": "1994-12.png",
+      "nino34_anom_c": 1.12,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1995-01",
+      "file": "1995-01.png",
+      "nino34_anom_c": 0.85,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1995-02",
+      "file": "1995-02.png",
+      "nino34_anom_c": 0.76,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1995-03",
+      "file": "1995-03.png",
+      "nino34_anom_c": 0.36,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1995-04",
+      "file": "1995-04.png",
+      "nino34_anom_c": 0.06,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1995-05",
+      "file": "1995-05.png",
+      "nino34_anom_c": -0.2,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1995-06",
+      "file": "1995-06.png",
+      "nino34_anom_c": -0.25,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1995-07",
+      "file": "1995-07.png",
+      "nino34_anom_c": -0.3,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1995-08",
+      "file": "1995-08.png",
+      "nino34_anom_c": -0.7,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1995-09",
+      "file": "1995-09.png",
+      "nino34_anom_c": -0.82,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1995-10",
+      "file": "1995-10.png",
+      "nino34_anom_c": -0.95,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1995-11",
+      "file": "1995-11.png",
+      "nino34_anom_c": -1.16,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1995-12",
+      "file": "1995-12.png",
+      "nino34_anom_c": -1.04,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1996-01",
+      "file": "1996-01.png",
+      "nino34_anom_c": -0.86,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1996-02",
+      "file": "1996-02.png",
+      "nino34_anom_c": -0.77,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1996-03",
+      "file": "1996-03.png",
+      "nino34_anom_c": -0.63,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1996-04",
+      "file": "1996-04.png",
+      "nino34_anom_c": -0.44,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1996-05",
+      "file": "1996-05.png",
+      "nino34_anom_c": -0.37,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1996-06",
+      "file": "1996-06.png",
+      "nino34_anom_c": -0.38,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1996-07",
+      "file": "1996-07.png",
+      "nino34_anom_c": -0.38,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1996-08",
+      "file": "1996-08.png",
+      "nino34_anom_c": -0.23,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1996-09",
+      "file": "1996-09.png",
+      "nino34_anom_c": -0.39,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1996-10",
+      "file": "1996-10.png",
+      "nino34_anom_c": -0.41,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1996-11",
+      "file": "1996-11.png",
+      "nino34_anom_c": -0.4,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1996-12",
+      "file": "1996-12.png",
+      "nino34_anom_c": -0.6,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1997-01",
+      "file": "1997-01.png",
+      "nino34_anom_c": -0.46,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1997-02",
+      "file": "1997-02.png",
+      "nino34_anom_c": -0.28,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1997-03",
+      "file": "1997-03.png",
+      "nino34_anom_c": -0.19,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1997-04",
+      "file": "1997-04.png",
+      "nino34_anom_c": 0.09,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1997-05",
+      "file": "1997-05.png",
+      "nino34_anom_c": 0.61,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1997-06",
+      "file": "1997-06.png",
+      "nino34_anom_c": 0.98,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1997-07",
+      "file": "1997-07.png",
+      "nino34_anom_c": 1.37,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1997-08",
+      "file": "1997-08.png",
+      "nino34_anom_c": 1.74,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1997-09",
+      "file": "1997-09.png",
+      "nino34_anom_c": 2.05,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1997-10",
+      "file": "1997-10.png",
+      "nino34_anom_c": 2.18,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1997-11",
+      "file": "1997-11.png",
+      "nino34_anom_c": 2.29,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1997-12",
+      "file": "1997-12.png",
+      "nino34_anom_c": 2.31,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1998-01",
+      "file": "1998-01.png",
+      "nino34_anom_c": 2.29,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1998-02",
+      "file": "1998-02.png",
+      "nino34_anom_c": 1.94,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1998-03",
+      "file": "1998-03.png",
+      "nino34_anom_c": 1.36,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1998-04",
+      "file": "1998-04.png",
+      "nino34_anom_c": 0.62,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "1998-05",
+      "file": "1998-05.png",
+      "nino34_anom_c": 0.74,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1998-06",
+      "file": "1998-06.png",
+      "nino34_anom_c": -0.6,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "1998-07",
+      "file": "1998-07.png",
+      "nino34_anom_c": -0.79,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1998-08",
+      "file": "1998-08.png",
+      "nino34_anom_c": -0.85,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1998-09",
+      "file": "1998-09.png",
+      "nino34_anom_c": -1.05,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1998-10",
+      "file": "1998-10.png",
+      "nino34_anom_c": -1.3,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1998-11",
+      "file": "1998-11.png",
+      "nino34_anom_c": -1.23,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1998-12",
+      "file": "1998-12.png",
+      "nino34_anom_c": -1.65,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1999-01",
+      "file": "1999-01.png",
+      "nino34_anom_c": -1.74,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1999-02",
+      "file": "1999-02.png",
+      "nino34_anom_c": -1.26,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1999-03",
+      "file": "1999-03.png",
+      "nino34_anom_c": -0.9,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1999-04",
+      "file": "1999-04.png",
+      "nino34_anom_c": -0.9,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1999-05",
+      "file": "1999-05.png",
+      "nino34_anom_c": -0.99,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1999-06",
+      "file": "1999-06.png",
+      "nino34_anom_c": -0.94,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1999-07",
+      "file": "1999-07.png",
+      "nino34_anom_c": -1.0,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1999-08",
+      "file": "1999-08.png",
+      "nino34_anom_c": -1.1,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1999-09",
+      "file": "1999-09.png",
+      "nino34_anom_c": -0.93,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1999-10",
+      "file": "1999-10.png",
+      "nino34_anom_c": -1.1,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1999-11",
+      "file": "1999-11.png",
+      "nino34_anom_c": -1.58,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "1999-12",
+      "file": "1999-12.png",
+      "nino34_anom_c": -1.63,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2000-01",
+      "file": "2000-01.png",
+      "nino34_anom_c": -1.59,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2000-02",
+      "file": "2000-02.png",
+      "nino34_anom_c": -1.3,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2000-03",
+      "file": "2000-03.png",
+      "nino34_anom_c": -1.05,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2000-04",
+      "file": "2000-04.png",
+      "nino34_anom_c": -0.86,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2000-05",
+      "file": "2000-05.png",
+      "nino34_anom_c": -0.89,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2000-06",
+      "file": "2000-06.png",
+      "nino34_anom_c": -0.71,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2000-07",
+      "file": "2000-07.png",
+      "nino34_anom_c": -0.67,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2000-08",
+      "file": "2000-08.png",
+      "nino34_anom_c": -0.39,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2000-09",
+      "file": "2000-09.png",
+      "nino34_anom_c": -0.33,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2000-10",
+      "file": "2000-10.png",
+      "nino34_anom_c": -0.68,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2000-11",
+      "file": "2000-11.png",
+      "nino34_anom_c": -0.82,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2000-12",
+      "file": "2000-12.png",
+      "nino34_anom_c": -1.04,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2001-01",
+      "file": "2001-01.png",
+      "nino34_anom_c": -0.78,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2001-02",
+      "file": "2001-02.png",
+      "nino34_anom_c": -0.74,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2001-03",
+      "file": "2001-03.png",
+      "nino34_anom_c": -0.42,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2001-04",
+      "file": "2001-04.png",
+      "nino34_anom_c": -0.46,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2001-05",
+      "file": "2001-05.png",
+      "nino34_anom_c": -0.29,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2001-06",
+      "file": "2001-06.png",
+      "nino34_anom_c": -0.11,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2001-07",
+      "file": "2001-07.png",
+      "nino34_anom_c": -0.05,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2001-08",
+      "file": "2001-08.png",
+      "nino34_anom_c": -0.09,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2001-09",
+      "file": "2001-09.png",
+      "nino34_anom_c": -0.23,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2001-10",
+      "file": "2001-10.png",
+      "nino34_anom_c": -0.06,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2001-11",
+      "file": "2001-11.png",
+      "nino34_anom_c": -0.4,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2001-12",
+      "file": "2001-12.png",
+      "nino34_anom_c": -0.46,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2002-01",
+      "file": "2002-01.png",
+      "nino34_anom_c": -0.17,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2002-02",
+      "file": "2002-02.png",
+      "nino34_anom_c": -0.01,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2002-03",
+      "file": "2002-03.png",
+      "nino34_anom_c": 0.06,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2002-04",
+      "file": "2002-04.png",
+      "nino34_anom_c": -0.04,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2002-05",
+      "file": "2002-05.png",
+      "nino34_anom_c": 0.13,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2002-06",
+      "file": "2002-06.png",
+      "nino34_anom_c": 0.51,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2002-07",
+      "file": "2002-07.png",
+      "nino34_anom_c": 0.49,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2002-08",
+      "file": "2002-08.png",
+      "nino34_anom_c": 0.6,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2002-09",
+      "file": "2002-09.png",
+      "nino34_anom_c": 0.85,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2002-10",
+      "file": "2002-10.png",
+      "nino34_anom_c": 0.97,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2002-11",
+      "file": "2002-11.png",
+      "nino34_anom_c": 1.24,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2002-12",
+      "file": "2002-12.png",
+      "nino34_anom_c": 1.41,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2003-01",
+      "file": "2003-01.png",
+      "nino34_anom_c": 0.52,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2003-02",
+      "file": "2003-02.png",
+      "nino34_anom_c": 0.58,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2003-03",
+      "file": "2003-03.png",
+      "nino34_anom_c": 0.36,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2003-04",
+      "file": "2003-04.png",
+      "nino34_anom_c": -0.11,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2003-05",
+      "file": "2003-05.png",
+      "nino34_anom_c": -0.58,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2003-06",
+      "file": "2003-06.png",
+      "nino34_anom_c": -0.13,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2003-07",
+      "file": "2003-07.png",
+      "nino34_anom_c": 0.09,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2003-08",
+      "file": "2003-08.png",
+      "nino34_anom_c": 0.21,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2003-09",
+      "file": "2003-09.png",
+      "nino34_anom_c": 0.14,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2003-10",
+      "file": "2003-10.png",
+      "nino34_anom_c": 0.4,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2003-11",
+      "file": "2003-11.png",
+      "nino34_anom_c": 0.21,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2003-12",
+      "file": "2003-12.png",
+      "nino34_anom_c": 0.31,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2004-01",
+      "file": "2004-01.png",
+      "nino34_anom_c": 0.29,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2004-02",
+      "file": "2004-02.png",
+      "nino34_anom_c": 0.23,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2004-03",
+      "file": "2004-03.png",
+      "nino34_anom_c": -0.03,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2004-04",
+      "file": "2004-04.png",
+      "nino34_anom_c": 0.04,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2004-05",
+      "file": "2004-05.png",
+      "nino34_anom_c": -0.03,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2004-06",
+      "file": "2004-06.png",
+      "nino34_anom_c": 0.05,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2004-07",
+      "file": "2004-07.png",
+      "nino34_anom_c": 0.42,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2004-08",
+      "file": "2004-08.png",
+      "nino34_anom_c": 0.58,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2004-09",
+      "file": "2004-09.png",
+      "nino34_anom_c": 0.65,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2004-10",
+      "file": "2004-10.png",
+      "nino34_anom_c": 0.59,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2004-11",
+      "file": "2004-11.png",
+      "nino34_anom_c": 0.66,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2004-12",
+      "file": "2004-12.png",
+      "nino34_anom_c": 0.73,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2005-01",
+      "file": "2005-01.png",
+      "nino34_anom_c": 0.65,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2005-02",
+      "file": "2005-02.png",
+      "nino34_anom_c": 0.29,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2005-03",
+      "file": "2005-03.png",
+      "nino34_anom_c": 0.4,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2005-04",
+      "file": "2005-04.png",
+      "nino34_anom_c": 0.18,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2005-05",
+      "file": "2005-05.png",
+      "nino34_anom_c": 0.21,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2005-06",
+      "file": "2005-06.png",
+      "nino34_anom_c": 0.12,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2005-07",
+      "file": "2005-07.png",
+      "nino34_anom_c": -0.27,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2005-08",
+      "file": "2005-08.png",
+      "nino34_anom_c": -0.08,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2005-09",
+      "file": "2005-09.png",
+      "nino34_anom_c": -0.05,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2005-10",
+      "file": "2005-10.png",
+      "nino34_anom_c": -0.11,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2005-11",
+      "file": "2005-11.png",
+      "nino34_anom_c": -0.58,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2005-12",
+      "file": "2005-12.png",
+      "nino34_anom_c": -0.95,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2006-01",
+      "file": "2006-01.png",
+      "nino34_anom_c": -0.87,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2006-02",
+      "file": "2006-02.png",
+      "nino34_anom_c": -0.71,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2006-03",
+      "file": "2006-03.png",
+      "nino34_anom_c": -0.8,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2006-04",
+      "file": "2006-04.png",
+      "nino34_anom_c": -0.37,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2006-05",
+      "file": "2006-05.png",
+      "nino34_anom_c": -0.16,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2006-06",
+      "file": "2006-06.png",
+      "nino34_anom_c": -0.02,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2006-07",
+      "file": "2006-07.png",
+      "nino34_anom_c": 0.03,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2006-08",
+      "file": "2006-08.png",
+      "nino34_anom_c": 0.37,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2006-09",
+      "file": "2006-09.png",
+      "nino34_anom_c": 0.6,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2006-10",
+      "file": "2006-10.png",
+      "nino34_anom_c": 0.66,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2006-11",
+      "file": "2006-11.png",
+      "nino34_anom_c": 0.89,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2006-12",
+      "file": "2006-12.png",
+      "nino34_anom_c": 1.12,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2007-01",
+      "file": "2007-01.png",
+      "nino34_anom_c": 0.65,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2007-02",
+      "file": "2007-02.png",
+      "nino34_anom_c": 0.11,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2007-03",
+      "file": "2007-03.png",
+      "nino34_anom_c": -0.17,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2007-04",
+      "file": "2007-04.png",
+      "nino34_anom_c": -0.27,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2007-05",
+      "file": "2007-05.png",
+      "nino34_anom_c": -0.5,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2007-06",
+      "file": "2007-06.png",
+      "nino34_anom_c": -0.24,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2007-07",
+      "file": "2007-07.png",
+      "nino34_anom_c": -0.49,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2007-08",
+      "file": "2007-08.png",
+      "nino34_anom_c": -0.72,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2007-09",
+      "file": "2007-09.png",
+      "nino34_anom_c": -1.08,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2007-10",
+      "file": "2007-10.png",
+      "nino34_anom_c": -1.34,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2007-11",
+      "file": "2007-11.png",
+      "nino34_anom_c": -1.7,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2007-12",
+      "file": "2007-12.png",
+      "nino34_anom_c": -1.66,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2008-01",
+      "file": "2008-01.png",
+      "nino34_anom_c": -1.79,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2008-02",
+      "file": "2008-02.png",
+      "nino34_anom_c": -1.8,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2008-03",
+      "file": "2008-03.png",
+      "nino34_anom_c": -1.24,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2008-04",
+      "file": "2008-04.png",
+      "nino34_anom_c": -1.05,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2008-05",
+      "file": "2008-05.png",
+      "nino34_anom_c": -0.83,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2008-06",
+      "file": "2008-06.png",
+      "nino34_anom_c": -0.64,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2008-07",
+      "file": "2008-07.png",
+      "nino34_anom_c": -0.18,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2008-08",
+      "file": "2008-08.png",
+      "nino34_anom_c": -0.16,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2008-09",
+      "file": "2008-09.png",
+      "nino34_anom_c": -0.25,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2008-10",
+      "file": "2008-10.png",
+      "nino34_anom_c": -0.31,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2008-11",
+      "file": "2008-11.png",
+      "nino34_anom_c": -0.49,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2008-12",
+      "file": "2008-12.png",
+      "nino34_anom_c": -0.89,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2009-01",
+      "file": "2009-01.png",
+      "nino34_anom_c": -0.98,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2009-02",
+      "file": "2009-02.png",
+      "nino34_anom_c": -0.78,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2009-03",
+      "file": "2009-03.png",
+      "nino34_anom_c": -0.74,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2009-04",
+      "file": "2009-04.png",
+      "nino34_anom_c": -0.37,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2009-05",
+      "file": "2009-05.png",
+      "nino34_anom_c": 0.07,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2009-06",
+      "file": "2009-06.png",
+      "nino34_anom_c": 0.41,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2009-07",
+      "file": "2009-07.png",
+      "nino34_anom_c": 0.56,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2009-08",
+      "file": "2009-08.png",
+      "nino34_anom_c": 0.53,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2009-09",
+      "file": "2009-09.png",
+      "nino34_anom_c": 0.6,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2009-10",
+      "file": "2009-10.png",
+      "nino34_anom_c": 0.85,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2009-11",
+      "file": "2009-11.png",
+      "nino34_anom_c": 1.34,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2009-12",
+      "file": "2009-12.png",
+      "nino34_anom_c": 1.74,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2010-01",
+      "file": "2010-01.png",
+      "nino34_anom_c": 1.42,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2010-02",
+      "file": "2010-02.png",
+      "nino34_anom_c": 1.27,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2010-03",
+      "file": "2010-03.png",
+      "nino34_anom_c": 0.95,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2010-04",
+      "file": "2010-04.png",
+      "nino34_anom_c": 0.43,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2010-05",
+      "file": "2010-05.png",
+      "nino34_anom_c": -0.24,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2010-06",
+      "file": "2010-06.png",
+      "nino34_anom_c": -0.66,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2010-07",
+      "file": "2010-07.png",
+      "nino34_anom_c": -1.06,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2010-08",
+      "file": "2010-08.png",
+      "nino34_anom_c": -1.22,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2010-09",
+      "file": "2010-09.png",
+      "nino34_anom_c": -1.44,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2010-10",
+      "file": "2010-10.png",
+      "nino34_anom_c": -1.63,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2010-11",
+      "file": "2010-11.png",
+      "nino34_anom_c": -1.55,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2010-12",
+      "file": "2010-12.png",
+      "nino34_anom_c": -1.53,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2011-01",
+      "file": "2011-01.png",
+      "nino34_anom_c": -1.5,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2011-02",
+      "file": "2011-02.png",
+      "nino34_anom_c": -1.14,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2011-03",
+      "file": "2011-03.png",
+      "nino34_anom_c": -0.92,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2011-04",
+      "file": "2011-04.png",
+      "nino34_anom_c": -0.82,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2011-05",
+      "file": "2011-05.png",
+      "nino34_anom_c": -0.6,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2011-06",
+      "file": "2011-06.png",
+      "nino34_anom_c": -0.32,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2011-07",
+      "file": "2011-07.png",
+      "nino34_anom_c": -0.25,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2011-08",
+      "file": "2011-08.png",
+      "nino34_anom_c": -0.63,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2011-09",
+      "file": "2011-09.png",
+      "nino34_anom_c": -0.7,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2011-10",
+      "file": "2011-10.png",
+      "nino34_anom_c": -1.05,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2011-11",
+      "file": "2011-11.png",
+      "nino34_anom_c": -1.18,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2011-12",
+      "file": "2011-12.png",
+      "nino34_anom_c": -1.01,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2012-01",
+      "file": "2012-01.png",
+      "nino34_anom_c": -0.87,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2012-02",
+      "file": "2012-02.png",
+      "nino34_anom_c": -0.62,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2012-03",
+      "file": "2012-03.png",
+      "nino34_anom_c": -0.55,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2012-04",
+      "file": "2012-04.png",
+      "nino34_anom_c": -0.46,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2012-05",
+      "file": "2012-05.png",
+      "nino34_anom_c": -0.31,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2012-06",
+      "file": "2012-06.png",
+      "nino34_anom_c": -0.0,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2012-07",
+      "file": "2012-07.png",
+      "nino34_anom_c": 0.24,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2012-08",
+      "file": "2012-08.png",
+      "nino34_anom_c": 0.51,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2012-09",
+      "file": "2012-09.png",
+      "nino34_anom_c": 0.35,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2012-10",
+      "file": "2012-10.png",
+      "nino34_anom_c": 0.15,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2012-11",
+      "file": "2012-11.png",
+      "nino34_anom_c": 0.21,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2012-12",
+      "file": "2012-12.png",
+      "nino34_anom_c": -0.15,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2013-01",
+      "file": "2013-01.png",
+      "nino34_anom_c": -0.44,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2013-02",
+      "file": "2013-02.png",
+      "nino34_anom_c": -0.52,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2013-03",
+      "file": "2013-03.png",
+      "nino34_anom_c": -0.25,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2013-04",
+      "file": "2013-04.png",
+      "nino34_anom_c": -0.24,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2013-05",
+      "file": "2013-05.png",
+      "nino34_anom_c": -0.41,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2013-06",
+      "file": "2013-06.png",
+      "nino34_anom_c": -0.52,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2013-07",
+      "file": "2013-07.png",
+      "nino34_anom_c": -0.39,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2013-08",
+      "file": "2013-08.png",
+      "nino34_anom_c": -0.54,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2013-09",
+      "file": "2013-09.png",
+      "nino34_anom_c": -0.18,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2013-10",
+      "file": "2013-10.png",
+      "nino34_anom_c": -0.32,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2013-11",
+      "file": "2013-11.png",
+      "nino34_anom_c": -0.03,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2013-12",
+      "file": "2013-12.png",
+      "nino34_anom_c": -0.2,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2014-01",
+      "file": "2014-01.png",
+      "nino34_anom_c": -0.4,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2014-02",
+      "file": "2014-02.png",
+      "nino34_anom_c": -0.49,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2014-03",
+      "file": "2014-03.png",
+      "nino34_anom_c": -0.1,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2014-04",
+      "file": "2014-04.png",
+      "nino34_anom_c": 0.22,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2014-05",
+      "file": "2014-05.png",
+      "nino34_anom_c": 0.35,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2014-06",
+      "file": "2014-06.png",
+      "nino34_anom_c": 0.22,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2014-07",
+      "file": "2014-07.png",
+      "nino34_anom_c": -0.09,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2014-08",
+      "file": "2014-08.png",
+      "nino34_anom_c": -0.03,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2014-09",
+      "file": "2014-09.png",
+      "nino34_anom_c": 0.27,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2014-10",
+      "file": "2014-10.png",
+      "nino34_anom_c": 0.38,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2014-11",
+      "file": "2014-11.png",
+      "nino34_anom_c": 0.76,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2014-12",
+      "file": "2014-12.png",
+      "nino34_anom_c": 0.78,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2015-01",
+      "file": "2015-01.png",
+      "nino34_anom_c": 0.55,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2015-02",
+      "file": "2015-02.png",
+      "nino34_anom_c": 0.49,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2015-03",
+      "file": "2015-03.png",
+      "nino34_anom_c": 0.53,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2015-04",
+      "file": "2015-04.png",
+      "nino34_anom_c": 0.83,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2015-05",
+      "file": "2015-05.png",
+      "nino34_anom_c": 0.92,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2015-06",
+      "file": "2015-06.png",
+      "nino34_anom_c": 1.12,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2015-07",
+      "file": "2015-07.png",
+      "nino34_anom_c": 1.37,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2015-08",
+      "file": "2015-08.png",
+      "nino34_anom_c": 1.73,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2015-09",
+      "file": "2015-09.png",
+      "nino34_anom_c": 2.03,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2015-10",
+      "file": "2015-10.png",
+      "nino34_anom_c": 2.22,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2015-11",
+      "file": "2015-11.png",
+      "nino34_anom_c": 2.48,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2015-12",
+      "file": "2015-12.png",
+      "nino34_anom_c": 2.48,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2016-01",
+      "file": "2016-01.png",
+      "nino34_anom_c": 2.51,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2016-02",
+      "file": "2016-02.png",
+      "nino34_anom_c": 2.13,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2016-03",
+      "file": "2016-03.png",
+      "nino34_anom_c": 1.62,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2016-04",
+      "file": "2016-04.png",
+      "nino34_anom_c": 1.0,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2016-05",
+      "file": "2016-05.png",
+      "nino34_anom_c": 0.41,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2016-06",
+      "file": "2016-06.png",
+      "nino34_anom_c": 0.06,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2016-07",
+      "file": "2016-07.png",
+      "nino34_anom_c": -0.36,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2016-08",
+      "file": "2016-08.png",
+      "nino34_anom_c": -0.37,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2016-09",
+      "file": "2016-09.png",
+      "nino34_anom_c": -0.35,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2016-10",
+      "file": "2016-10.png",
+      "nino34_anom_c": -0.64,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2016-11",
+      "file": "2016-11.png",
+      "nino34_anom_c": -0.67,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2016-12",
+      "file": "2016-12.png",
+      "nino34_anom_c": -0.37,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2017-01",
+      "file": "2017-01.png",
+      "nino34_anom_c": -0.39,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2017-02",
+      "file": "2017-02.png",
+      "nino34_anom_c": 0.15,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2017-03",
+      "file": "2017-03.png",
+      "nino34_anom_c": 0.12,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2017-04",
+      "file": "2017-04.png",
+      "nino34_anom_c": 0.23,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2017-05",
+      "file": "2017-05.png",
+      "nino34_anom_c": 0.32,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2017-06",
+      "file": "2017-06.png",
+      "nino34_anom_c": 0.26,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2017-07",
+      "file": "2017-07.png",
+      "nino34_anom_c": 0.2,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2017-08",
+      "file": "2017-08.png",
+      "nino34_anom_c": -0.13,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2017-09",
+      "file": "2017-09.png",
+      "nino34_anom_c": -0.34,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2017-10",
+      "file": "2017-10.png",
+      "nino34_anom_c": -0.31,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2017-11",
+      "file": "2017-11.png",
+      "nino34_anom_c": -0.78,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2017-12",
+      "file": "2017-12.png",
+      "nino34_anom_c": -0.92,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2018-01",
+      "file": "2018-01.png",
+      "nino34_anom_c": -0.88,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2018-02",
+      "file": "2018-02.png",
+      "nino34_anom_c": -0.72,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2018-03",
+      "file": "2018-03.png",
+      "nino34_anom_c": -0.79,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2018-04",
+      "file": "2018-04.png",
+      "nino34_anom_c": -0.45,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2018-05",
+      "file": "2018-05.png",
+      "nino34_anom_c": -0.11,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2018-06",
+      "file": "2018-06.png",
+      "nino34_anom_c": 0.1,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2018-07",
+      "file": "2018-07.png",
+      "nino34_anom_c": 0.25,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2018-08",
+      "file": "2018-08.png",
+      "nino34_anom_c": 0.16,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2018-09",
+      "file": "2018-09.png",
+      "nino34_anom_c": 0.41,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2018-10",
+      "file": "2018-10.png",
+      "nino34_anom_c": 0.9,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2018-11",
+      "file": "2018-11.png",
+      "nino34_anom_c": 1.02,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2018-12",
+      "file": "2018-12.png",
+      "nino34_anom_c": 1.02,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2019-01",
+      "file": "2019-01.png",
+      "nino34_anom_c": 0.81,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2019-02",
+      "file": "2019-02.png",
+      "nino34_anom_c": 0.76,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2019-03",
+      "file": "2019-03.png",
+      "nino34_anom_c": 0.87,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2019-04",
+      "file": "2019-04.png",
+      "nino34_anom_c": 0.65,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2019-05",
+      "file": "2019-05.png",
+      "nino34_anom_c": 0.65,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2019-06",
+      "file": "2019-06.png",
+      "nino34_anom_c": 0.57,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2019-07",
+      "file": "2019-07.png",
+      "nino34_anom_c": 0.38,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2019-08",
+      "file": "2019-08.png",
+      "nino34_anom_c": 0.11,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2019-09",
+      "file": "2019-09.png",
+      "nino34_anom_c": 0.05,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2019-10",
+      "file": "2019-10.png",
+      "nino34_anom_c": 0.67,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2019-11",
+      "file": "2019-11.png",
+      "nino34_anom_c": 0.67,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2019-12",
+      "file": "2019-12.png",
+      "nino34_anom_c": 0.62,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2020-01",
+      "file": "2020-01.png",
+      "nino34_anom_c": 0.67,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2020-02",
+      "file": "2020-02.png",
+      "nino34_anom_c": 0.46,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2020-03",
+      "file": "2020-03.png",
+      "nino34_anom_c": 0.48,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2020-04",
+      "file": "2020-04.png",
+      "nino34_anom_c": 0.44,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2020-05",
+      "file": "2020-05.png",
+      "nino34_anom_c": -0.2,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2020-06",
+      "file": "2020-06.png",
+      "nino34_anom_c": -0.37,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2020-07",
+      "file": "2020-07.png",
+      "nino34_anom_c": -0.12,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2020-08",
+      "file": "2020-08.png",
+      "nino34_anom_c": -0.48,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2020-09",
+      "file": "2020-09.png",
+      "nino34_anom_c": -0.77,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2020-10",
+      "file": "2020-10.png",
+      "nino34_anom_c": -1.16,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2020-11",
+      "file": "2020-11.png",
+      "nino34_anom_c": -1.19,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2020-12",
+      "file": "2020-12.png",
+      "nino34_anom_c": -1.16,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2021-01",
+      "file": "2021-01.png",
+      "nino34_anom_c": -1.12,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2021-02",
+      "file": "2021-02.png",
+      "nino34_anom_c": -1.08,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2021-03",
+      "file": "2021-03.png",
+      "nino34_anom_c": -0.75,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2021-04",
+      "file": "2021-04.png",
+      "nino34_anom_c": -0.73,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2021-05",
+      "file": "2021-05.png",
+      "nino34_anom_c": -0.5,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2021-06",
+      "file": "2021-06.png",
+      "nino34_anom_c": -0.22,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2021-07",
+      "file": "2021-07.png",
+      "nino34_anom_c": -0.38,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2021-08",
+      "file": "2021-08.png",
+      "nino34_anom_c": -0.52,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2021-09",
+      "file": "2021-09.png",
+      "nino34_anom_c": -0.56,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2021-10",
+      "file": "2021-10.png",
+      "nino34_anom_c": -0.92,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2021-11",
+      "file": "2021-11.png",
+      "nino34_anom_c": -0.94,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2021-12",
+      "file": "2021-12.png",
+      "nino34_anom_c": -1.06,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2022-01",
+      "file": "2022-01.png",
+      "nino34_anom_c": -0.81,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2022-02",
+      "file": "2022-02.png",
+      "nino34_anom_c": -0.8,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2022-03",
+      "file": "2022-03.png",
+      "nino34_anom_c": -0.82,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2022-04",
+      "file": "2022-04.png",
+      "nino34_anom_c": -1.01,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2022-05",
+      "file": "2022-05.png",
+      "nino34_anom_c": -1.03,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2022-06",
+      "file": "2022-06.png",
+      "nino34_anom_c": -0.71,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2022-07",
+      "file": "2022-07.png",
+      "nino34_anom_c": -0.62,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2022-08",
+      "file": "2022-08.png",
+      "nino34_anom_c": -0.86,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2022-09",
+      "file": "2022-09.png",
+      "nino34_anom_c": -0.94,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2022-10",
+      "file": "2022-10.png",
+      "nino34_anom_c": -0.91,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2022-11",
+      "file": "2022-11.png",
+      "nino34_anom_c": -0.95,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2022-12",
+      "file": "2022-12.png",
+      "nino34_anom_c": -0.78,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2023-01",
+      "file": "2023-01.png",
+      "nino34_anom_c": -0.69,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2023-02",
+      "file": "2023-02.png",
+      "nino34_anom_c": -0.56,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2023-03",
+      "file": "2023-03.png",
+      "nino34_anom_c": -0.11,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2023-04",
+      "file": "2023-04.png",
+      "nino34_anom_c": 0.01,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2023-05",
+      "file": "2023-05.png",
+      "nino34_anom_c": 0.37,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2023-06",
+      "file": "2023-06.png",
+      "nino34_anom_c": 0.74,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2023-07",
+      "file": "2023-07.png",
+      "nino34_anom_c": 0.92,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2023-08",
+      "file": "2023-08.png",
+      "nino34_anom_c": 1.25,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2023-09",
+      "file": "2023-09.png",
+      "nino34_anom_c": 1.52,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2023-10",
+      "file": "2023-10.png",
+      "nino34_anom_c": 1.64,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2023-11",
+      "file": "2023-11.png",
+      "nino34_anom_c": 1.95,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2023-12",
+      "file": "2023-12.png",
+      "nino34_anom_c": 1.93,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2024-01",
+      "file": "2024-01.png",
+      "nino34_anom_c": 1.78,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2024-02",
+      "file": "2024-02.png",
+      "nino34_anom_c": 1.42,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2024-03",
+      "file": "2024-03.png",
+      "nino34_anom_c": 1.0,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2024-04",
+      "file": "2024-04.png",
+      "nino34_anom_c": 0.79,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2024-05",
+      "file": "2024-05.png",
+      "nino34_anom_c": 0.24,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2024-06",
+      "file": "2024-06.png",
+      "nino34_anom_c": 0.03,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2024-07",
+      "file": "2024-07.png",
+      "nino34_anom_c": 0.1,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2024-08",
+      "file": "2024-08.png",
+      "nino34_anom_c": -0.04,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2024-09",
+      "file": "2024-09.png",
+      "nino34_anom_c": -0.25,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2024-10",
+      "file": "2024-10.png",
+      "nino34_anom_c": -0.17,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2024-11",
+      "file": "2024-11.png",
+      "nino34_anom_c": -0.27,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2024-12",
+      "file": "2024-12.png",
+      "nino34_anom_c": -0.63,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2025-01",
+      "file": "2025-01.png",
+      "nino34_anom_c": -0.69,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2025-02",
+      "file": "2025-02.png",
+      "nino34_anom_c": -0.44,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2025-03",
+      "file": "2025-03.png",
+      "nino34_anom_c": 0.09,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2025-04",
+      "file": "2025-04.png",
+      "nino34_anom_c": -0.21,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2025-05",
+      "file": "2025-05.png",
+      "nino34_anom_c": -0.12,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2025-06",
+      "file": "2025-06.png",
+      "nino34_anom_c": -0.04,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2025-07",
+      "file": "2025-07.png",
+      "nino34_anom_c": -0.06,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2025-08",
+      "file": "2025-08.png",
+      "nino34_anom_c": -0.33,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2025-09",
+      "file": "2025-09.png",
+      "nino34_anom_c": -0.46,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2025-10",
+      "file": "2025-10.png",
+      "nino34_anom_c": -0.6,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2025-11",
+      "file": "2025-11.png",
+      "nino34_anom_c": -0.78,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2025-12",
+      "file": "2025-12.png",
+      "nino34_anom_c": -0.63,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2026-01",
+      "file": "2026-01.png",
+      "nino34_anom_c": -0.68,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2026-02",
+      "file": "2026-02.png",
+      "nino34_anom_c": -0.25,
+      "roni_phase": "la_nina"
+    },
+    {
+      "ym": "2026-03",
+      "file": "2026-03.png",
+      "nino34_anom_c": -0.06,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2026-04",
+      "file": "2026-04.png",
+      "nino34_anom_c": 0.32,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2026-05",
+      "file": "2026-05.png",
+      "nino34_anom_c": 0.84,
+      "roni_phase": "neutral"
+    },
+    {
+      "ym": "2026-06",
+      "file": "2026-06.png",
+      "nino34_anom_c": 1.43,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2026-07",
+      "file": "2026-07.png",
+      "nino34_anom_c": 1.75,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2026-08",
+      "file": "2026-08.png",
+      "nino34_anom_c": 2.14,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2026-09",
+      "file": "2026-09.png",
+      "nino34_anom_c": 2.52,
+      "roni_phase": "el_nino"
+    },
+    {
+      "ym": "2026-10",
+      "file": "2026-10.png",
+      "nino34_anom_c": 2.79,
+      "roni_phase": "el_nino"
+    }
+  ],
+  "chapters": [
+    {
+      "id": "1982-83",
+      "title": "1982–83 El Niño",
+      "start_ym": "1982-05",
+      "peak_ym": "1983-01",
+      "end_ym": "1983-05",
+      "peak_anom_c": 2.4,
+      "phase": "el_nino",
+      "strength": "very strong",
+      "note": "NOAA CPC RONI peaked at +2.40 °C (1983-01) across 13 consecutive overlapping 3-month seasons."
+    },
+    {
+      "id": "1988-89",
+      "title": "1988–89 La Niña",
+      "start_ym": "1988-04",
+      "peak_ym": "1988-11",
+      "end_ym": "1989-05",
+      "peak_anom_c": -1.95,
+      "phase": "la_nina",
+      "strength": "strong",
+      "note": "NOAA CPC RONI peaked at -1.95 °C (1988-11) across 14 consecutive overlapping 3-month seasons."
+    },
+    {
+      "id": "1991-92",
+      "title": "1991–92 El Niño",
+      "start_ym": "1991-05",
+      "peak_ym": "1992-01",
+      "end_ym": "1992-07",
+      "peak_anom_c": 2.12,
+      "phase": "el_nino",
+      "strength": "very strong",
+      "note": "NOAA CPC RONI peaked at +2.12 °C (1992-01) across 15 consecutive overlapping 3-month seasons."
+    },
+    {
+      "id": "1997-98",
+      "title": "1997–98 El Niño",
+      "start_ym": "1997-05",
+      "peak_ym": "1997-12",
+      "end_ym": "1998-04",
+      "peak_anom_c": 2.28,
+      "phase": "el_nino",
+      "strength": "very strong",
+      "note": "NOAA CPC RONI peaked at +2.28 °C (1997-12) across 12 consecutive overlapping 3-month seasons."
+    },
+    {
+      "id": "1998-00",
+      "title": "1998–00 La Niña",
+      "start_ym": "1998-07",
+      "peak_ym": "1998-12",
+      "end_ym": "2000-06",
+      "peak_anom_c": -1.61,
+      "phase": "la_nina",
+      "strength": "strong",
+      "note": "NOAA CPC RONI peaked at -1.61 °C (1998-12) across 24 consecutive overlapping 3-month seasons."
+    },
+    {
+      "id": "2007-08",
+      "title": "2007–08 La Niña",
+      "start_ym": "2007-07",
+      "peak_ym": "2008-01",
+      "end_ym": "2008-05",
+      "peak_anom_c": -1.73,
+      "phase": "la_nina",
+      "strength": "strong",
+      "note": "NOAA CPC RONI peaked at -1.73 °C (2008-01) across 11 consecutive overlapping 3-month seasons."
+    },
+    {
+      "id": "2009-10",
+      "title": "2009–10 El Niño",
+      "start_ym": "2009-09",
+      "peak_ym": "2009-12",
+      "end_ym": "2010-03",
+      "peak_anom_c": 1.5,
+      "phase": "el_nino",
+      "strength": "strong",
+      "note": "NOAA CPC RONI peaked at +1.50 °C (2009-12) across 7 consecutive overlapping 3-month seasons."
+    },
+    {
+      "id": "2010-11",
+      "title": "2010–11 La Niña",
+      "start_ym": "2010-05",
+      "peak_ym": "2010-11",
+      "end_ym": "2011-05",
+      "peak_anom_c": -1.63,
+      "phase": "la_nina",
+      "strength": "strong",
+      "note": "NOAA CPC RONI peaked at -1.63 °C (2010-11) across 13 consecutive overlapping 3-month seasons."
+    },
+    {
+      "id": "2015-16",
+      "title": "2015–16 El Niño",
+      "start_ym": "2015-03",
+      "peak_ym": "2015-12",
+      "end_ym": "2016-04",
+      "peak_anom_c": 2.25,
+      "phase": "el_nino",
+      "strength": "very strong",
+      "note": "NOAA CPC RONI peaked at +2.25 °C (2015-12) across 14 consecutive overlapping 3-month seasons."
+    },
+    {
+      "id": "2025-26",
+      "title": "2025–26 La Niña to El Niño",
+      "start_ym": "2025-11",
+      "peak_ym": "2026-09",
+      "end_ym": "2026-10",
+      "peak_anom_c": 1.97,
+      "phase": "el_nino",
+      "strength": "strong (developing)",
+      "note": "2025–26 La Niña (-1.04 °C in NDJ 2025) flipped rapidly to +1.97 °C in NOAA CPC RONI by ASO 2026 (4 consecutive warm seasons through the latest table)."
+    }
+  ]
+}

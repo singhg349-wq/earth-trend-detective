@@ -1,5 +1,6 @@
+import InfoTip from './InfoTip';
 import type { SeriesDoc } from '../types';
-import { validationLabel } from '../data/validation';
+import { comparisonLabel } from '../data/validation';
 import Chart from './Chart';
 import InferenceBlock from './InferenceBlock';
 import PeriodCompare from './PeriodCompare';
@@ -45,8 +46,7 @@ export default function SeriesCard({
         : `${Math.round(meanCoverage * 100)}%`;
 
   const inference = doc.trend?.inference;
-  const validation = doc.validation?.status ?? 'unknown';
-  const validationText = validationLabel(validation) ?? validation;
+  const validationText = comparisonLabel(doc);
   const slope = doc.trend?.sen_slope_per_decade;
   const firstYear = doc.years[0];
   const lastYear = doc.years[doc.years.length - 1];
@@ -61,8 +61,8 @@ export default function SeriesCard({
             {doc.season.code} · {doc.variable} · {doc.units}
           </p>
         </div>
-        <span className={`tag tag-${validation}`}>
-          Validation: {validationText}
+        <span className="tag tag-validation">
+          Method comparison: {validationText}
         </span>
       </header>
 
@@ -79,7 +79,7 @@ export default function SeriesCard({
           <dd>{mean === null ? 'not available' : `${formatNumber(mean)} ${doc.units}`}</dd>
         </div>
         <div>
-          <dt>Sen slope (full period)</dt>
+          <dt>Sen’s slope (full period)<InfoTip term="senSlope" /></dt>
           <dd>
             {slope === null || slope === undefined
               ? 'not available'

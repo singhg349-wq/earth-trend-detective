@@ -5,7 +5,7 @@
  * user's inference decision (2026-11-14):
  *
  * - main test: Mann-Kendall with a 3-lag Hamed-Rao variance correction,
- * - strict check: Yue-Wang classic prewhitening (trend not restored),
+ * - prewhitening sensitivity check: Yue-Wang classic prewhitening (trend not restored),
  * - slope interval: Sen 95% interval, which assumes independent years,
  * - caution badge when the detrended lag-1 correlation is 0.3 or more.
  *
@@ -40,12 +40,12 @@ export interface TrendInference {
   /** Test description, for example `MK + Hamed-Rao (3 lags)`, or null. */
   method: string | null;
   /**
-   * Whether the trend also passes the strict check (Yue-Wang classic
+   * Whether the trend also passes the prewhitening sensitivity check (Yue-Wang classic
    * prewhitening), or null when that check was not computed. The UI shows both
    * tests: the main p-value and this strict-check verdict.
    */
   strict_check_pass: boolean | null;
-  /** p-value of the strict check, or null when it was not computed. */
+  /** p-value of the prewhitening sensitivity check, or null when it was not computed. */
   strict_check_p: number | null;
   /**
    * Detrended lag-1 autocorrelation, or null. Show it next to the caution
