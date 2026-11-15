@@ -1,11 +1,11 @@
 """
-Build TrendTrace PowerPoint deliverables (R5 Present visual twin).
+Build TrendTrace PowerPoint deliverables (R5 Present 7-slide twin).
 
 Outputs:
-  - deck/TrendTrace.pptx       (Morph 0.75s transitions on b0-b3, staggered text animations, embedded Instrument Serif)
-  - deck/TrendTrace_safe.pptx  (identical 9 slides, simple fade transitions, zero animation XML)
+  - deck/TrendTrace.pptx       (7 slides, Morph 0.75s on !!b0-b3, auto-staggered fades, embedded Instrument Serif)
+  - deck/TrendTrace_safe.pptx  (identical 7 slides, simple fade transitions, zero animation XML)
   - deck/TrendTrace.pdf        (PowerPoint 16.0 COM export from TrendTrace.pptx)
-  - deck/preview/slide_01.png .. slide_09.png (1920x1080 COM PNG exports)
+  - deck/preview/slide_01.png .. slide_07.png (1920x1080 COM PNG exports)
 
 Design source of truth:
   - frontend/src/present/blobs.ts
@@ -13,25 +13,25 @@ Design source of truth:
   - frontend/src/present/scenes.tsx
   - frontend/src/present/present.css
   - docs/workers/R5_PRESENT_HANDOFF.md
+  - docs/workers/R5_PRESENT_STYLE.md
 """
 
 from __future__ import annotations
 
 import math
-import os
 import re
 import shutil
 import subprocess
 import tempfile
 from pathlib import Path
-from typing import Iterable, Sequence
+from typing import Sequence
 
 import numpy as np
 from lxml import etree
-from PIL import Image, ImageDraw, ImageFilter
+from PIL import Image, ImageDraw
 from pptx import Presentation
 from pptx.dml.color import RGBColor
-from pptx.enum.shapes import MSO_SHAPE
+from pptx.enum.shapes import MSO_CONNECTOR, MSO_SHAPE
 from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
 from pptx.oxml.ns import qn
 from pptx.util import Emu, Inches, Pt
@@ -46,14 +46,13 @@ PREVIEW_DIR = DECK_DIR / "preview"
 ASSETS_GEN = DECK_DIR / "assets" / "r5"
 PRESENT_ASSETS = REPO / "frontend" / "public" / "assets" / "present"
 EARTH_JPG = REPO / "frontend" / "public" / "assets" / "earth-blue-marble.jpg"
-FONTS_DIR = DECK_DIR / "fonts"
 
 STAGE_W = 1600.0
 STAGE_H = 900.0
 SLIDE_W_IN = 13.333333
 SLIDE_H_IN = 7.5
 PX_IN = SLIDE_W_IN / STAGE_W          # 1/120 in/px
-PT_PER_PX = 960.0 / STAGE_W          # 0.6 pt/px (since 13.3333 in * 72 = 960 pt)
+PT_PER_PX = 960.0 / STAGE_W          # 0.6 pt/px
 
 FONT_SERIF = "Instrument Serif"
 FONT_SANS = "Segoe UI"
@@ -97,19 +96,13 @@ SHAPES = {
     "drop": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.9, 1.0, 1.62, 1.0, 0.9, 1.0],
 }
 
-# Exact blob layouts for the 9 story scenes (blobs.ts STORY_LAYOUTS)
-STORY_LAYOUTS = {
-    "question": [
+# Persistent blob states (b0-b3) across the condensed 7-slide deck
+SLIDE_LAYOUTS = {
+    "open": [
         dict(cx=1240, cy=1390, rx=980, ry=760, rot=0, shape="orb", colors=PAIRS["COOL"]),
-        dict(cx=1395, cy=165, rx=104, ry=104, rot=0, shape="orb", colors=PAIRS["WARM"]),
-        dict(cx=1130, cy=372, rx=30, ry=30, rot=0, shape="orb", colors=PAIRS["MINT"]),
+        dict(cx=1340, cy=300, rx=152, ry=152, rot=14, shape="drop", colors=PAIRS["WARM"]),
+        dict(cx=1110, cy=410, rx=30, ry=30, rot=0, shape="orb", colors=PAIRS["MINT"]),
         dict(cx=-260, cy=760, rx=180, ry=180, rot=0, shape="pebble", colors=PAIRS["DEEP"]),
-    ],
-    "place": [
-        dict(cx=1200, cy=1190, rx=760, ry=400, rot=0, shape="orb", colors=PAIRS["COOL"]),
-        dict(cx=1200, cy=392, rx=176, ry=176, rot=15, shape="drop", colors=PAIRS["WARM"]),
-        dict(cx=118, cy=818, rx=58, ry=58, rot=0, shape="orb", colors=PAIRS["MINT"]),
-        dict(cx=1650, cy=120, rx=150, ry=150, rot=0, shape="pebble", colors=PAIRS["DEEP"]),
     ],
     "locked": [
         dict(cx=-60, cy=980, rx=300, ry=150, rot=-8, shape="bean", colors=PAIRS["DEEP"]),
@@ -136,26 +129,20 @@ STORY_LAYOUTS = {
         dict(cx=1640, cy=900, rx=170, ry=120, rot=0, shape="pebble", colors=PAIRS["COOL"]),
     ],
     "link": [
-        dict(cx=800, cy=330, rx=980, ry=32, rot=3, shape="ribbon", amp=80, phase=2.2, colors=PAIRS["EMBER"]),
-        dict(cx=800, cy=1500, rx=1150, ry=650, rot=0, shape="orb", colors=PAIRS["WARM"]),
-        dict(cx=1085, cy=560, rx=34, ry=34, rot=0, shape="orb", colors=PAIRS["SUN"]),
+        dict(cx=800, cy=288, rx=980, ry=30, rot=3, shape="ribbon", amp=76, phase=2.2, colors=PAIRS["EMBER"]),
+        dict(cx=800, cy=1520, rx=1150, ry=640, rot=0, shape="orb", colors=PAIRS["WARM"]),
+        dict(cx=1340, cy=432, rx=32, ry=32, rot=0, shape="orb", colors=PAIRS["SUN"]),
         dict(cx=1560, cy=60, rx=150, ry=150, rot=0, shape="pebble", colors=PAIRS["WARM"]),
     ],
-    "impact": [
-        dict(cx=1720, cy=450, rx=640, ry=700, rot=0, shape="orb", colors=PAIRS["COOL"]),
-        dict(cx=985, cy=150, rx=66, ry=66, rot=0, shape="orb", colors=PAIRS["WARM"]),
-        dict(cx=40, cy=940, rx=170, ry=130, rot=0, shape="pebble", colors=PAIRS["MINT"]),
-        dict(cx=1660, cy=-60, rx=150, ry=150, rot=0, shape="orb", colors=PAIRS["DEEP"]),
-    ],
     "close": [
-        dict(cx=800, cy=285, rx=960, ry=28, rot=3, shape="ribbon", amp=70, phase=3.4, colors=PAIRS["COOL"]),
+        dict(cx=800, cy=205, rx=960, ry=26, rot=3, shape="ribbon", amp=62, phase=3.4, colors=PAIRS["COOL"]),
         dict(cx=60, cy=900, rx=210, ry=170, rot=0, shape="pebble", colors=PAIRS["WARM"]),
-        dict(cx=1345, cy=650, rx=215, ry=215, rot=0, shape="pebble", colors=PAIRS["MINT"]),
+        dict(cx=1360, cy=640, rx=218, ry=218, rot=0, shape="pebble", colors=PAIRS["MINT"]),
         dict(cx=1640, cy=40, rx=120, ry=120, rot=0, shape="orb", colors=PAIRS["DEEP"]),
     ],
 }
 
-# Real MERRA-2 Amazon Dec-Feb temperature series 1981-2026 (scenes.tsx lines 198-205)
+# Real MERRA-2 Amazon Dec-Feb 2m temperature series 1981-2026 (scenes.tsx)
 AMAZON_T = [
     24.67, 24.64, 25.71, 24.24, 24.32, 24.19, 24.85, 25.34, 24.21, 24.69, 24.92, 25.51,
     24.77, 24.75, 24.99, 24.76, 24.71, 26.52, 24.82, 24.58, 24.61, 25.22, 25.59, 25.38,
@@ -174,11 +161,6 @@ LIVE_URL = "trendtrace.earth-trend-detective-frontend.workers.dev"
 def hex_to_rgb(h: str) -> tuple[int, int, int]:
     h = h.lstrip("#")
     return (int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16))
-
-
-def rgb(h: str) -> RGBColor:
-    r, g, b = hex_to_rgb(h)
-    return RGBColor(r, g, b)
 
 
 def _blob_control_points(spec: dict) -> list[tuple[float, float]]:
@@ -206,7 +188,6 @@ def _blob_control_points(spec: dict) -> list[tuple[float, float]]:
 
 
 def sample_blob_polygon(spec: dict, steps_per_seg: int = 24) -> list[tuple[float, float]]:
-    """Sample exact Catmull-Rom cubic Bezier polygon matching blobs.ts."""
     p = _blob_control_points(spec)
     n = len(p)
     k = 0.2 if spec["shape"] == "ribbon" else 0.182
@@ -243,18 +224,15 @@ def _tile_grain(h: int, w: int, g_rgb: np.ndarray, g_alpha: np.ndarray) -> tuple
     gh, gw, _ = g_rgb.shape
     ty = (h + gh - 1) // gh
     tx = (w + gw - 1) // gw
-    rgb_t = np.tile(g_rgb, (ty, tx, 1))[:h, :w, :]
-    a_t = np.tile(g_alpha, (ty, tx, 1))[:h, :w, :]
-    return rgb_t, a_t
+    return np.tile(g_rgb, (ty, tx, 1))[:h, :w, :], np.tile(g_alpha, (ty, tx, 1))[:h, :w, :]
 
 
 def render_black_grain_bg(out_path: Path, with_earth: bool = False) -> Path:
-    """Render 1280x720 black stage background with 15% film grain (and 27% globe on slide 4)."""
+    """Render 1280x720 black stage background with 15% film grain (and 27% globe on slide 3)."""
     W, H = 1280, 720
     canvas = np.zeros((H, W, 3), dtype=np.float32)
     if with_earth:
         earth = Image.open(EARTH_JPG).convert("RGB")
-        # Crop square Equatorial center of equirectangular Blue Marble and darken edge limb
         ew, eh = earth.size
         side = int(eh * 0.96)
         x0 = int(ew * 0.52 - side / 2)
@@ -280,10 +258,6 @@ def render_black_grain_bg(out_path: Path, with_earth: bool = False) -> Path:
 
 
 def render_blob_png(spec: dict, out_path: Path, stage_scale: float = 0.72) -> tuple[float, float, float, float]:
-    """
-    Rasterize a grainy gradient blob to RGBA PNG and return (left_px, top_px, w_px, h_px) in 1600x900 space.
-    Renders full unclipped blob bounding box so PowerPoint Morph slides smoothly across stage edges.
-    """
     poly = sample_blob_polygon(spec, steps_per_seg=24)
     xs = [pt[0] for pt in poly]
     ys = [pt[1] for pt in poly]
@@ -297,7 +271,6 @@ def render_blob_png(spec: dict, out_path: Path, stage_scale: float = 0.72) -> tu
     pw = max(16, int(round(w_px * eff_scale)))
     ph = max(16, int(round(h_px * eff_scale)))
 
-    # 2x supersampled mask for crisp organic edge antialiasing
     ss = 2
     mask_big = Image.new("L", (pw * ss, ph * ss), 0)
     draw = ImageDraw.Draw(mask_big)
@@ -306,18 +279,15 @@ def render_blob_png(spec: dict, out_path: Path, stage_scale: float = 0.72) -> tu
     mask = mask_big.resize((pw, ph), Image.Resampling.LANCZOS)
     mask_arr = np.asarray(mask, dtype=np.uint8)
 
-    # Diagonal linear gradient matching SVG linearGradient(0.1,0 -> 0.9,1)
     c0 = np.array(hex_to_rgb(spec["colors"][0]), dtype=np.float32) / 255.0
     c1 = np.array(hex_to_rgb(spec["colors"][1]), dtype=np.float32) / 255.0
     gx = np.linspace(0.0, 1.0, pw, dtype=np.float32)[None, :]
     gy = np.linspace(0.0, 1.0, ph, dtype=np.float32)[:, None]
-    # Projection onto vector (0.8, 1.0) starting at (0.1, 0.0)
     t = np.clip(((gx - 0.1) * 0.8 + gy * 1.0) / (0.8**2 + 1.0**2), 0.0, 1.0)[..., None]
     grad = c0 * (1.0 - t) + c1 * t
 
     g_rgb, g_a = _load_grain_tile()
     t_rgb, t_a = _tile_grain(ph, pw, g_rgb, g_a)
-    # PresentMode uses 90% opacity grain layer over gradient
     alpha = 0.88 * t_a
     comp = np.clip(grad * (1.0 - alpha) + t_rgb * alpha, 0.0, 1.0)
 
@@ -328,17 +298,14 @@ def render_blob_png(spec: dict, out_path: Path, stage_scale: float = 0.72) -> tu
     return (x0, y0, w_px, h_px)
 
 
-def render_qr_png(out_path: Path, scale: int = 14) -> Path:
-    """Rasterize frontend/public/assets/present/qr-live.svg bit-for-bit without SVG binary deps."""
+def render_qr_png(out_path: Path, scale: int = 16) -> Path:
     svg_text = (PRESENT_ASSETS / "qr-live.svg").read_text(encoding="utf-8")
     m = re.search(r'<path[^>]*stroke="#000"[^>]*d="([^"]+)"', svg_text)
     if not m:
         raise ValueError("Could not parse QR path from qr-live.svg")
-    d = m.group(1)
-    tokens = re.findall(r"[Mmh]|-?\d+(?:\.\d+)?", d)
+    tokens = re.findall(r"[Mmh]|-?\d+(?:\.\d+)?", m.group(1))
     grid = np.full((37, 37), 255, dtype=np.uint8)
-    x = 0.0
-    y = 0.0
+    x = y = 0.0
     cmd = ""
     i = 0
     while i < len(tokens):
@@ -348,8 +315,7 @@ def render_qr_png(out_path: Path, scale: int = 14) -> Path:
             i += 1
             continue
         if cmd == "M":
-            x = float(tok)
-            y = float(tokens[i + 1])
+            x, y = float(tok), float(tokens[i + 1])
             i += 2
         elif cmd == "m":
             x += float(tok)
@@ -357,25 +323,21 @@ def render_qr_png(out_path: Path, scale: int = 14) -> Path:
             i += 2
         elif cmd == "h":
             run = int(round(float(tok)))
-            row = int(round(y - 0.5))
-            c0 = int(round(x))
-            grid[row, c0:c0 + run] = 0
+            grid[int(round(y - 0.5)), int(round(x)):int(round(x)) + run] = 0
             x += run
             i += 1
         else:
             i += 1
-    img = Image.fromarray(grid, mode="L").convert("RGB")
-    img = img.resize((37 * scale, 37 * scale), Image.Resampling.NEAREST)
+    img = Image.fromarray(grid, mode="L").convert("RGB").resize((37 * scale, 37 * scale), Image.Resampling.NEAREST)
     img.save(out_path, optimize=True)
     return out_path
 
 
 # ---------------------------------------------------------------------------
-# OOXML Helpers (Gradients, Alpha Colors, Transitions, Animations, Z-Order)
+# OOXML Helpers
 # ---------------------------------------------------------------------------
 
 def set_bg_picture(slide, img_path: Path) -> None:
-    """Set slide native background fill to a full-bleed image (<p:bg><p:bgPr><a:blipFill>)."""
     _, r_id = slide.part.get_or_add_image_part(str(img_path))
     cSld = slide._element.cSld
     old_bg = cSld.find(qn("p:bg"))
@@ -392,7 +354,6 @@ def set_bg_picture(slide, img_path: Path) -> None:
 
 
 def set_linear_gradient_fill(shape, hex1: str, hex2: str, angle_deg: float = 0.0) -> None:
-    """Apply clean 2-stop linear gradient fill to a PowerPoint shape."""
     spPr = shape._element.spPr
     for tag in ("a:noFill", "a:solidFill", "a:gradFill"):
         el = spPr.find(qn(tag))
@@ -440,20 +401,21 @@ def set_no_line(shape) -> None:
 
 
 def set_run_color_alpha(run, hex_color: str, alpha_pct: int) -> None:
-    """Set run text color with optional OOXML alpha transparency (0-100%)."""
-    rPr = run._r.get_or_add_rPr()
-    for tag in ("a:noFill", "a:solidFill"):
-        el = rPr.find(qn(tag))
-        if el is not None:
-            rPr.remove(el)
-    sf = etree.SubElement(rPr, qn("a:solidFill"))
-    c = etree.SubElement(sf, qn("a:srgbClr"), attrib={"val": hex_color.lstrip("#").upper()})
+    """Set run color via python-pptx schema-ordered solidFill, then attach optional alpha."""
+    r, g, b = hex_to_rgb(hex_color)
+    run.font.color.rgb = RGBColor(r, g, b)
     if alpha_pct < 100:
-        etree.SubElement(c, qn("a:alpha"), attrib={"val": str(alpha_pct * 1000)})
+        rPr = run._r.get_or_add_rPr()
+        sf = rPr.find(qn("a:solidFill"))
+        if sf is not None:
+            clr = sf.find(qn("a:srgbClr"))
+            if clr is not None:
+                for old_a in clr.findall(qn("a:alpha")):
+                    clr.remove(old_a)
+                etree.SubElement(clr, qn("a:alpha"), attrib={"val": str(int(alpha_pct) * 1000)})
 
 
 def set_run_spacing(run, spc_hundredth_pt: int) -> None:
-    """Set tight display kerning/tracking (`spc` in 1/100 pt)."""
     rPr = run._r.get_or_add_rPr()
     rPr.set("spc", str(int(spc_hundredth_pt)))
 
@@ -464,7 +426,6 @@ def set_alt_text(shape, descr: str) -> None:
 
 
 def set_morph_transition(slide, dur_ms: int = 750) -> None:
-    """Add native PowerPoint Morph transition (p159:morph byObject) with fade fallback."""
     sld = slide._element
     for tag in (qn("p:transition"), "{http://schemas.openxmlformats.org/markup-compatibility/2006}AlternateContent"):
         for el in sld.findall(tag):
@@ -478,16 +439,10 @@ def set_morph_transition(slide, dur_ms: int = 750) -> None:
         nsmap={"mc": ns_mc, "p14": ns_p14, "p159": ns_p159},
     )
     choice = etree.SubElement(ac, f"{{{ns_mc}}}Choice", attrib={"Requires": "p159"})
-    tr = etree.SubElement(
-        choice, f"{{{ns_p}}}transition",
-        attrib={"spd": "med", f"{{{ns_p14}}}dur": str(dur_ms)},
-    )
+    tr = etree.SubElement(choice, f"{{{ns_p}}}transition", attrib={"spd": "med", f"{{{ns_p14}}}dur": str(dur_ms)})
     etree.SubElement(tr, f"{{{ns_p159}}}morph", attrib={"option": "byObject"})
     fb = etree.SubElement(ac, f"{{{ns_mc}}}Fallback")
-    tr_fb = etree.SubElement(
-        fb, f"{{{ns_p}}}transition",
-        attrib={"spd": "fast", f"{{{ns_p14}}}dur": "350"},
-    )
+    tr_fb = etree.SubElement(fb, f"{{{ns_p}}}transition", attrib={"spd": "fast", f"{{{ns_p14}}}dur": "320"})
     etree.SubElement(tr_fb, f"{{{ns_p}}}fade")
     sld.append(ac)
 
@@ -503,13 +458,9 @@ def set_fade_transition(slide, dur_ms: int = 320) -> None:
 
 
 def add_auto_fade_entrances(slide, shapes_and_delays_ms: Sequence[tuple[object, int]]) -> None:
-    """
-    Add fast, click-free auto-staggered fade-in animations (`With Previous` on slide load)
-    so presenters never get blocked waiting on clicks.
-    """
+    """Valid schema-compliant OOXML fade-in animations (`<p:set><p:cBhvr>...`) triggered automatically."""
     if not shapes_and_delays_ms:
         return
-    p_ns = "http://schemas.openxmlformats.org/presentationml/2006/main"
     old = slide._element.find(qn("p:timing"))
     if old is not None:
         slide._element.remove(old)
@@ -536,7 +487,6 @@ def add_auto_fade_entrances(slide, shapes_and_delays_ms: Sequence[tuple[object, 
     for idx, (sh, delay_ms) in enumerate(shapes_and_delays_ms):
         spid = str(sh.shape_id)
         inner = etree.SubElement(outer_ch, qn("p:par"))
-        node_type = "withEffect" if idx > 0 else "withEffect"
         icTn = etree.SubElement(inner, qn("p:cTn"), attrib={"id": str(next_id), "fill": "hold"})
         next_id += 1
         ist = etree.SubElement(icTn, qn("p:stCondLst"))
@@ -544,30 +494,33 @@ def add_auto_fade_entrances(slide, shapes_and_delays_ms: Sequence[tuple[object, 
         ich = etree.SubElement(icTn, qn("p:childTnLst"))
 
         eff = etree.SubElement(ich, qn("p:par"))
+        nt = "afterEffect" if idx == 0 else "withEffect"
         ecTn = etree.SubElement(
             eff, qn("p:cTn"),
-            attrib={"id": str(next_id), "presetID": "10", "presetClass": "entr", "presetSubtype": "0", "fill": "hold", "nodeType": node_type},
+            attrib={"id": str(next_id), "presetID": "10", "presetClass": "entr", "presetSubtype": "0", "fill": "hold", "nodeType": nt},
         )
         next_id += 1
         est = etree.SubElement(ecTn, qn("p:stCondLst"))
         etree.SubElement(est, qn("p:cond"), attrib={"delay": str(int(delay_ms))})
         ech = etree.SubElement(ecTn, qn("p:childTnLst"))
 
+        # Valid <p:set> structure: <p:cBhvr> wraps <p:cTn>, <p:tgtEl>, <p:attrNameLst>
         s = etree.SubElement(ech, qn("p:set"))
-        scTn = etree.SubElement(s, qn("p:cTn"), attrib={"id": str(next_id), "dur": "1", "fill": "hold"})
+        scBhvr = etree.SubElement(s, qn("p:cBhvr"))
+        scTn = etree.SubElement(scBhvr, qn("p:cTn"), attrib={"id": str(next_id), "dur": "1", "fill": "hold"})
         next_id += 1
         sst = etree.SubElement(scTn, qn("p:stCondLst"))
         etree.SubElement(sst, qn("p:cond"), attrib={"delay": "0"})
-        s_tgt = etree.SubElement(scTn, qn("p:tgtEl"))
+        s_tgt = etree.SubElement(scBhvr, qn("p:tgtEl"))
         etree.SubElement(s_tgt, qn("p:spTgt"), attrib={"spid": spid})
+        al = etree.SubElement(scBhvr, qn("p:attrNameLst"))
+        etree.SubElement(al, qn("p:attrName")).text = "style.visibility"
         to = etree.SubElement(s, qn("p:to"))
         etree.SubElement(to, qn("p:strVal"), attrib={"val": "visible"})
-        al = etree.SubElement(s, qn("p:attrNameLst"))
-        etree.SubElement(al, qn("p:attrName")).text = "style.visibility"
 
         ae = etree.SubElement(ech, qn("p:animEffect"), attrib={"transition": "in", "filter": "fade"})
         acBn = etree.SubElement(ae, qn("p:cBhvr"))
-        acTn = etree.SubElement(acBn, qn("p:cTn"), attrib={"id": str(next_id), "dur": "320"})
+        etree.SubElement(acBn, qn("p:cTn"), attrib={"id": str(next_id), "dur": "320"})
         next_id += 1
         a_tgt = etree.SubElement(acBn, qn("p:tgtEl"))
         etree.SubElement(a_tgt, qn("p:spTgt"), attrib={"spid": spid})
@@ -579,16 +532,7 @@ def add_auto_fade_entrances(slide, shapes_and_delays_ms: Sequence[tuple[object, 
 # UI Primitives in 1600x900 Coordinates
 # ---------------------------------------------------------------------------
 
-def add_tb(
-    slide,
-    x: float,
-    y: float,
-    w: float,
-    h: float,
-    align: PP_ALIGN = PP_ALIGN.LEFT,
-    anchor: MSO_ANCHOR = MSO_ANCHOR.TOP,
-    wrap: bool = True,
-):
+def add_tb(slide, x: float, y: float, w: float, h: float, align=PP_ALIGN.LEFT, anchor=MSO_ANCHOR.TOP, wrap: bool = True):
     tb = slide.shapes.add_textbox(Inches(x * PX_IN), Inches(y * PX_IN), Inches(w * PX_IN), Inches(h * PX_IN))
     tf = tb.text_frame
     tf.word_wrap = wrap
@@ -598,17 +542,7 @@ def add_tb(
     return tb, tf
 
 
-def add_run(
-    p,
-    text: str,
-    size_pt: float,
-    font: str = FONT_SERIF,
-    color_hex: str = HEX["white"],
-    alpha_pct: int = 100,
-    italic: bool = False,
-    bold: bool = False,
-    spc_em: float = 0.0,
-):
+def add_run(p, text: str, size_pt: float, font: str = FONT_SERIF, color_hex: str = HEX["white"], alpha_pct: int = 100, italic: bool = False, bold: bool = False, spc_em: float = 0.0):
     r = p.add_run()
     r.text = text
     r.font.name = font
@@ -623,7 +557,7 @@ def add_run(
 
 def add_pill(slide, x: float, y: float, text: str, tone: str = "warm", center_x: bool = False):
     upper = text.upper()
-    w = max(145.0, len(upper) * 10.6 + 52.0)
+    w = max(150.0, len(upper) * 12.6 + 60.0)
     h = 34.0
     left = (x - w / 2.0) if center_x else x
     sh = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(left * PX_IN), Inches(y * PX_IN), Inches(w * PX_IN), Inches(h * PX_IN))
@@ -637,24 +571,11 @@ def add_pill(slide, x: float, y: float, text: str, tone: str = "warm", center_x:
     tf.margin_left = tf.margin_right = tf.margin_top = tf.margin_bottom = Emu(0)
     p = tf.paragraphs[0]
     p.alignment = PP_ALIGN.CENTER
-    add_run(p, upper, 11.2, FONT_SANS, HEX["ink"], 100, bold=True, spc_em=0.14)
+    add_run(p, upper, 10.6, FONT_SANS, HEX["ink"], 100, bold=True, spc_em=0.11)
     return sh
 
 
-def add_chip(
-    slide,
-    x: float,
-    y: float,
-    text: str,
-    size_pt: float = 11.2,
-    height_px: float = 38.0,
-    char_w_px: float = 8.4,
-    pad_px: float = 38.0,
-    dark_solid: bool = False,
-    rot: float = 0.0,
-    bold: bool = False,
-    border_alpha: int = 38,
-):
+def add_chip(slide, x: float, y: float, text: str, size_pt: float = 11.2, height_px: float = 38.0, char_w_px: float = 8.4, pad_px: float = 38.0, dark_solid: bool = False, rot: float = 0.0, bold: bool = False, border_alpha: int = 38):
     w = max(84.0, len(text) * char_w_px + pad_px)
     sh = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(x * PX_IN), Inches(y * PX_IN), Inches(w * PX_IN), Inches(height_px * PX_IN))
     sh.adjustments[0] = 0.5
@@ -687,27 +608,9 @@ def add_chip_row(slide, items: Sequence[str], center_x: float, y: float, gap_px:
     return out
 
 
-def add_giant_weave(
-    slide,
-    text: str,
-    front_indices: set[int],
-    y_center: float,
-    size_pt: float,
-    spc_em: float,
-    blob0_pic,
-    add_blob0_fn,
-) -> tuple[object, object, object]:
-    """
-    Create pixel-exact weave of giant serif word across blob0:
-    1) Back textbox (every non-front letter visible, front letters alpha=0)
-    2) Blob0 picture (!!b0) placed in middle z-order
-    3) Front textbox (only front letters visible, others alpha=0)
-    Identical run chunking preserves exact font kerning to 0.00 px.
-    """
+def add_giant_weave(slide, text: str, front_indices: set[int], y_center: float, size_pt: float, spc_em: float, add_blob0_fn, left_px: float = -60.0, width_px: float = STAGE_W + 120.0, align=PP_ALIGN.CENTER):
     h_px = size_pt / PT_PER_PX * 1.15
     top_px = y_center - h_px / 2.0
-
-    # Group contiguous characters that share front/back visibility so kerning inside groups stays crisp
     runs: list[tuple[str, bool]] = []
     for idx, ch in enumerate(text):
         is_front = idx in front_indices
@@ -717,20 +620,12 @@ def add_giant_weave(
             runs.append((ch, is_front))
 
     def _make_layer(show_front: bool):
-        tb, tf = add_tb(slide, -60, top_px, STAGE_W + 120, h_px, PP_ALIGN.CENTER, MSO_ANCHOR.MIDDLE, wrap=False)
+        tb, tf = add_tb(slide, left_px, top_px, width_px, h_px, align, MSO_ANCHOR.MIDDLE, wrap=False)
         p = tf.paragraphs[0]
         p.line_spacing = 0.82
         for seg, is_front in runs:
             visible = (is_front == show_front) and seg.strip() != ""
-            add_run(
-                p,
-                seg,
-                size_pt,
-                FONT_SERIF,
-                HEX["white"],
-                100 if visible else 0,
-                spc_em=spc_em,
-            )
+            add_run(p, seg, size_pt, FONT_SERIF, HEX["white"], 100 if visible else 0, spc_em=spc_em)
         return tb
 
     tb_back = _make_layer(show_front=False)
@@ -739,43 +634,30 @@ def add_giant_weave(
     return tb_back, b0, tb_front
 
 
-def add_line_segment(slide, x1: float, y1: float, x2: float, y2: float, hex_color: str, alpha_pct: int, width_pt: float = 1.0, dashed: bool = False):
-    """Add crisp straight connector line."""
-    from pptx.enum.shapes import MSO_CONNECTOR
+def add_line_segment(slide, x1: float, y1: float, x2: float, y2: float, hex_color: str, alpha_pct: int, width_pt: float = 1.0):
     conn = slide.shapes.add_connector(
         MSO_CONNECTOR.STRAIGHT,
-        Inches(x1 * PX_IN),
-        Inches(y1 * PX_IN),
-        Inches(x2 * PX_IN),
-        Inches(y2 * PX_IN),
+        Inches(x1 * PX_IN), Inches(y1 * PX_IN),
+        Inches(x2 * PX_IN), Inches(y2 * PX_IN),
     )
     set_shape_line_rgba(conn, hex_color, alpha_pct, width_pt)
-    if dashed:
-        ln = conn._element.spPr.find(qn("a:ln"))
-        etree.SubElement(ln, qn("a:prstDash"), attrib={"val": "dot"})
     return conn
 
 
 def add_quadratic_dotted_arc(slide, x0: float, y0: float, cx: float, cy: float, x1: float, y1: float):
-    """Draw smooth quadratic Bezier arc + evenly spaced white beads matching Built slide."""
     builder = slide.shapes.build_freeform(Inches(x0 * PX_IN), Inches(y0 * PX_IN))
     pts = []
     steps = 28
     for i in range(1, steps + 1):
         t = i / steps
         u = 1.0 - t
-        px = u * u * x0 + 2 * u * t * cx + t * t * x1
-        py = u * u * y0 + 2 * u * t * cy + t * t * y1
-        pts.append((Inches(px * PX_IN), Inches(py * PX_IN)))
+        pts.append((Inches((u * u * x0 + 2 * u * t * cx + t * t * x1) * PX_IN), Inches((u * u * y0 + 2 * u * t * cy + t * t * y1) * PX_IN)))
     builder.add_line_segments(pts, close=False)
     arc = builder.convert_to_shape()
     arc.fill.background()
     set_shape_line_rgba(arc, HEX["white"], 35, 1.2)
-
-    dots = []
-    n_dots = 17
-    for i in range(n_dots):
-        t = i / (n_dots - 1)
+    for i in range(17):
+        t = i / 16.0
         u = 1.0 - t
         px = u * u * x0 + 2 * u * t * cx + t * t * x1
         py = u * u * y0 + 2 * u * t * cy + t * t * y1
@@ -783,27 +665,24 @@ def add_quadratic_dotted_arc(slide, x0: float, y0: float, cx: float, cy: float, 
         d = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches((px - r) * PX_IN), Inches((py - r) * PX_IN), Inches(2 * r * PX_IN), Inches(2 * r * PX_IN))
         set_shape_fill_rgba(d, HEX["white"], 92)
         set_no_line(d)
-        dots.append(d)
-    return [arc] + dots
+    return arc
 
-
-# ---------------------------------------------------------------------------
-# Build Individual Story Slides
-# ---------------------------------------------------------------------------
 
 def _place_blob(slide, blob_idx: int, spec: dict, img_path: Path, bbox: tuple[float, float, float, float]):
     x0, y0, w_px, h_px = bbox
     pic = slide.shapes.add_picture(
         str(img_path),
-        Inches(x0 * PX_IN),
-        Inches(y0 * PX_IN),
-        Inches(w_px * PX_IN),
-        Inches(h_px * PX_IN),
+        Inches(x0 * PX_IN), Inches(y0 * PX_IN),
+        Inches(w_px * PX_IN), Inches(h_px * PX_IN),
     )
     pic.name = f"!!b{blob_idx}"
     set_alt_text(pic, f"Decorative grainy gradient blob b{blob_idx} ({spec['shape']})")
     return pic
 
+
+# ---------------------------------------------------------------------------
+# 7-Slide Condensed R5 Deck
+# ---------------------------------------------------------------------------
 
 def build_deck(out_path: Path, morph: bool, blob_cache: dict, bg_plain: Path, bg_earth: Path, qr_png: Path) -> None:
     prs = Presentation()
@@ -814,108 +693,77 @@ def build_deck(out_path: Path, morph: bool, blob_cache: dict, bg_plain: Path, bg
     blank = prs.slide_layouts[6]
 
     def add_blobs(slide, scene: str, skip: tuple[int, ...] = ()):
-        specs = STORY_LAYOUTS[scene]
-        for idx, spec in enumerate(specs):
+        for idx, spec in enumerate(SLIDE_LAYOUTS[scene]):
             if idx in skip:
                 continue
             img_path, bbox = blob_cache[(scene, idx)]
             _place_blob(slide, idx, spec, img_path, bbox)
 
     def add_single_blob(slide, scene: str, idx: int):
-        spec = STORY_LAYOUTS[scene][idx]
+        spec = SLIDE_LAYOUTS[scene][idx]
         img_path, bbox = blob_cache[(scene, idx)]
         return _place_blob(slide, idx, spec, img_path, bbox)
 
     # =========================================================================
-    # SLIDE 1 — Opening Question
+    # SLIDE 1 — Question & Local Problem
     # =========================================================================
     s1 = prs.slides.add_slide(blank)
     set_bg_picture(s1, bg_plain)
-    add_blobs(s1, "question")
-    pill = add_pill(s1, 96, 72, "NASA Space Apps Challenge", "cool")
-    tb_lead, tf = add_tb(s1, 96, 152, 920, 56)
-    add_run(tf.paragraphs[0], "Everyone says the climate is changing.", 32.5, FONT_SERIF, HEX["white"], 82, spc_em=-0.01)
-
-    tb_q, tf = add_tb(s1, 96, 224, 1140, 520)
-    for idx, (line, is_it) in enumerate([("Where?", False), ("By how much?", False), ("And how sure are we?", True)]):
-        p = tf.paragraphs[0] if idx == 0 else tf.add_paragraph()
-        p.line_spacing = 0.94
-        add_run(p, line, 102.0, FONT_SERIF, HEX["white"], 100, italic=is_it, spc_em=-0.03)
-
-    s1.notes_slide.notes_text_frame.text = (
-        "Three questions frame this talk: where is climate changing, by how much, and how sure are we? "
-        "TrendTrace answers all three for any 1° × 1° cell on Earth (64,800 cells) across 4 NASA metrics: "
-        "rainfall (GPCP v3.3), temperature (MERRA-2), aerosols/haze (MERRA-2 AOD), and soil moisture (GLDAS v2.1)."
-    )
-    if morph:
-        add_auto_fade_entrances(s1, [(pill, 40), (tb_lead, 100), (tb_q, 160)])
-
-    # =========================================================================
-    # SLIDE 2 — Problem: Place
-    # =========================================================================
-    s2 = prs.slides.add_slide(blank)
-    set_bg_picture(s2, bg_plain)
-    add_blobs(s2, "place")
-    # Black dot inside map-pin head (b1 centered at 1200,392)
-    dot_r = 56.0
-    pin_dot = s2.shapes.add_shape(
-        MSO_SHAPE.OVAL,
-        Inches((1200 - dot_r) * PX_IN),
-        Inches((392 - dot_r) * PX_IN),
-        Inches((2 * dot_r) * PX_IN),
-        Inches((2 * dot_r) * PX_IN),
-    )
+    add_blobs(s1, "open")
+    dot_r = 46.0
+    pin_dot = s1.shapes.add_shape(MSO_SHAPE.OVAL, Inches((1340 - dot_r) * PX_IN), Inches((300 - dot_r) * PX_IN), Inches((2 * dot_r) * PX_IN), Inches((2 * dot_r) * PX_IN))
     set_shape_fill_rgba(pin_dot, HEX["black"], 100)
     set_no_line(pin_dot)
 
-    pill = add_pill(s2, 96, 72, "The problem", "warm")
-    tb_h, tf = add_tb(s2, 96, 232, 880, 210)
-    p = tf.paragraphs[0]
-    p.line_spacing = 0.98
-    add_run(p, "The headline is global.", 66.0, FONT_SERIF, HEX["white"], 100, spc_em=-0.022)
-    p2 = tf.add_paragraph()
-    p2.line_spacing = 0.98
-    add_run(p2, "The question is local.", 66.0, FONT_SERIF, HEX["white"], 100, italic=True, spc_em=-0.022)
+    pill = add_pill(s1, 96, 70, "NASA Space Apps Challenge · The problem", "cool")
+    tb_lead, tf = add_tb(s1, 96, 134, 980, 50)
+    add_run(tf.paragraphs[0], "Everyone says the climate is changing.", 30.0, FONT_SERIF, HEX["white"], 84, spc_em=-0.01)
 
-    tb_sub, tf = add_tb(s2, 96, 470, 560, 110)
-    p = tf.paragraphs[0]
-    p.line_spacing = 1.38
-    add_run(p, "What about here? Almost no one can check the place they care about.", 15.0, FONT_SANS, HEX["white"], 74)
+    tb_q, tf = add_tb(s1, 96, 194, 1080, 380)
+    for idx, (line, is_it) in enumerate([("Where?", False), ("By how much?", False), ("And how sure are we?", True)]):
+        p = tf.paragraphs[0] if idx == 0 else tf.add_paragraph()
+        p.line_spacing = 0.88
+        add_run(p, line, 79.0, FONT_SERIF, HEX["white"], 100, italic=is_it, spc_em=-0.03)
 
-    tb_here, tf = add_tb(s2, 1368, 186, 150, 68)
+    tb_sub, tf = add_tb(s1, 96, 594, 720, 120)
+    p0 = tf.paragraphs[0]
+    add_run(p0, "The headline is global. ", 27.0, FONT_SERIF, HEX["white"], 95, spc_em=-0.012)
+    add_run(p0, "The question is local.", 27.0, FONT_SERIF, HEX["mint"], 100, italic=True, spc_em=-0.012)
+    p1 = tf.add_paragraph()
+    p1.space_before = Pt(6)
+    add_run(p1, "What about here? Almost no one can check the place they care about.", 14.2, FONT_SANS, HEX["white"], 76)
+
+    tb_here, tf = add_tb(s1, 1448, 120, 130, 58)
     tb_here.rotation = 6.0
-    add_run(tf.paragraphs[0], "here?", 34.5, FONT_SERIF, HEX["mint"], 100, italic=True)
+    add_run(tf.paragraphs[0], "here?", 32.0, FONT_SERIF, HEX["mint"], 100, italic=True)
 
-    s2.notes_slide.notes_text_frame.text = (
-        "People hear global climate averages, yet their real questions are local: a farm, a town, or a river basin. "
-        "Answering a local question today requires code, specialized file formats, and statistical tests most people do not have. "
-        "The gap is access plus honesty about uncertainty."
+    s1.notes_slide.notes_text_frame.text = (
+        "Three questions frame this talk: where is climate changing, by how much, and how sure are we? "
+        "People hear global averages, yet their real questions are local — a farm, a town, a river basin. "
+        "TrendTrace answers all three for any 1° × 1° cell on Earth (64,800 cells) across 4 open NASA metrics."
     )
-    if morph:
-        set_morph_transition(s2, 750)
-        add_auto_fade_entrances(s2, [(pill, 80), (tb_h, 140), (tb_sub, 200), (tb_here, 240)])
-    else:
-        set_fade_transition(s2)
+    if not morph:
+        pass  # animations applied via COM MainSequence.AddEffect after save
 
     # =========================================================================
-    # SLIDE 3 — Problem: Locked in Files
+    # SLIDE 2 — 46 Years Locked in 2,534 Files
     # =========================================================================
-    s3 = prs.slides.add_slide(blank)
-    set_bg_picture(s3, bg_plain)
-    add_blobs(s3, "locked")
-    pill = add_pill(s3, 96, 72, "The data exists", "cool")
+    s2 = prs.slides.add_slide(blank)
+    set_bg_picture(s2, bg_plain)
+    add_blobs(s2, "locked")
+    pill = add_pill(s2, 96, 72, "The data exists", "cool")
 
-    tb_46, tf = add_tb(s3, -40, 128, STAGE_W + 80, 320, PP_ALIGN.CENTER, MSO_ANCHOR.MIDDLE, wrap=False)
+    tb_46, tf = add_tb(s2, -40, 128, STAGE_W + 80, 320, PP_ALIGN.CENTER, MSO_ANCHOR.MIDDLE, wrap=False)
     add_run(tf.paragraphs[0], "46 YEARS", 270.0, FONT_SERIF, HEX["white"], 100, spc_em=-0.045)
 
-    tb_line, tf = add_tb(s3, 96, 512, 830, 145)
+    tb_line, tf = add_tb(s2, 96, 512, 830, 145)
     p = tf.paragraphs[0]
     p.line_spacing = 1.05
     add_run(p, "of open NASA records, locked inside ", 35.5, FONT_SERIF, HEX["white"], 100, spc_em=-0.012)
     add_run(p, "2,534", 53.0, FONT_SERIF, HEX["amber"], 100, spc_em=-0.02)
     add_run(p, " files.", 35.5, FONT_SERIF, HEX["white"], 100, spc_em=-0.012)
 
-    tb_sub, tf = add_tb(s3, 96, 692, 580, 96)
+    tb_sub, tf = add_tb(s2, 96, 692, 620, 96)
     p = tf.paragraphs[0]
     p.line_spacing = 1.38
     add_run(p, "Public, free, and unreadable without code, file formats and statistics.", 15.0, FONT_SANS, HEX["white"], 74)
@@ -928,69 +776,69 @@ def build_deck(out_path: Path, morph: bool, blob_cache: dict, bg_plain: Path, bg
     ]
     b_shapes = []
     for txt, bx, by, rot in barriers:
-        sh, _ = add_chip(s3, bx, by, txt, size_pt=11.6, height_px=38.0, char_w_px=8.8, pad_px=40.0, dark_solid=True, rot=rot, bold=True)
+        sh, _ = add_chip(s2, bx, by, txt, size_pt=11.6, height_px=38.0, char_w_px=8.8, pad_px=40.0, dark_solid=True, rot=rot, bold=True)
         b_shapes.append(sh)
 
-    s3.notes_slide.notes_text_frame.text = (
+    s2.notes_slide.notes_text_frame.text = (
         "2,534 public input files total: 516 GPCP v3.3 rainfall months (1983–2025), "
         "560 MERRA-2 temperature + 560 MERRA-2 aerosol months (1980–2026), 319 GLDAS v2.1 soil moisture months (2000–2026), "
-        "574 NOAA ERSST v6 SST months (1979–2026), plus 2 NOAA index tables and 3 Natural Earth shapefiles."
+        "574 NOAA ERSST v6 SST months (1979–2026), plus 2 NOAA index tables and 3 Natural Earth files."
     )
     if morph:
-        set_morph_transition(s3, 750)
-        add_auto_fade_entrances(s3, [(pill, 80), (tb_46, 120), (tb_line, 200), (tb_sub, 250)] + [(b, 280 + i * 50) for i, b in enumerate(b_shapes)])
+        set_morph_transition(s2, 720)
     else:
-        set_fade_transition(s3)
+        set_fade_transition(s2)
 
     # =========================================================================
-    # SLIDE 4 — Reveal: TRENDTRACE (Weave over dimmed globe)
+    # SLIDE 3 — Reveal: TRENDTRACE (Weave + Dimmed Globe)
     # =========================================================================
-    s4 = prs.slides.add_slide(blank)
-    set_bg_picture(s4, bg_earth)
-    add_blobs(s4, "reveal", skip=(0,))  # b0 placed in weave between back & front letters
-    pill = add_pill(s4, 800, 126, "So we built", "warm", center_x=True)
+    s3 = prs.slides.add_slide(blank)
+    set_bg_picture(s3, bg_earth)
+    add_blobs(s3, "reveal", skip=(0,))
+    pill = add_pill(s3, 800, 126, "So we built", "warm", center_x=True)
 
-    tb_back, b0_4, tb_front = add_giant_weave(
-        s4, "TRENDTRACE", {1, 2, 5, 6, 9}, y_center=392, size_pt=206.0, spc_em=-0.035,
-        blob0_pic=None, add_blob0_fn=lambda: add_single_blob(s4, "reveal", 0),
+    tb_back3, _, tb_front3 = add_giant_weave(
+        s3, "TRENDTRACE", {1, 2, 5, 6, 9}, y_center=392, size_pt=206.0, spc_em=-0.035,
+        add_blob0_fn=lambda: add_single_blob(s3, "reveal", 0),
     )
-    tb_tag, tf = add_tb(s4, 120, 568, STAGE_W - 240, 64, PP_ALIGN.CENTER)
+
+    tb_tag, tf = add_tb(s3, 120, 568, STAGE_W - 240, 64, PP_ALIGN.CENTER)
     p = tf.paragraphs[0]
     add_run(p, "Click anywhere on Earth. ", 29.0, FONT_SERIF, HEX["white"], 100, spc_em=-0.012)
     add_run(p, "See what’s changing, and how sure we are.", 29.0, FONT_SERIF, HEX["white"], 100, italic=True, spc_em=-0.012)
 
-    chips = add_chip_row(s4, ["Rainfall", "Temperature", "Aerosols (haze)", "Soil moisture"], 800, 696, gap_px=14.0, size_pt=11.0, height_px=38.0)
+    chips = add_chip_row(s3, ["Rainfall", "Temperature", "Aerosols (haze)", "Soil moisture"], 800, 696, gap_px=14.0, size_pt=11.0, height_px=38.0)
 
-    s4.notes_slide.notes_text_frame.text = (
-        "Reveal: TrendTrace. Four metrics — rainfall, temperature, aerosols (haze), and soil moisture (0–10 cm, land only) — "
-        "across five seasons (annual, Dec–Feb, Mar–May, Jun–Aug, Sep–Nov). Static Cloudflare Workers architecture runs statistics directly in the browser."
+    s3.notes_slide.notes_text_frame.text = (
+        "Reveal: TrendTrace. Four metrics — rainfall (GPCP v3.3), temperature (MERRA-2), aerosols/haze (MERRA-2 AOD), "
+        "and soil moisture (0–10 cm, GLDAS v2.1, land only) — across 5 seasons (annual, DJF, MAM, JJA, SON). "
+        "Runs as a static site on Cloudflare Workers with statistics computed directly in the browser."
     )
     if morph:
-        set_morph_transition(s4, 750)
-        add_auto_fade_entrances(s4, [(pill, 80), (tb_back, 140), (tb_front, 140), (tb_tag, 220)] + [(c, 260 + i * 35) for i, c in enumerate(chips)])
+        set_morph_transition(s3, 720)
     else:
-        set_fade_transition(s4)
+        set_fade_transition(s3)
 
     # =========================================================================
-    # SLIDE 5 — What We Built in 48 Hours
+    # SLIDE 4 — Pipeline in 48 Hours
     # =========================================================================
-    s5 = prs.slides.add_slide(blank)
-    set_bg_picture(s5, bg_plain)
-    add_blobs(s5, "built")
-    pill = add_pill(s5, 96, 72, "What we built", "mint")
+    s4 = prs.slides.add_slide(blank)
+    set_bg_picture(s4, bg_plain)
+    add_blobs(s4, "built")
+    pill = add_pill(s4, 96, 72, "What we built", "mint")
 
-    tb_h, tf = add_tb(s5, 96, 126, 1360, 74)
+    tb_h, tf = add_tb(s4, 96, 126, 1360, 74)
     p = tf.paragraphs[0]
     add_run(p, "From raw files to one click, ", 43.2, FONT_SERIF, HEX["white"], 100, spc_em=-0.02)
     add_run(p, "in 48 hours.", 43.2, FONT_SERIF, HEX["white"], 100, italic=True, spc_em=-0.02)
 
-    arc1 = add_quadratic_dotted_arc(s5, 368, 398, 550, 286, 732, 398)
-    arc2 = add_quadratic_dotted_arc(s5, 868, 398, 1050, 286, 1232, 398)
+    add_quadratic_dotted_arc(s4, 368, 398, 550, 286, 732, 398)
+    add_quadratic_dotted_arc(s4, 868, 398, 1050, 286, 1232, 398)
 
     lbls = []
     for lx, ltxt in [(550, "PYTHON PIPELINE"), (1050, "STATISTICS IN YOUR BROWSER")]:
-        tb_l, tf = add_tb(s5, lx - 170, 288, 340, 26, PP_ALIGN.CENTER)
-        add_run(tf.paragraphs[0], ltxt, 11.4, FONT_SANS, HEX["white"], 82, bold=True, spc_em=0.14)
+        tb_l, tf = add_tb(s4, lx - 230, 266, 460, 28, PP_ALIGN.CENTER, wrap=False)
+        add_run(tf.paragraphs[0], ltxt, 11.4, FONT_SANS, HEX["white"], 84, bold=True, spc_em=0.14)
         lbls.append(tb_l)
 
     stations = [
@@ -1000,7 +848,7 @@ def build_deck(out_path: Path, morph: bool, blob_cache: dict, bg_plain: Path, bg
     ]
     st_tbs = []
     for cx, num, lbl, sub, col in stations:
-        tb_s, tf = add_tb(s5, cx - 155, 480, 310, 190, PP_ALIGN.CENTER, MSO_ANCHOR.MIDDLE)
+        tb_s, tf = add_tb(s4, cx - 155, 480, 310, 190, PP_ALIGN.CENTER, MSO_ANCHOR.MIDDLE)
         p0 = tf.paragraphs[0]
         p0.alignment = PP_ALIGN.CENTER
         p0.line_spacing = 0.95
@@ -1016,48 +864,47 @@ def build_deck(out_path: Path, morph: bool, blob_cache: dict, bg_plain: Path, bg
         st_tbs.append(tb_s)
 
     facts = add_chip_row(
-        s5, ["4 metrics × 5 seasons", "0.29 ms per trend test", "809 timelapse frames", "291 automated tests"],
+        s4, ["4 metrics × 5 seasons", "0.29 ms per trend test", "809 timelapse frames", "291 automated tests"],
         800, 808, gap_px=13.0, size_pt=11.0, height_px=38.0,
     )
-    s5.notes_slide.notes_text_frame.text = (
-        "2,534 input files -> 11,055 JSON tiles (250.65 MB; rainfall, temperature, aerosols 3,240 each; soil moisture 1,335 land-only) -> "
-        "64,800 clickable 1° cells across 5 seasons and 4 metrics, plus 809 timelapse PNGs in 20 sets. Browser Mann-Kendall matches Python on 26/26 fixtures "
-        "(0.288 ms warmed mean). Verified by 180 pytest tests, 291 present/engine Vitest specs (plus 284 site tests), and 5/5 data integrity checks. "
-        "GLDAS v2.0 was excluded intentionally due to a +0.469 kg/m² 2000–2014 step jump vs v2.1."
+    s4.notes_slide.notes_text_frame.text = (
+        "2,534 input files -> 11,055 JSON tiles (250.65 MB: rainfall, temperature, aerosols 3,240 each; soil moisture 1,335 land-only) -> "
+        "64,800 clickable 1° cells across 5 seasons and 4 metrics; 809 timelapse PNG frames across 20 sets. "
+        "Browser inference averages 0.288 ms (26/26 parity with Python). 291 frontend + 180 Python tests pass; data integrity 5/5. "
+        "GLDAS v2.0 excluded intentionally due to a +0.469 kg/m² 2000–2014 step jump vs v2.1."
     )
     if morph:
-        set_morph_transition(s5, 750)
-        add_auto_fade_entrances(s5, [(pill, 80), (tb_h, 120)] + [(st, 160 + i * 70) for i, st in enumerate(st_tbs)] + [(l, 200) for l in lbls] + [(f, 320 + i * 35) for i, f in enumerate(facts)])
+        set_morph_transition(s4, 720)
     else:
-        set_fade_transition(s5)
+        set_fade_transition(s4)
 
     # =========================================================================
-    # SLIDE 6 — Method: Is the Trend Real? (with real Amazon DJF vector chart)
+    # SLIDE 5 — Method: Is the Trend Real? (Real Amazon DJF Chart)
     # =========================================================================
-    s6 = prs.slides.add_slide(blank)
-    set_bg_picture(s6, bg_plain)
-    add_blobs(s6, "method")
-    pill = add_pill(s6, 96, 72, "How we decide", "cool")
+    s5 = prs.slides.add_slide(blank)
+    set_bg_picture(s5, bg_plain)
+    add_blobs(s5, "method")
+    pill = add_pill(s5, 96, 72, "How we decide", "cool")
 
-    tb_h, tf = add_tb(s6, 96, 134, 520, 156)
+    tb_h, tf = add_tb(s5, 96, 122, 520, 148)
     p = tf.paragraphs[0]
     p.line_spacing = 0.88
-    add_run(p, "Is the trend", 72.0, FONT_SERIF, HEX["white"], 100, spc_em=-0.024)
+    add_run(p, "Is the trend", 66.0, FONT_SERIF, HEX["white"], 100, spc_em=-0.024)
     p2 = tf.add_paragraph()
     p2.line_spacing = 0.88
-    add_run(p2, "real?", 72.0, FONT_SERIF, HEX["mint"], 100, italic=True, spc_em=-0.024)
+    add_run(p2, "real?", 66.0, FONT_SERIF, HEX["mint"], 100, italic=True, spc_em=-0.024)
 
     checks = [
         ("1", "Mann–Kendall test", "Hamed–Rao corrected: is the direction more than year-to-year noise?"),
         ("2", "Sen’s slope + 95% interval", "How fast, and how sure. Robust to odd years."),
         ("3", "False discovery rate on maps", "Thousands of cells tested, q = 0.10."),
-        ("4", "Checked against NASA Giovanni", "Two test regions reproduced."),
+        ("4", "Checked against NASA Giovanni", "Two test regions reproduced (Coastal Peru & Indonesia DJF rain)."),
     ]
     chk_shapes = []
-    cy_start = 334.0
+    cy_start = 360.0
     for idx, (num, title, desc) in enumerate(checks):
-        cy = cy_start + idx * 98.0
-        badge = s6.shapes.add_shape(MSO_SHAPE.OVAL, Inches(96 * PX_IN), Inches(cy * PX_IN), Inches(40 * PX_IN), Inches(40 * PX_IN))
+        cy = cy_start + idx * 96.0
+        badge = s5.shapes.add_shape(MSO_SHAPE.OVAL, Inches(96 * PX_IN), Inches(cy * PX_IN), Inches(40 * PX_IN), Inches(40 * PX_IN))
         set_linear_gradient_fill(badge, HEX["mint"], HEX["teal"], 45.0)
         set_no_line(badge)
         tfb = badge.text_frame
@@ -1067,21 +914,18 @@ def build_deck(out_path: Path, morph: bool, blob_cache: dict, bg_plain: Path, bg
         pb.alignment = PP_ALIGN.CENTER
         add_run(pb, num, 15.5, FONT_SERIF, HEX["ink"], 100)
 
-        tbc, tfc = add_tb(s6, 154, cy - 2, 418, 86)
+        tbc, tfc = add_tb(s5, 154, cy - 2, 424, 88)
         pc0 = tfc.paragraphs[0]
         pc0.line_spacing = 1.1
         add_run(pc0, title, 14.5, FONT_SANS, HEX["white"], 100, bold=True)
         pc1 = tfc.add_paragraph()
         pc1.space_before = Pt(3)
         pc1.line_spacing = 1.25
-        add_run(pc1, desc, 10.6, FONT_SANS, HEX["white"], 72)
+        add_run(pc1, desc, 10.5, FONT_SANS, HEX["white"], 72)
         chk_shapes.extend([badge, tbc])
 
-    # Native vector Amazon DJF temperature chart inside right bean blob
-    chart_shapes = []
-    tb_clbl, tfl = add_tb(s6, 756, 190, 740, 26)
+    tb_clbl, tfl = add_tb(s5, 756, 190, 740, 26)
     add_run(tfl.paragraphs[0], "AMAZON · DEC–FEB TEMPERATURE · 1981–2026", 11.4, FONT_SANS, HEX["white"], 80, bold=True, spc_em=0.14)
-    chart_shapes.append(tb_clbl)
 
     cx0, cx1 = 790.0, 1485.0
     cy_top, cy_bot = 236.0, 560.0
@@ -1096,12 +940,10 @@ def build_deck(out_path: Path, morph: bool, blob_cache: dict, bg_plain: Path, bg
 
     for deg in (24, 25, 26, 27):
         yy = px_y(deg)
-        gl = add_line_segment(s6, cx0 - 10, yy, cx1, yy, HEX["white"], 14, 0.8)
-        tl, tfl = add_tb(s6, cx0 - 46, yy - 11, 30, 22, PP_ALIGN.RIGHT)
+        add_line_segment(s5, cx0 - 10, yy, cx1, yy, HEX["white"], 14, 0.8)
+        tl, tfl = add_tb(s5, cx0 - 46, yy - 11, 30, 22, PP_ALIGN.RIGHT)
         add_run(tfl.paragraphs[0], f"{deg}°", 9.6, FONT_SANS, HEX["white"], 62)
-        chart_shapes.extend([gl, tl])
 
-    # 95% CI polygon fan around Sen midpoint
     mid_yr = (y0_yr + y1_yr) / 2.0
     fit_mid = SEN["intercept"] + SEN["slope"] * mid_yr
     fan_pts = [
@@ -1110,238 +952,190 @@ def build_deck(out_path: Path, morph: bool, blob_cache: dict, bg_plain: Path, bg
         (px_x(y1_yr), px_y(fit_mid + SEN["lo"] * (y1_yr - mid_yr))),
         (px_x(y0_yr), px_y(fit_mid + SEN["hi"] * (y0_yr - mid_yr))),
     ]
-    fb = s6.shapes.build_freeform(Inches(fan_pts[0][0] * PX_IN), Inches(fan_pts[0][1] * PX_IN))
+    fb = s5.shapes.build_freeform(Inches(fan_pts[0][0] * PX_IN), Inches(fan_pts[0][1] * PX_IN))
     fb.add_line_segments([(Inches(x * PX_IN), Inches(y * PX_IN)) for x, y in fan_pts[1:]], close=True)
     fan_sh = fb.convert_to_shape()
     set_shape_fill_rgba(fan_sh, HEX["white"], 17)
     set_no_line(fan_sh)
-    chart_shapes.append(fan_sh)
 
-    # Yearly series polyline + dots
     pts_series = [(px_x(y0_yr + i), px_y(v)) for i, v in enumerate(AMAZON_T)]
-    sb = s6.shapes.build_freeform(Inches(pts_series[0][0] * PX_IN), Inches(pts_series[0][1] * PX_IN))
+    sb = s5.shapes.build_freeform(Inches(pts_series[0][0] * PX_IN), Inches(pts_series[0][1] * PX_IN))
     sb.add_line_segments([(Inches(x * PX_IN), Inches(y * PX_IN)) for x, y in pts_series[1:]], close=False)
     ser_sh = sb.convert_to_shape()
     ser_sh.fill.background()
     set_shape_line_rgba(ser_sh, HEX["white"], 42, 1.1)
-    chart_shapes.append(ser_sh)
 
     for px, py in pts_series:
         r = 3.6
-        dot = s6.shapes.add_shape(MSO_SHAPE.OVAL, Inches((px - r) * PX_IN), Inches((py - r) * PX_IN), Inches(2 * r * PX_IN), Inches(2 * r * PX_IN))
+        dot = s5.shapes.add_shape(MSO_SHAPE.OVAL, Inches((px - r) * PX_IN), Inches((py - r) * PX_IN), Inches(2 * r * PX_IN), Inches(2 * r * PX_IN))
         set_shape_fill_rgba(dot, HEX["white"], 95)
         set_no_line(dot)
-        chart_shapes.append(dot)
 
-    # Sen's slope amber line
-    trend_sh = add_line_segment(
-        s6,
+    add_line_segment(
+        s5,
         px_x(y0_yr), px_y(SEN["intercept"] + SEN["slope"] * y0_yr),
         px_x(y1_yr), px_y(SEN["intercept"] + SEN["slope"] * y1_yr),
         HEX["amber"], 100, 3.0,
     )
-    chart_shapes.append(trend_sh)
 
-    # Axis years & Sen headline result
-    ty1, tf1 = add_tb(s6, cx0 - 4, cy_bot + 4, 80, 22)
+    ty1, tf1 = add_tb(s5, cx0 - 4, cy_bot + 4, 80, 22)
     add_run(tf1.paragraphs[0], "1981", 9.6, FONT_SANS, HEX["white"], 62)
-    ty2, tf2 = add_tb(s6, cx1 - 80, cy_bot + 4, 80, 22, PP_ALIGN.RIGHT)
+    ty2, tf2 = add_tb(s5, cx1 - 80, cy_bot + 4, 80, 22, PP_ALIGN.RIGHT)
     add_run(tf2.paragraphs[0], "2026", 9.6, FONT_SANS, HEX["white"], 62)
-    tb_res, tfr = add_tb(s6, 756, 594, 750, 62)
+
+    tb_res, tfr = add_tb(s5, 756, 594, 750, 62)
     pr = tfr.paragraphs[0]
     add_run(pr, "+0.25 °C per decade   ", 33.6, FONT_SERIF, HEX["amber"], 100, spc_em=-0.02)
     add_run(pr, "p = 0.0001 · 95% CI +0.14 to +0.37", 11.4, FONT_SANS, HEX["white"], 84)
-    chart_shapes.extend([ty1, ty2, tb_res])
 
-    s6.notes_slide.notes_text_frame.text = (
+    s5.notes_slide.notes_text_frame.text = (
         "Method check: our processing pipeline reproduced NASA Giovanni's results for two test regions "
         "(Coastal Peru and Indonesia rainfall, Dec–Feb). Every other series is produced by the same code but has not been compared individually. "
         "Chart shows real MERRA-2 Amazon Dec–Feb temperature (1981–2026): Sen's slope +0.246 °C/decade, p = 0.00006, 95% CI +0.145 to +0.372; "
-        "three warmest winters (2024, 2016, 1998) were all El Niño winters."
+        "the three warmest winters (2024, 2016, 1998) were all El Niño winters."
     )
     if morph:
-        set_morph_transition(s6, 750)
-        add_auto_fade_entrances(s6, [(pill, 80), (tb_h, 120)] + [(c, 160) for c in chk_shapes[:4]] + [(tb_clbl, 140), (tb_res, 260)])
+        set_morph_transition(s5, 720)
+    else:
+        set_fade_transition(s5)
+
+    # =========================================================================
+    # SLIDE 6 — El Niño & Real Findings (Weave)
+    # =========================================================================
+    s6 = prs.slides.add_slide(blank)
+    set_bg_picture(s6, bg_plain)
+    add_blobs(s6, "link", skip=(0,))
+    pill = add_pill(s6, 96, 62, "The why, from our own data", "warm")
+
+    tb_back6, _, tb_front6 = add_giant_weave(
+        s6, "EL NIÑO", {1, 4, 5}, y_center=316, size_pt=236.0, spc_em=-0.04,
+        add_blob0_fn=lambda: add_single_blob(s6, "link", 0),
+    )
+
+    tb_lead, tf = add_tb(s6, 96, 496, 1380, 48)
+    add_run(tf.paragraphs[0], "One Pacific pattern shows up in both places  ", 26.0, FONT_SERIF, HEX["white"], 100, italic=True)
+    add_run(tf.paragraphs[0], "·  RONI +2.28 °C (1997–98)  ·  +2.40 °C (1982–83)  ·  +2.25 °C (2015–16)", 11.4, FONT_SANS, HEX["mint"], 90, bold=True)
+
+    stats = [
+        ("AMAZON · TEMP + HAZE", "+0.82 °C", "warmer in El Niño winters · trend +0.25 °C/dec & +0.010 AOD/dec (p = 0.015)"),
+        ("AMAZON · INDONESIA RAIN & HAZE", "−0.95 mm/day", "Amazon drier in El Niño winters · Indonesia −1.10 mm/day, SON +0.28 AOD"),
+        ("ALBERTA / PRAIRIES · SOIL", "+1.51 °C", "warmer in El Niño winters · 2001–26 soil −1.80 kg/m²/dec (p = 0.003)"),
+    ]
+    col_w = 448.0
+    for idx, (place, val, note) in enumerate(stats):
+        sx = 96.0 + idx * (col_w + 32.0)
+        add_line_segment(s6, sx, 566, sx + col_w, 566, HEX["white"], 35, 0.8)
+        tb_st, tf = add_tb(s6, sx, 578, col_w, 180)
+        p0 = tf.paragraphs[0]
+        add_run(p0, place, 10.2, FONT_SANS, HEX["white"], 74, bold=True, spc_em=0.13)
+        p1 = tf.add_paragraph()
+        p1.space_before = Pt(4)
+        p1.line_spacing = 1.0
+        add_run(p1, val, 44.2, FONT_SERIF, HEX["amber"], 100, spc_em=-0.025)
+        p2 = tf.add_paragraph()
+        p2.space_before = Pt(4)
+        p2.line_spacing = 1.28
+        add_run(p2, note, 11.2, FONT_SANS, HEX["white"], 88)
+
+    tb_foot, tf = add_tb(s6, 96, 822, 1410, 32)
+    add_run(
+        tf.paragraphs[0],
+        "El Niño minus La Niña winters, detrended (FDR q = 0.10). Coastal Peru DJF rainfall is not significant (p = 0.52). Associated with, not a proven cause.",
+        10.5, FONT_SANS, HEX["white"], 68,
+    )
+
+    s6.notes_slide.notes_text_frame.text = (
+        "RONI episodes (1950–2026, 921 seasons, 44 episodes; latest ASO 2026 +1.97 °C). Top RONI peaks: 1982–83 (+2.40 °C), 1997–98 (+2.28 °C), 2015–16 (+2.25 °C). "
+        "Significant DJF composites (FDR q = 0.10): Indonesia −1.10 mm/day, Amazon −0.95 mm/day & +0.82 °C, Alberta +1.51 °C; Indonesia SON haze +0.28 AOD. "
+        "Coastal Peru DJF rainfall composite (−0.36 mm/day, CI −0.91..+0.30) and trend (p = 0.52) are not significant. Association, not causation."
+    )
+    if morph:
+        set_morph_transition(s6, 720)
     else:
         set_fade_transition(s6)
 
     # =========================================================================
-    # SLIDE 7 — Link: EL NIÑO (Weave)
+    # SLIDE 7 — Impact & Close (Weave + Audience + Next + Live URL + QR)
     # =========================================================================
     s7 = prs.slides.add_slide(blank)
     set_bg_picture(s7, bg_plain)
-    add_blobs(s7, "link", skip=(0,))
-    pill = add_pill(s7, 96, 72, "The why, from our own data", "warm")
+    add_blobs(s7, "close", skip=(0,))
 
-    tb_back7, b0_7, tb_front7 = add_giant_weave(
-        s7, "EL NIÑO", {1, 4, 5}, y_center=326, size_pt=274.0, spc_em=-0.04,
-        blob0_pic=None, add_blob0_fn=lambda: add_single_blob(s7, "link", 0),
+    tb_back7, _, tb_front7 = add_giant_weave(
+        s7, "TRENDTRACE", {0, 3, 4, 7, 8}, y_center=205, size_pt=194.0, spc_em=-0.035,
+        add_blob0_fn=lambda: add_single_blob(s7, "close", 0),
     )
 
-    tb_lead, tf = add_tb(s7, 96, 538, 1100, 56)
-    add_run(tf.paragraphs[0], "One Pacific pattern shows up in both places.", 27.0, FONT_SERIF, HEX["white"], 100, italic=True)
+    tb_tag, tf = add_tb(s7, 96, 368, 1020, 48)
+    add_run(tf.paragraphs[0], "Click anywhere on Earth. See what’s changing, and how sure we are.", 24.5, FONT_SERIF, HEX["white"], 96, italic=True, spc_em=-0.012)
 
-    stats = [
-        ("AMAZON", "+0.82 °C", "warmer in El Niño winters"),
-        ("AMAZON", "−0.95 mm/day", "drier in El Niño winters"),
-        ("ALBERTA / PRAIRIES", "+1.51 °C", "warmer in El Niño winters"),
-    ]
-    st_boxes = []
-    col_w = 448.0
-    for idx, (place, val, note) in enumerate(stats):
-        sx = 96.0 + idx * (col_w + 32.0)
-        hl = add_line_segment(s7, sx, 622, sx + col_w, 622, HEX["white"], 35, 0.8)
-        tb_st, tf = add_tb(s7, sx, 634, col_w, 130)
-        p0 = tf.paragraphs[0]
-        add_run(p0, place, 10.6, FONT_SANS, HEX["white"], 72, bold=True, spc_em=0.14)
-        p1 = tf.add_paragraph()
-        p1.space_before = Pt(3)
-        p1.line_spacing = 1.0
-        add_run(p1, val, 44.2, FONT_SERIF, HEX["amber"], 100, spc_em=-0.025)
-        p2 = tf.add_paragraph()
-        p2.space_before = Pt(3)
-        add_run(p2, note, 11.8, FONT_SANS, HEX["white"], 86)
-        st_boxes.extend([hl, tb_st])
-
-    tb_foot, tf = add_tb(s7, 96, 822, 1360, 32)
-    add_run(tf.paragraphs[0], "El Niño winters minus La Niña winters, long-term trend removed. Associated with, not a proven cause.", 10.6, FONT_SANS, HEX["white"], 64)
-
-    s7.notes_slide.notes_text_frame.text = (
-        "Detrended composite: El Niño winters minus La Niña winters (temperature: 15 vs 20 winters; rainfall: 14 vs 19 winters; RONI threshold ±0.5 °C). "
-        "Significant DJF associations: Amazon +0.82 °C (CI +0.53..+1.12) & −0.95 mm/day (CI −1.27..−0.65); Alberta/Prairies +1.51 °C (CI +0.37..+2.69). "
-        "Coastal Peru rainfall DJF is NOT significant (−0.36 mm/day, p=0.52 trend) and excluded as an El Niño wetness claim. Association, not causation."
-    )
-    if morph:
-        set_morph_transition(s7, 750)
-        add_auto_fade_entrances(s7, [(pill, 80), (tb_back7, 130), (tb_front7, 130), (tb_lead, 200), (tb_foot, 320)])
-    else:
-        set_fade_transition(s7)
-
-    # =========================================================================
-    # SLIDE 8 — Impact: Who It Is For & What's Next
-    # =========================================================================
-    s8 = prs.slides.add_slide(blank)
-    set_bg_picture(s8, bg_plain)
-    add_blobs(s8, "impact")
-    pill = add_pill(s8, 96, 72, "Who it is for", "mint")
-
-    tb_ppl, tf = add_tb(s8, 96, 154, 1020, 480)
-    for idx, (word, it) in enumerate([("Farmers.", False), ("Students.", True), ("Journalists.", False), ("Local planners.", True)]):
-        p = tf.paragraphs[0] if idx == 0 else tf.add_paragraph()
-        p.line_spacing = 0.96
-        add_run(p, word, 83.5, FONT_SERIF, HEX["white"], 100, italic=it, spc_em=-0.03)
-
-    tb_sub, tf = add_tb(s8, 96, 666, 620, 96)
+    tb_ppl, tf = add_tb(s7, 96, 424, 1040, 74)
     p = tf.paragraphs[0]
-    p.line_spacing = 1.38
-    add_run(p, "Anyone with a place they care about, and no time to learn NetCDF.", 15.0, FONT_SANS, HEX["white"], 74)
+    add_run(p, "Farmers. ", 36.0, FONT_SERIF, HEX["white"], 100, spc_em=-0.02)
+    add_run(p, "Students. ", 36.0, FONT_SERIF, HEX["mint"], 100, italic=True, spc_em=-0.02)
+    add_run(p, "Journalists. ", 36.0, FONT_SERIF, HEX["white"], 100, spc_em=-0.02)
+    add_run(p, "Local planners.", 36.0, FONT_SERIF, HEX["mint"], 100, italic=True, spc_em=-0.02)
 
-    tb_nt, tfn = add_tb(s8, 1168, 240, 360, 26)
-    add_run(tfn.paragraphs[0], "WHAT’S NEXT", 11.2, FONT_SANS, HEX["mint"], 100, bold=True, spc_em=0.16)
-    next_items = [
-        ("01", "Compare temperature, aerosols and soil moisture with NASA Giovanni"),
-        ("02", "All five seasons for named regions"),
-        ("03", "Significance for sub-periods"),
-    ]
-    next_shapes = [tb_nt]
-    ny = 282.0
-    for code, txt in next_items:
-        hl = add_line_segment(s8, 1168, ny, 1542, ny, HEX["white"], 42, 0.8)
-        tb_n, tfi = add_tb(s8, 1168, ny + 14, 374, 105)
-        p0 = tfi.paragraphs[0]
-        add_run(p0, code, 9.6, FONT_MONO, HEX["white"], 72, bold=True, spc_em=0.1)
-        p1 = tfi.add_paragraph()
-        p1.space_before = Pt(4)
-        p1.line_spacing = 1.12
-        add_run(p1, txt, 19.8, FONT_SERIF, HEX["white"], 100, spc_em=-0.008)
-        next_shapes.extend([hl, tb_n])
-        ny += 134.0
-
-    s8.notes_slide.notes_text_frame.text = (
-        "Users export reproducible CSV/JSON results with full NASA/NOAA DOIs and exact bounds. "
-        "Explicit limits stated up front: 2 of 40 regional series compared against NASA Giovanni (38 use the same code without individual comparison); "
-        "named regions are Dec–Feb only; sub-periods show no p-value yet; zero forecasting or prediction."
-    )
-    if morph:
-        set_morph_transition(s8, 750)
-        add_auto_fade_entrances(s8, [(pill, 80), (tb_ppl, 140), (tb_sub, 220)] + [(n, 240) for n in next_shapes])
-    else:
-        set_fade_transition(s8)
-
-    # =========================================================================
-    # SLIDE 9 — Close: Try It Now (Weave + Live URL + QR)
-    # =========================================================================
-    s9 = prs.slides.add_slide(blank)
-    set_bg_picture(s9, bg_plain)
-    add_blobs(s9, "close", skip=(0,))
-    tb_back9, b0_9, tb_front9 = add_giant_weave(
-        s9, "TRENDTRACE", {0, 3, 4, 7, 8}, y_center=266, size_pt=206.0, spc_em=-0.035,
-        blob0_pic=None, add_blob0_fn=lambda: add_single_blob(s9, "close", 0),
-    )
-
-    tb_tag, tf = add_tb(s9, 96, 446, 980, 54)
-    add_run(tf.paragraphs[0], "Click anywhere on Earth. See what’s changing, and how sure we are.", 26.0, FONT_SERIF, HEX["white"], 100, italic=True, spc_em=-0.012)
-
-    # Live URL pill with mint indicator dot
-    url_pill = s9.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(96 * PX_IN), Inches(528 * PX_IN), Inches(890 * PX_IN), Inches(64 * PX_IN))
+    url_pill = s7.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(96 * PX_IN), Inches(512 * PX_IN), Inches(840 * PX_IN), Inches(56 * PX_IN))
     url_pill.adjustments[0] = 0.5
-    set_shape_fill_rgba(url_pill, HEX["black"], 55)
-    set_shape_line_rgba(url_pill, HEX["white"], 50, 1.0)
+    set_shape_fill_rgba(url_pill, HEX["black"], 58)
+    set_shape_line_rgba(url_pill, HEX["white"], 52, 1.0)
     tfu = url_pill.text_frame
     tfu.word_wrap = False
     tfu.vertical_anchor = MSO_ANCHOR.MIDDLE
-    tfu.margin_left = Inches(52 * PX_IN)
+    tfu.margin_left = Inches(48 * PX_IN)
     tfu.margin_right = tfu.margin_top = tfu.margin_bottom = Emu(0)
-    add_run(tfu.paragraphs[0], LIVE_URL, 18.8, FONT_SANS, HEX["white"], 100, bold=True, spc_em=-0.005)
+    add_run(tfu.paragraphs[0], LIVE_URL, 17.6, FONT_SANS, HEX["white"], 100, bold=True, spc_em=-0.005)
 
-    udot = s9.shapes.add_shape(MSO_SHAPE.OVAL, Inches(120 * PX_IN), Inches(552 * PX_IN), Inches(16 * PX_IN), Inches(16 * PX_IN))
+    udot = s7.shapes.add_shape(MSO_SHAPE.OVAL, Inches(118 * PX_IN), Inches(533 * PX_IN), Inches(14 * PX_IN), Inches(14 * PX_IN))
     set_shape_fill_rgba(udot, HEX["mint"], 100)
     set_no_line(udot)
 
-    # Credit chips (2 neat rows in bottom-center/left clear of QR pebble)
-    row1 = ["NASA GES DISC", "GPCP v3.3", "MERRA-2", "GLDAS v2.1", "NOAA ERSST v6"]
-    row2 = ["NOAA CPC RONI", "Natural Earth"]
-    c1 = add_chip_row(s9, row1, 560, 672, gap_px=10.0, size_pt=9.8, height_px=34.0, char_w_px=7.8, pad_px=30.0, border_alpha=30)
-    c2 = add_chip_row(s9, row2, 425, 718, gap_px=10.0, size_pt=9.8, height_px=34.0, char_w_px=7.8, pad_px=30.0, border_alpha=30)
+    tb_nxt, tf = add_tb(s7, 96, 592, 1020, 68)
+    p0 = tf.paragraphs[0]
+    add_run(p0, "WHAT’S NEXT   ", 10.0, FONT_SANS, HEX["mint"], 100, bold=True, spc_em=0.14)
+    add_run(p0, "01 Giovanni checks for T2M/AOD/SM  ·  02 All 5 seasons for regions  ·  03 Sub-period p-values", 11.4, FONT_SANS, HEX["white"], 86)
+    p1 = tf.add_paragraph()
+    p1.space_before = Pt(4)
+    add_run(p1, "Limits: 2/40 regional series checked vs Giovanni; 2000–2026 soil moisture (v2.0 withheld +0.47 kg/m²); observed history only.", 10.2, FONT_SANS, HEX["white"], 68)
 
-    tb_foot, tf = add_tb(s9, 286, 816, 760, 32)
-    add_run(tf.paragraphs[0], "Built with AI coding assistance. Trends are observed history; links are associations.", 10.6, FONT_SANS, HEX["white"], 64)
+    credits = ["NASA GES DISC", "GPCP v3.3", "MERRA-2", "GLDAS v2.1", "NOAA ERSST v6", "NOAA CPC RONI", "Natural Earth"]
+    add_chip_row(s7, credits, 660, 710, gap_px=9.0, size_pt=9.6, height_px=34.0, char_w_px=7.8, pad_px=26.0, border_alpha=32)
 
-    # White rounded QR card inside b2 MINT pebble (cx=1345, cy=650)
+    tb_foot, tf = add_tb(s7, 290, 816, 860, 40)
+    add_run(
+        tf.paragraphs[0],
+        "Built with AI coding assistance. Trends are observed history; links are associations. Custom domain trendtrace.earth coming soon.",
+        10.2, FONT_SANS, HEX["white"], 68,
+    )
+
     qw, qh = 248.0, 276.0
-    qx, qy = 1345.0 - qw / 2.0, 650.0 - qh / 2.0
-    qr_card = s9.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(qx * PX_IN), Inches(qy * PX_IN), Inches(qw * PX_IN), Inches(qh * PX_IN))
+    qx, qy = 1360.0 - qw / 2.0, 640.0 - qh / 2.0
+    qr_card = s7.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(qx * PX_IN), Inches(qy * PX_IN), Inches(qw * PX_IN), Inches(qh * PX_IN))
     qr_card.adjustments[0] = 0.08
     set_shape_fill_rgba(qr_card, HEX["white"], 100)
     set_no_line(qr_card)
 
-    qr_pic = s9.shapes.add_picture(str(qr_png), Inches((qx + 16) * PX_IN), Inches((qy + 16) * PX_IN), Inches(216 * PX_IN), Inches(216 * PX_IN))
+    qr_pic = s7.shapes.add_picture(str(qr_png), Inches((qx + 16) * PX_IN), Inches((qy + 16) * PX_IN), Inches(216 * PX_IN), Inches(216 * PX_IN))
     set_alt_text(qr_pic, f"QR code for https://{LIVE_URL}")
-    tb_qr, tfq = add_tb(s9, qx, qy + 236, qw, 32, PP_ALIGN.CENTER, MSO_ANCHOR.MIDDLE)
+    tb_qr, tfq = add_tb(s7, qx, qy + 236, qw, 32, PP_ALIGN.CENTER, MSO_ANCHOR.MIDDLE)
     add_run(tfq.paragraphs[0], "TRY IT NOW", 10.6, FONT_SANS, HEX["ink"], 100, bold=True, spc_em=0.16)
 
-    s9.notes_slide.notes_text_frame.text = (
+    s7.notes_slide.notes_text_frame.text = (
         f"Live site: https://{LIVE_URL} (custom domain trendtrace.earth coming soon). "
         "Data: NASA GES DISC (GPCP v3.3, MERRA-2 T2M & AOD, GLDAS Noah v2.1), NOAA (ERSST v6, CPC RONI), Natural Earth. "
-        "AI coding assistance disclosed. Trends are observed history; links are associations in the data."
+        "AI coding assistance disclosed. No forecasts or predictions."
     )
     if morph:
-        set_morph_transition(s9, 750)
-        add_auto_fade_entrances(s9, [(tb_back9, 100), (tb_front9, 100), (tb_tag, 180), (url_pill, 220), (udot, 220), (qr_card, 260), (qr_pic, 260), (tb_qr, 260)])
+        set_morph_transition(s7, 720)
     else:
-        set_fade_transition(s9)
+        set_fade_transition(s7)
 
     prs.save(str(out_path))
     print(f"Saved {out_path.name} ({out_path.stat().st_size:,} B, {len(prs.slides)} slides)")
 
 
 def run_com_export_and_embed(main_pptx: Path, safe_pptx: Path, pdf_out: Path, preview_dir: Path) -> None:
-    """
-    Open both PPTX decks in PowerPoint 16.0 COM:
-      1) Verify error-free load + Morph / Safe transition state
-      2) Re-save each with EmbedFonts=True (-1) so Instrument Serif TTF is embedded
-      3) Export PDF via SaveAs(pdf, 32) and 1920x1080 PNG previews
-    """
     if preview_dir.exists():
         for old_png in preview_dir.glob("slide_*.png"):
             old_png.unlink()
@@ -1351,7 +1145,6 @@ def run_com_export_and_embed(main_pptx: Path, safe_pptx: Path, pdf_out: Path, pr
 $ErrorActionPreference = 'Stop'
 $pp = New-Object -ComObject PowerPoint.Application
 try {{
-    # 1. Embed fonts + export TrendTrace_safe.pptx
     $safe = $pp.Presentations.Open('{safe_pptx.resolve()}', $false, $false, $false)
     $safeCount = $safe.Slides.Count
     $safeAnims = 0
@@ -1363,13 +1156,22 @@ try {{
     $safe.Close()
     Move-Item -Force $safeTmp '{safe_pptx.resolve()}'
 
-    # 2. Embed fonts + export TrendTrace.pptx -> PDF & PNGs
     $main = $pp.Presentations.Open('{main_pptx.resolve()}', $false, $false, $false)
     $mainCount = $main.Slides.Count
     $effects = @()
     $anims = @()
     for ($i = 1; $i -le $mainCount; $i++) {{
         $sl = $main.Slides.Item($i)
+        # Add snappy click-free fade-in stagger to foreground text/UI shapes (never blobs !!b0-b3)
+        $delay = 0.04
+        foreach ($sh in $sl.Shapes) {{
+            if (-not $sh.Name.StartsWith('!!b')) {{
+                $eff = $sl.TimeLine.MainSequence.AddEffect($sh, 10, 0, 2) # 10=Fade, 2=WithPrevious
+                $eff.Timing.TriggerDelayTime = [single]$delay
+                $eff.Timing.Duration = [single]0.30
+                $delay = [Math]::Min(0.42, $delay + 0.035)
+            }}
+        }}
         $effects += $sl.SlideShowTransition.EntryEffect
         $anims += $sl.TimeLine.MainSequence.Count
         $png = Join-Path '{preview_dir.resolve()}' ('slide_{{0:D2}}.png' -f $i)
@@ -1415,7 +1217,7 @@ def main() -> None:
     qr_png = render_qr_png(ASSETS_GEN / "qr_live.png", scale=16)
 
     blob_cache: dict[tuple[str, int], tuple[Path, tuple[float, float, float, float]]] = {}
-    for scene, specs in STORY_LAYOUTS.items():
+    for scene, specs in SLIDE_LAYOUTS.items():
         for idx, spec in enumerate(specs):
             out_p = ASSETS_GEN / f"{scene}_b{idx}.png"
             bbox = render_blob_png(spec, out_p, stage_scale=0.72)
@@ -1429,7 +1231,6 @@ def main() -> None:
     build_deck(safe_pptx, morph=False, blob_cache=blob_cache, bg_plain=bg_plain, bg_earth=bg_earth, qr_png=qr_png)
     run_com_export_and_embed(main_pptx, safe_pptx, pdf_out, PREVIEW_DIR)
 
-    # Verify embedded fonts inside saved pptx archives
     import zipfile
     for p in (main_pptx, safe_pptx):
         with zipfile.ZipFile(p) as z:
