@@ -597,6 +597,24 @@ export default function App() {
     }
     resetApp();
     if (action.type === 'landing') return;
+    if (action.type === 'workflow') {
+      setWorkflowOpen(true);
+      if (action.place) setPendingPlace(action.place);
+      if (action.variable || action.season) {
+        dispatch({
+          type: 'applySharedSettings',
+          patch: {
+            ...(action.variable ? { variable: action.variable } : {}),
+            ...(action.season ? { season: action.season } : {}),
+          },
+        });
+      }
+      return;
+    }
+    if (action.type === 'library') {
+      dispatch({ type: 'navigate', mode: 'library' });
+      return;
+    }
     if (action.type === 'enso') {
       window.location.hash = action.hash;
       setEnsoKey((key) => key + 1);
@@ -615,6 +633,15 @@ export default function App() {
     };
     const list = await waitFor(() => seriesListRef.current);
     if (!list || stale()) return;
+    const scrollDrawer = (where?: 'top' | 'chart') => {
+      if (!where) return;
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          const el = document.querySelector('.inspector-body');
+          if (el) el.scrollTo({ top: where === 'chart' ? 380 : 0, behavior: 'smooth' });
+        }, 120);
+      });
+    };
     if (action.compare && action.place.regionId && action.compare.place.regionId) {
       const s1 = list.find((item) => item.region_id === action.place.regionId && item.variable === action.variable);
       const s2 = list.find((item) => item.region_id === action.compare!.place.regionId && item.variable === action.compare!.variable);
@@ -627,6 +654,7 @@ export default function App() {
         dispatch({ type: 'navigate', mode: 'compare' });
         dispatch({ type: 'addSlot', doc: d1, enso: e1, settings: { variable: action.variable, season: action.season, period: 'full' } });
         dispatch({ type: 'addSlot', doc: d2, enso: e2, settings: { variable: action.compare.variable, season: action.compare.season, period: 'full' } });
+        scrollDrawer(action.scroll);
         return;
       }
     }
@@ -635,6 +663,7 @@ export default function App() {
       list,
       stale,
     );
+    scrollDrawer(action.scroll);
   }
   const demoRef = useRef(runDemo);
   demoRef.current = runDemo;
