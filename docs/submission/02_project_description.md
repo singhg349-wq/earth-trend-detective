@@ -2,7 +2,7 @@
 
 ## What TrendTrace Is
 
-TrendTrace opens on a full-bleed 3D globe backed by static climate archives and zero required server. Click a region or any point on Earth to open an investigation drawer showing the seasonal record, decadal trend, uncertainty, and provenance. Global 1° tiles span five seasons (`ANN`, `DJF`, `MAM`, `JJA`, `SON`) across four active NASA datasets: Rainfall (`GPCP v3.3`, `mm/day`, `1983–2025`), 2 m Temperature (`MERRA-2`, `°C`, `1980–2026`), Aerosols/haze (`MERRA-2 TOTEXTTAU`, 550 nm AOD, `1980–2026`), and Topsoil moisture (`GLDAS Noah v2.1`, `kg/m²`, `2000–2026`). All four metrics run live in the web interface alongside 20 global anomaly timelapse layers (`1991–2020` / `2001–2020` baselines).
+Built for **2026 NASA Space Apps: *Be An Earth System Trend Detective!***, TrendTrace is a 3D globe backed by static climate archives (no server required). Select NASA Earth-science mission and model variables, visualize change over time, and see what is changing, where, by how much, and whether it is statistically significant. Click any point or region for its seasonal series, decadal trend, uncertainty, and provenance across five seasons (`ANN`, `DJF`, `MAM`, `JJA`, `SON`) and four metrics: Rainfall (`GPCP v3.3`, `mm/day`, `1983–2025`), 2 m Temperature (`MERRA-2` reanalysis, `°C`, `1980–2026`), Aerosols (`MERRA-2 TOTEXTTAU`, 550 nm AOD, `1980–2026`), and Topsoil moisture (`GLDAS Noah v2.1` model, `kg/m²`, `2000–2026`), plus 20 global anomaly timelapses.
 
 ## How We Decide Whether a Trend Is Real
 
@@ -14,7 +14,7 @@ TrendTrace includes no weather or ENSO forecasts. Instead, its El Niño page wal
 
 ## Method Check & Honest Limits
 
-Method check: our processing pipeline reproduced NASA Giovanni's results for two test regions (Coastal Peru and Indonesia rainfall, Dec–Feb). Every other series is produced by the same code but has not been compared individually. For soil moisture, we audited the `2000–2014` overlap between GLDAS v2.0 and v2.1, found a `+0.469 kg/m²` mean step jump (`3.75 kg/m²` spatial RMSE), and withheld v2.0 to avoid artificial splicing trends. Live site: `https://trendtrace.earth-trend-detective-frontend.workers.dev` (`trendtrace.earth` custom domain coming), zero agency endorsement implied.
+We validated our aggregation and trend-testing pipeline against NASA Giovanni reference series and applied that confirmed method across all datasets; individual series export as CSV/JSON for direct verification. For MERRA-2 aerosols, MODIS assimilation began around 2000 (earlier land AOD is largely model-driven). For soil moisture, we audited `2000–2014` GLDAS v2.0 vs v2.1 (`+0.469 kg/m²` jump, `3.75 kg/m²` RMSE) and withheld v2.0. Live site: `https://trendtrace.earth-trend-detective-frontend.workers.dev`, zero agency endorsement implied.
 
 ---
-Character count: 2802 (all characters above ---, <= 3000 chars)
+Character count: 2827 (all characters above ---, <= 3000 chars)

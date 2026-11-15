@@ -220,7 +220,7 @@ function windowText(period: PeriodWindow): string {
 
 function seasonText(row: ResolvedResult): string {
   const parts = [row.seasonCode];
-  if (row.seasonYearLabel) parts.push(row.seasonYearLabel);
+  if (row.seasonYearLabel && row.seasonYearLabel !== 'January year') parts.push(row.seasonYearLabel);
   parts.push(`${row.n} ${row.n === 1 ? 'season' : 'seasons'}`);
   return parts.join(' · ');
 }

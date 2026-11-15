@@ -140,7 +140,7 @@ def build():
     monthly = load_monthly()
     meta = {"format_version": 1, "grid_resolution_deg": 1.0, "tile_size_deg": 10, "fill_int16": FILL,
             "seasons": {}, "variables": {"precip": {"variable": "precipitation", "units": "mm/day", "slope_units": "mm/day/decade", "scale": .01, "offset": 0., "decimals": 2, "slope_scale": .001, "slope_offset": 0., "slope_decimals": 3, "coverage_scale": .001, "coverage_offset": 0., "coverage_decimals": 3, "land_only": False,
-            "regrid_note": "GPCP 0.5 deg averaged to 1.0 deg with cos(latitude) weights", "source": {"product": "GPCPMON", "version": "3.3", "var": "sat_gauge_precip", "doi_or_url": "https://doi.org/10.5067/MEASURES/GPCP/DATA304"}, "years_by_season": {}, "available_tiles": {}}}}
+            "regrid_note": "GPCP 0.5 deg averaged to 1.0 deg with cos(latitude) weights", "source": {"product": "GPCPMON", "version": "3.3", "var": "sat_gauge_precip", "doi_or_url": "https://doi.org/10.5067/MEASURES/GPCP/DATA306"}, "years_by_season": {}, "available_tiles": {}}}}
     root = ROOT / "data" / "artifacts"
     for season, (months, label) in SEASONS.items():
         years = YEARS[season]

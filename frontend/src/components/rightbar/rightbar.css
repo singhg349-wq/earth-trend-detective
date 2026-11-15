@@ -33,6 +33,39 @@
   white-space: nowrap;
 }
 
+.rb-controls {
+  display: flex;
+  gap: 8px;
+  margin: 10px 0 4px;
+}
+
+.rb-control-label {
+  flex: 1;
+  min-width: 0;
+}
+
+.rb-select {
+  width: 100%;
+  height: 28px;
+  padding: 2px 8px;
+  font: 500 12px/1.2 var(--ed-sans);
+  color: var(--ed-text);
+  background: var(--ed-panel-bg-2, rgba(255, 255, 255, 0.05));
+  border: 1px solid var(--ed-line-strong, rgba(255, 255, 255, 0.15));
+  border-radius: 4px;
+  cursor: pointer;
+  outline: none;
+}
+
+.rb-select:hover {
+  border-color: var(--ed-accent, #68b88b);
+}
+
+.rb-select:focus-visible {
+  outline: 2px solid var(--ed-accent, #68b88b);
+  outline-offset: 1px;
+}
+
 .rb-sub {
   margin: 8px 0 4px;
   font: 500 13px/1.4 var(--ed-sans);

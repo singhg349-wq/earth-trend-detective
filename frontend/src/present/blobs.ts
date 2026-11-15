@@ -165,6 +165,13 @@ export const STORY_LAYOUTS: Record<string, BlobLayout> = {
     { cx: 1085, cy: 560, rx: 34, ry: 34, shape: 'orb', colors: SUN },
     { cx: 1560, cy: 60, rx: 150, ry: 150, shape: 'pebble', colors: WARM },
   ],
+  // Annotated result card + key trends (after the demo).
+  result: [
+    { cx: 1220, cy: 480, rx: 520, ry: 360, rot: -3, shape: 'bean', colors: DEEP },
+    { cx: 140, cy: 880, rx: 160, ry: 150, shape: 'pebble', colors: WARM },
+    { cx: 1560, cy: 80, rx: 72, ry: 72, shape: 'orb', colors: MINT },
+    { cx: 1620, cy: 900, rx: 160, ry: 120, shape: 'pebble', colors: COOL },
+  ],
   // A planet edge on the right.
   impact: [
     { cx: 1720, cy: 450, rx: 640, ry: 700, shape: 'orb', colors: COOL },

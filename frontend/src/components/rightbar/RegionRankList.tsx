@@ -12,6 +12,7 @@ import {
   type RankCandidate,
   type RankedRegion,
 } from '../../lib/regionRank';
+import { METRICS } from '../../lib/metrics';
 import './rightbar.css';
 
 type RankVariable = import('../../lib/metrics').MetricId;
@@ -21,6 +22,8 @@ export interface RegionRankListProps {
   season: string;
   selectedRegionId: string | null;
   onSelectRegion: (regionId: string) => void;
+  onChangeVariable?: (variable: RankVariable) => void;
+  onChangeSeason?: (season: string) => void;
 }
 
 interface LoadState {
@@ -63,6 +66,8 @@ export default function RegionRankList({
   season,
   selectedRegionId,
   onSelectRegion,
+  onChangeVariable,
+  onChangeSeason,
 }: RegionRankListProps) {
   const [attempt, setAttempt] = useState(0);
   const currentKey = `${variable}:${season}`;
@@ -161,6 +166,38 @@ export default function RegionRankList({
           <span className="rb-count">{rows.length} regions</span>
         ) : null}
       </div>
+      <div className="rb-controls" role="group" aria-label="Ranking criteria">
+        <label className="rb-control-label">
+          <span className="visually-hidden">Metric</span>
+          <select
+            className="rb-select"
+            aria-label="Select metric"
+            value={variable}
+            onChange={(e) => onChangeVariable?.(e.target.value as RankVariable)}
+          >
+            {METRICS.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.shortLabel}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="rb-control-label">
+          <span className="visually-hidden">Season</span>
+          <select
+            className="rb-select"
+            aria-label="Select season"
+            value={season}
+            onChange={(e) => onChangeSeason?.(e.target.value)}
+          >
+            <option value="ANN">Annual (ANN)</option>
+            <option value="DJF">Dec–Feb (DJF)</option>
+            <option value="MAM">Mar–May (MAM)</option>
+            <option value="JJA">Jun–Aug (JJA)</option>
+            <option value="SON">Sep–Nov (SON)</option>
+          </select>
+        </label>
+      </div>
       <p className="rb-sub">{subtitle}</p>
 
       {loading ? (
@@ -232,7 +269,7 @@ export default function RegionRankList({
                         />
                       </span>
                       <span className="rb-p">
-                        {row.pValue === null ? 'p —' : `p = ${p}`}
+                        {row.pValue === null ? 'p —' : p.startsWith('<') ? `p ${p}` : `p = ${p}`}
                       </span>
                       <span
                         className={`rb-sig${
@@ -255,7 +292,7 @@ export default function RegionRankList({
             </p>
           ) : null}
 
-          <div className="rb-foot"><p>p-value<InfoTip term="pValue" /> · Mann–Kendall test<InfoTip term="mannKendall" /></p><p>Sen’s slope<InfoTip term="senSlope" /></p></div>
+          <div className="rb-foot"><p>p-value<InfoTip term="pValue" /> · Mann–Kendall test<InfoTip term="mannKendall" /></p><p>Sen’s slope<InfoTip term="senSlope" /></p><p>Raw p-values, ranked for navigation only: no multiple-testing correction on this list. The trend maps use Benjamini–Hochberg (q = 0.10).</p></div>
         </>
       )}
     </section>

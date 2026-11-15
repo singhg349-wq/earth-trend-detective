@@ -81,7 +81,7 @@ def build_series(bbox_or_region, start_year, end_year, equal_month=False) -> dic
     vals = [v if v is not None and np.isfinite(v) else None for v in values]
     payload = {
         "id": f"precip_{rid}_DJF", "variable": "precipitation", "units": "mm/day",
-        "source": {"product": "GPCPMON", "version": "3.3", "var": "sat_gauge_precip", "doi_or_url": "https://doi.org/10.5067/MEASURES/GPCP/DATA304"},
+        "source": {"product": "GPCPMON", "version": "3.3", "var": "sat_gauge_precip", "doi_or_url": "https://doi.org/10.5067/MEASURES/GPCP/DATA306"},
         "region": {"id": rid, "label": label, "geometry": geometry_label, "bbox": list(bbox),
                    "cells_used": int(np.count_nonzero(weights)), "area_km2": round(float(weights.sum()), 2)},
         "season": {"code": "DJF", "year_label": "January year", "months": [12, 1, 2], "aggregation": "day-weighted mean of 3 monthly rates"},

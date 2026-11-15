@@ -564,6 +564,7 @@ export default function App() {
     dispatch({ type: 'setBanner', message: null });
     dispatch({ type: 'closeTimelapse' });
     dispatch({ type: 'clearExplore' });
+    dispatch({ type: 'resetComparison' });
     dispatch({ type: 'navigate', mode: 'explore' });
     dispatch({ type: 'applySharedSettings', patch: { variable: 'precipitation', season: 'DJF', period: 'full' } });
     dispatch({ type: 'setExplorePeriod', period: 'full' });
@@ -614,6 +615,21 @@ export default function App() {
     };
     const list = await waitFor(() => seriesListRef.current);
     if (!list || stale()) return;
+    if (action.compare && action.place.regionId && action.compare.place.regionId) {
+      const s1 = list.find((item) => item.region_id === action.place.regionId && item.variable === action.variable);
+      const s2 = list.find((item) => item.region_id === action.compare!.place.regionId && item.variable === action.compare!.variable);
+      if (s1 && s2) {
+        const [[d1, e1], [d2, e2]] = await Promise.all([
+          Promise.all([getSeries(s1.id), getEnso(s1.region_id)]),
+          Promise.all([getSeries(s2.id), getEnso(s2.region_id)]),
+        ]);
+        if (stale()) return;
+        dispatch({ type: 'navigate', mode: 'compare' });
+        dispatch({ type: 'addSlot', doc: d1, enso: e1, settings: { variable: action.variable, season: action.season, period: 'full' } });
+        dispatch({ type: 'addSlot', doc: d2, enso: e2, settings: { variable: action.compare.variable, season: action.compare.season, period: 'full' } });
+        return;
+      }
+    }
     await runInvestigation(
       { place: action.place, variable: action.variable, season: action.season, period: 'full' },
       list,
@@ -770,6 +786,12 @@ export default function App() {
                   season={comparison.shared.season}
                   selectedRegionId={pendingPlace?.regionId ?? null}
                   onSelectRegion={(regionId) => handleRegionSelect(regionId)}
+                  onChangeVariable={(variable) => {
+                    dispatch({ type: 'applySharedSettings', patch: { variable } });
+                  }}
+                  onChangeSeason={(season) => {
+                    dispatch({ type: 'applySharedSettings', patch: { season } });
+                  }}
                 />
               </div>
               <button
@@ -904,9 +926,15 @@ export default function App() {
             onOpenTimelapse={(variable, season) => void openTimelapse(variable, season)}
             onOverride={(id, patch) => dispatch({ type: 'overrideSlot', id, patch })}
             onClearOverride={(id) => dispatch({ type: 'clearOverride', id })}
-            onPeriodChange={(_id, period) => {
-              if (mode === 'explore') dispatch({ type: 'setExplorePeriod', period });
+            onPeriodChange={(id, period) => {
+              if (mode === 'explore') {
+                dispatch({ type: 'setExplorePeriod', period });
+              } else {
+                dispatch({ type: 'applySharedSettings', patch: { period } });
+                dispatch({ type: 'overrideSlot', id, patch: { period } });
+              }
             }}
+            sharedSettings={comparison.shared}
             catalog={(seriesList ?? []).map((item) => ({
               regionId: item.region_id,
               label: item.region_label,

@@ -31,11 +31,23 @@ function Blob({ index, spec }: { index: number; spec: BlobSpec }) {
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
+function requestFull() {
+  if (typeof document === 'undefined') return;
+  if (!document.fullscreenElement) {
+    void document.documentElement.requestFullscreen?.().catch(() => {});
+  }
+}
+
+function exitFull() {
+  if (typeof document === 'undefined') return;
+  if (document.fullscreenElement) {
+    void document.exitFullscreen?.().catch(() => {});
+  }
+}
+
 /**
- * Fullscreen presenter. Story steps render a designed scene on black; demo
- * steps leave the real app (driven by App via `onStep`) on screen with a small
- * caption. Four blobs persist across every step and morph between layouts, so
- * story → demo → story reads as one continuous piece. Keyboard only.
+ * Fullscreen presenter. Story steps render a designed scene on black with
+ * progressive Next reveals on the same slide; demo steps drive the real app.
  */
 export default function PresentMode({ onStep, onExit }: PresentModeProps) {
   const [state, send] = useReducer(
@@ -46,10 +58,12 @@ export default function PresentMode({ onStep, onExit }: PresentModeProps) {
   );
   const step = STEPS[state.index];
 
-  // The step that is on its way out stays mounted briefly for a fast exit.
-  // Derived during render so the outgoing scene never unmounts and remounts.
+  // Track scene changes (do NOT cross-fade when staying on the same scene for a progressive reveal).
   const [track, setTrack] = useState<{ current: PresentStep; previous: PresentStep | null }>({ current: step, previous: null });
-  if (track.current !== step) setTrack({ current: step, previous: track.current });
+  if (track.current !== step) {
+    const sameScene = track.current.kind === 'story' && step.kind === 'story' && track.current.scene === step.scene;
+    setTrack({ current: step, previous: sameScene ? null : track.current });
+  }
   const leaving = track.current === step ? track.previous : track.current;
   useEffect(() => {
     if (!track.previous) return;
@@ -58,9 +72,10 @@ export default function PresentMode({ onStep, onExit }: PresentModeProps) {
   }, [track]);
 
   useEffect(() => {
-    // Warm the display font so the first headline never flashes a fallback.
     void document.fonts?.load('400 64px "Instrument Serif"');
     void document.fonts?.load('italic 400 64px "Instrument Serif"');
+    requestFull();
+    return () => exitFull();
   }, []);
 
   useEffect(() => {
@@ -71,6 +86,7 @@ export default function PresentMode({ onStep, onExit }: PresentModeProps) {
     const down = (event: KeyboardEvent) => {
       const action = handled(event);
       if (!action) return;
+      if (action !== 'exit') requestFull();
       event.preventDefault();
       event.stopImmediatePropagation();
       if (event.repeat) return;
@@ -92,6 +108,7 @@ export default function PresentMode({ onStep, onExit }: PresentModeProps) {
 
   useEffect(() => {
     if (!state.active) {
+      exitFull();
       onExit();
       return;
     }
@@ -104,9 +121,11 @@ export default function PresentMode({ onStep, onExit }: PresentModeProps) {
   if (!state.active) return null;
   const isStory = step.kind === 'story';
   const scene = isStory ? step.scene : undefined;
+  const reveal = step.reveal ?? 99;
   const layout = layoutFor(step);
   const weave = scene && WEAVE_SCENES.has(scene);
-  const leavingScene = leaving && leaving.kind === 'story' && leaving !== step ? leaving.scene : undefined;
+  const leavingScene =
+    leaving && leaving.kind === 'story' && leaving.scene !== scene ? leaving.scene : undefined;
   const layers: Array<{ step: PresentStep; out: boolean }> = [];
   if (leavingScene && leaving) layers.push({ step: leaving, out: true });
   if (scene) layers.push({ step, out: false });
@@ -123,41 +142,50 @@ export default function PresentMode({ onStep, onExit }: PresentModeProps) {
       </svg>
 
       <div className="pm-black" style={{ opacity: isStory ? backdropOpacity(scene) : 0 }} />
-      <Blob index={3} spec={layout[3]} />
-      <Blob index={2} spec={layout[2]} />
-      <Blob index={1} spec={layout[1]} />
-      {weave && scene && (
-        <div className="pm-layer pm-under" key={`under-${step.id}`} aria-hidden="true">
-          <Scene scene={scene} />
-        </div>
+
+      {layers.map(({ step: layerStep, out }) =>
+        out ? (
+          <div key={`out-${layerStep.id}`} className="pm-layer pm-leaving pm-under">
+            <Scene scene={layerStep.scene!} reveal={layerStep.reveal ?? 99} />
+          </div>
+        ) : weave ? (
+          <div key={`under-${layerStep.scene}`} className="pm-layer pm-under">
+            <Scene scene={layerStep.scene!} reveal={reveal} />
+          </div>
+        ) : null,
       )}
+
       <Blob index={0} spec={layout[0]} />
+      <Blob index={1} spec={layout[1]} />
+      <Blob index={2} spec={layout[2]} />
+      <Blob index={3} spec={layout[3]} />
       <div className="pm-grain" />
 
-      {layers.map((layer) => (
-        <section
-          className={`pm-layer pm-over${layer.out ? ' pm-leaving' : ''}`}
-          key={layer.step.id}
-          aria-label={layer.step.title}
-          aria-hidden={layer.out || undefined}
-        >
-          <Scene scene={layer.step.scene!} />
-        </section>
-      ))}
+      {layers.map(({ step: layerStep, out }) =>
+        out ? (
+          <div key={`out2-${layerStep.id}`} className="pm-layer pm-leaving pm-over">
+            <Scene scene={layerStep.scene!} reveal={layerStep.reveal ?? 99} />
+          </div>
+        ) : (
+          <div key={`in-${layerStep.scene}`} className={`pm-layer${weave ? ' pm-over' : ''}`}>
+            <Scene scene={layerStep.scene!} reveal={reveal} />
+          </div>
+        ),
+      )}
 
       {!isStory && step.caption && (
-        <div className="pm-caption" key={`cap-${step.id}`}>
+        <aside className="pm-caption" key={step.id}>
           <span className="pm-caption-live">Live</span>
           <span className="pm-caption-label">{step.caption.label}</span>
           {step.caption.value && <strong className="pm-caption-value">{step.caption.value}</strong>}
           {step.caption.detail && <span className="pm-caption-detail">{step.caption.detail}</span>}
-        </div>
+        </aside>
       )}
 
       <div className="pm-progress" aria-hidden="true">
         <span style={{ transform: `scaleX(${progress})` }} />
       </div>
-      <div className="present-counter" aria-live="off">
+      <div className="present-counter" aria-live="polite">
         {pad(state.index + 1)} / {pad(STEPS.length)}
       </div>
     </div>

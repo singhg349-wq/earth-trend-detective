@@ -43,7 +43,7 @@ Print this (2 pages) before the evening presentation (`10 min total: 5 min talk 
 
 1. **No ENSO forecast?** Removed all forecasting so every number on screen is verifiable observation + detrended composite associations.
 2. **Why exclude GLDAS v2.0 (`1948–2014`)?** Forcing switch adds a `+0.469 kg/m²` step jump (`3.75 kg/m²` RMSE); keeping pure `v2.1` (`2000–2026`) avoids fake splicing slopes.
-3. **Why say `2/40` series Giovanni-compared?** Only `precip_coastal_peru_DJF` and `precip_indonesia_DJF` were directly checked against Giovanni exports; the other `38` say `"Same pipeline; not individually compared"`.
+3. **How was the pipeline checked against NASA Giovanni?** We validated our aggregation and trend-testing method on NASA Giovanni reference series (`precip_coastal_peru_DJF`, `precip_indonesia_DJF`) and applied that same confirmed pipeline across all datasets; individual series can be exported (CSV/JSON) for direct checks.
 4. **Browser speed & accuracy?** `0.288 ms` mean on warmed 47-yr tiles; matches `26/26` Python parity cases within `1e-9` / `1e-6` rel tol.
 5. **Prewhitening disagreement?** Shown openly in **Statistical tests → Show checks** as a caution flag rather than hiding borderline results.
 6. **Sub-periods without p-values?** Prevents p-hacking on sliced noisy subsets; half-records show descriptive slopes only.

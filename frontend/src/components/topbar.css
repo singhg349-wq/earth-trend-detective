@@ -98,7 +98,7 @@
 }
 
 .ed-topbar .ed-enso-back {
-  margin-left: auto;
+  flex-shrink: 0;
   height: 36px;
 }
 
@@ -122,7 +122,8 @@
     right: 9px;
   }
 
-  .ed-topbar .ed-enso-btn {
+  .ed-topbar .ed-enso-btn,
+  .ed-topbar .ed-enso-back {
     font-size: 12px;
     padding: 0 12px;
   }

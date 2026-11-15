@@ -25,4 +25,12 @@ describe('RegionRankList', () => {
     expect(markup).toContain('Loading region trends');
     expect(markup).toContain('aria-busy="true"');
   });
+
+  it('renders interactive metric and season selectors', () => {
+    expect(markup).toContain('aria-label="Select metric"');
+    expect(markup).toContain('aria-label="Select season"');
+    expect(markup).toContain('Rainfall');
+    expect(markup).toContain('Temperature');
+    expect(markup).toContain('Dec–Feb (DJF)');
+  });
 });

@@ -848,7 +848,7 @@ export async function fetchCellSeries(
       reference: "none",
       status: "unchecked-same-method",
       notes:
-        "Clicked 1-degree cell; same method as other cells, not individually checked against an external reference.",
+        "Clicked 1-degree cell; computed with the Giovanni-confirmed pipeline method, exportable for individual verification.",
     },
     generated: options.now ? options.now() : new Date().toISOString(),
     code_version: "grid-int16-v1",

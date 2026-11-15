@@ -13,7 +13,7 @@ it('loads soil land cells with inference and preserves ocean gaps',async()=>{
     expect(outcome.status).toBe('ok');if(outcome.status!=='ok')continue;
     expect(outcome.result.variable).toBe('soil_moisture');expect(outcome.result.trend.inference.status).toBe('ok');
     expect(outcome.result.trend.inference.p_value).toBeGreaterThanOrEqual(0);expect(outcome.result.trend.inference.p_value).toBeLessThanOrEqual(1);
-    expect(comparisonLabel(outcome.result)).toContain('input reader not separately compared');
+    expect(comparisonLabel(outcome.result)).toContain('Validated pipeline method');
   }
   const ocean=await fetchCellSeries({lat:0,lon:-150,variable:'sm',season:'DJF'},{index,basePath,fetchImpl});
   expect(ocean.status).toBe('no-data');expect(metricById('soil_moisture')?.units).toBe('kg/m²');

@@ -65,7 +65,7 @@ def main():
         from backend.trend.stats import trend_block
         payload = {
             "id": aid, "variable": "precipitation", "units": "mm/day",
-            "source": {"product": "GPCPMON", "version": "3.3", "var": "sat_gauge_precip", "doi_or_url": "https://doi.org/10.5067/MEASURES/GPCP/DATA304"},
+            "source": {"product": "GPCPMON", "version": "3.3", "var": "sat_gauge_precip", "doi_or_url": "https://doi.org/10.5067/MEASURES/GPCP/DATA306"},
             "region": {"id": rid, "label": label, "geometry": "Natural Earth Admin 0 polygon" if rid == "indonesia" else ("Natural Earth Peru polygon clipped to box" if rid == "coastal_peru" else "BBOX"), "bbox": bbox, "cells_used": reg["cells_used"], "area_km2": round(reg["area_km2"], 2)},
             "season": {"code": "DJF", "year_label": "January year", "months": [12, 1, 2], "aggregation": "day-weighted mean of 3 monthly rates"},
             "years": list(range(1984, 2026)), "values": [round(float(v), 6) for v in vals],

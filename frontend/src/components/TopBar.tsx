@@ -40,38 +40,37 @@ export default function TopBar({
         <span className="ed-brand-name">TrendTrace</span>
       </div>
 
+      <nav className="ed-nav" aria-label="Primary">
+        {NAV.map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            className={
+              view === 'globe' && mode === item.id ? 'ed-nav-item is-active' : 'ed-nav-item'
+            }
+            onClick={() => onNavigate(item.id)}
+            aria-current={view === 'globe' && mode === item.id ? 'page' : undefined}
+          >
+            {item.label}
+          </button>
+        ))}
+        <a className={view === 'glossary' ? 'ed-nav-item is-active' : 'ed-nav-item'} href="#glossary">Glossary</a>
+        {onPresent && <button type="button" className="ed-present-btn" onClick={onPresent} title="Fullscreen talk mode (keyboard: arrows, Home, Esc)">Present</button>}
+      </nav>
+
       {view !== 'globe' ? (
         <button type="button" className="ed-btn ed-enso-back" onClick={onBackToGlobe}>
           <span aria-hidden="true">&larr;</span> Back to globe
         </button>
       ) : (
-        <>
-          <nav className="ed-nav" aria-label="Primary">
-            {NAV.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                className={
-                  mode === item.id ? 'ed-nav-item is-active' : 'ed-nav-item'
-                }
-                onClick={() => onNavigate(item.id)}
-                aria-current={mode === item.id ? 'page' : undefined}
-              >
-                {item.label}
-              </button>
-            ))}
-            <a className="nav-item" href="#glossary">Glossary</a>
-            {onPresent && <button type="button" className="ed-present-btn" onClick={onPresent} title="Fullscreen talk mode (keyboard: arrows, Home, Esc)">Present</button>}
-      </nav>
-          <button
-            type="button"
-            className="ed-btn ed-btn--primary ed-enso-btn"
-            onClick={onShowEnso}
-          >
-            <span className="ed-enso-dot" aria-hidden="true" />
-            El Ni&ntilde;o
-          </button>
-        </>
+        <button
+          type="button"
+          className="ed-btn ed-btn--primary ed-enso-btn"
+          onClick={onShowEnso}
+        >
+          <span className="ed-enso-dot" aria-hidden="true" />
+          El Ni&ntilde;o
+        </button>
       )}
     </header>
   );

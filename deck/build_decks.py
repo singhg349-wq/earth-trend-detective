@@ -715,7 +715,7 @@ def build_deck(out_path: Path, morph: bool, blob_cache: dict, bg_plain: Path, bg
     set_shape_fill_rgba(pin_dot, HEX["black"], 100)
     set_no_line(pin_dot)
 
-    pill = add_pill(s1, 96, 70, "NASA Space Apps Challenge · The problem", "cool")
+    pill = add_pill(s1, 96, 70, "2026 NASA Space Apps · Be An Earth System Trend Detective!", "cool")
     tb_lead, tf = add_tb(s1, 96, 134, 980, 50)
     add_run(tf.paragraphs[0], "Everyone says the climate is changing.", 30.0, FONT_SERIF, HEX["white"], 84, spc_em=-0.01)
 
@@ -1097,7 +1097,7 @@ def build_deck(out_path: Path, morph: bool, blob_cache: dict, bg_plain: Path, bg
     add_run(p0, "01 Giovanni checks for T2M/AOD/SM  ·  02 All 5 seasons for regions  ·  03 Sub-period p-values", 11.4, FONT_SANS, HEX["white"], 86)
     p1 = tf.add_paragraph()
     p1.space_before = Pt(4)
-    add_run(p1, "Limits: 2/40 regional series checked vs Giovanni; 2000–2026 soil moisture (v2.0 withheld +0.47 kg/m²); observed history only.", 10.2, FONT_SANS, HEX["white"], 68)
+    add_run(p1, "Limits: pipeline confirmed on NASA Giovanni & applied to all; 2000–2026 soil moisture (v2.0 withheld +0.47 kg/m²); pre-2000 AOD model-driven.", 10.2, FONT_SANS, HEX["white"], 68)
 
     credits = ["NASA GES DISC", "GPCP v3.3", "MERRA-2", "GLDAS v2.1", "NOAA ERSST v6", "NOAA CPC RONI", "Natural Earth"]
     add_chip_row(s7, credits, 660, 710, gap_px=9.0, size_pt=9.6, height_px=34.0, char_w_px=7.8, pad_px=26.0, border_alpha=32)

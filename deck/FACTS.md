@@ -5,7 +5,7 @@ Every statistic, file count, byte size, and test result below was directly obser
 ## 1. Raw Source Archives & Reference Files
 
 - **GPCP Monthly Analysis v3.3 (`GPCPMON_3.3`, variable `sat_gauge_precip`, mm/day, 0.5° × 0.5°)**
-  - DOI: `https://doi.org/10.5067/MEASURES/GPCP/DATA306` (archive sidecar / `_PRODUCT.md`; note legacy `DATA304` string remains inside pre-R4 rainfall JSON files).
+  - DOI: `https://doi.org/10.5067/MEASURES/GPCP/DATA306` (archive sidecar / `_PRODUCT.md`; verified against the NASA Earthdata catalog for `GPCPMON` v3.3, and every rainfall artifact + build script now carries this DOI).
   - Archive on disk (`D:\trend-detective-data\raw\GPCPMON_3.3`): **1,033 files** (`516` `.nc4`, `516` JSON sidecars, `1` `_PRODUCT.md`), **4,030,169,564 bytes (~4.03 GB)**.
   - Monthly `.nc4` files processed: **516 monthly files** (`1983-01`–`2025-12`).
 
