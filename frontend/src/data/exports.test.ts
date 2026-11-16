@@ -21,6 +21,12 @@ describe('periodWindow', () => {
     expect(periodWindow('second-half', doc.years)?.label).toBe('2004–2026');
   });
 
+  it('computes custom windows bounded by available years or sensible defaults', () => {
+    expect(periodWindow('custom', doc.years, [1990, 2010])?.label).toBe('1990–2010');
+    expect(periodWindow('custom', doc.years, [2010, 1990])?.label).toBe('1990–2010');
+    expect(periodWindow('custom', doc.years)?.label).toBe('2007–2026');
+  });
+
   it('returns null for a series with no years', () => {
     expect(periodWindow('full', [])).toBeNull();
   });
@@ -49,9 +55,9 @@ describe('resolveResult', () => {
     expect(cells.window).toBe('1981–2026 (full period)');
   });
 
-  it('never lets the full-period p value or interval reach a half window', () => {
-    for (const key of ['first-half', 'second-half'] as const) {
-      const row = resolveResult(doc, key, 'A');
+  it('never lets the full-period p value or interval reach a sub-period or custom window', () => {
+    for (const key of ['first-half', 'second-half', 'custom'] as const) {
+      const row = resolveResult(doc, key, 'A', key === 'custom' ? [1995, 2015] : undefined);
       const cells = resultTableCells(row);
 
       expect(row.origin).toBe('browser calculation');
@@ -146,5 +152,33 @@ describe('result exports', () => {
     expect(half.interval_95_per_decade).toBeNull();
     expect(half.inference.available).toBe(false);
     expect(half.values).toHaveLength(23);
+  });
+
+  it('exports a custom window with descriptive stats and null p-value/interval', () => {
+    const customRow = resolveResult(doc, 'custom', 'C', [1990, 2010]);
+    const payload = buildResultJson({
+      mode: 'explore',
+      period: 'custom',
+      exportedAt: '2026-11-14T00:00:00.000Z',
+      rows: [customRow],
+    });
+
+    expect(payload.period).toEqual({
+      key: 'custom',
+      start: 1990,
+      end: 2010,
+      label: '1990–2010',
+    });
+    expect(payload.rows[0].window).toEqual({
+      key: 'custom',
+      start: 1990,
+      end: 2010,
+      label: '1990–2010',
+    });
+    expect(payload.rows[0].result_origin).toBe('browser calculation');
+    expect(payload.rows[0].p_value).toBeNull();
+    expect(payload.rows[0].interval_95_per_decade).toBeNull();
+    expect(payload.rows[0].values).toHaveLength(21);
+    expect(resultTableCells(customRow).window).toBe('1990–2010 (custom)');
   });
 });

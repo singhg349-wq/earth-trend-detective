@@ -25,7 +25,7 @@ export async function loadEnsoData<T>(file: string, validate: (v: unknown) => v 
 export function validImpacts(v: unknown): v is ImpactHistory { return isObject(v) && Array.isArray(v.maps) && v.maps.every(m => isObject(m) && typeof m.id === 'string' && Array.isArray(m.region_summaries) && isObject(m.colormap)); }
 export function impactHeadline(map: ImpactMap): string {
   const region = map.region_summaries.filter(r => r.significant && Number.isFinite(r.diff) && r.ci_low * r.ci_high > 0).sort((a, b) => Math.abs(b.diff) - Math.abs(a.diff))[0];
-  return region ? `El Niño is associated with ${Math.abs(region.diff).toFixed(2)} ${region.units} ${region.diff < 0 ? 'lower' : 'higher'} values in ${region.label} than La Niña.` : 'Regional differences are uncertain in this composite.';
+  return region ? `El Niño is associated with ${Math.abs(region.diff).toFixed(2)} ${region.units} ${region.diff < 0 ? 'lower' : 'higher'} values in ${region.label} than the cool (opposite) Pacific phase.` : 'Regional differences are uncertain in this composite.';
 }
 export function monthLabel(ym: string): string { return new Date(`${ym.length === 2 ? '2000-'+ym : ym}-15T12:00:00Z`).toLocaleDateString('en', { month: 'long', year: ym.length === 2 ? undefined : 'numeric', timeZone: 'UTC' }); }
 export function colorGradient(map: ColorMap): string {

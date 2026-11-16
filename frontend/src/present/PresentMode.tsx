@@ -1,9 +1,20 @@
-import { useEffect, useReducer, useState, type CSSProperties } from 'react';
+import { useEffect, useLayoutEffect, useReducer, useRef, useState, type CSSProperties } from 'react';
 import { initialPresentState, keyToAction, presentReducer } from './engine';
 import { backdropOpacity, blobPath, layoutFor, type BlobSpec } from './blobs';
 import { Scene, WEAVE_SCENES } from './scenes';
-import { STEPS, type PresentStep } from './steps';
+import { STEPS, type DemoRing, type PresentStep } from './steps';
 import './present.css';
+
+interface MeasuredRing {
+  key: string;
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+  label?: string;
+  tone: 'amber' | 'mint' | 'coral';
+  fading?: boolean;
+}
 
 interface PresentModeProps {
   /** Called whenever the current step changes (and once on mount). */
@@ -81,6 +92,10 @@ export default function PresentMode({ onStep, onExit }: PresentModeProps) {
   useEffect(() => {
     const handled = (event: KeyboardEvent) => {
       if (event.ctrlKey || event.metaKey || event.altKey) return null;
+      // Let typing in search/notes fields work normally (Space, arrows, Escape).
+      if (event.target instanceof HTMLElement && event.target.closest('input, textarea, select, [contenteditable="true"]')) return null;
+      // Plain Escape reaches the app (closing dropdowns); only Shift+Escape exits.
+      if (event.key === 'Escape' && !event.shiftKey) return null;
       return keyToAction(event.key);
     };
     const down = (event: KeyboardEvent) => {
@@ -117,6 +132,86 @@ export default function PresentMode({ onStep, onExit }: PresentModeProps) {
     // onStep/onExit are stable refs from App; only the step index drives this.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.index, state.active]);
+
+  const [rings, setRings] = useState<MeasuredRing[]>([]);
+  const prevRingsRef = useRef<MeasuredRing[]>([]);
+
+  useLayoutEffect(() => {
+    const stepRings: DemoRing[] = step.kind === 'demo' ? (step.rings ?? []) : [];
+    if (step.kind === 'demo') {
+      if (stepRings.length === 0) {
+        setRings([]);
+        prevRingsRef.current = [];
+        return;
+      }
+      const measure = () => {
+        const next: MeasuredRing[] = [];
+        for (const r of stepRings) {
+          const el = document.querySelector(r.to);
+          if (!el) continue;
+          const rect = el.getBoundingClientRect();
+          if (rect.width <= 0 || rect.height <= 0) continue;
+          next.push({
+            key: r.key,
+            left: rect.left - 4,
+            top: rect.top - 4,
+            width: rect.width + 8,
+            height: rect.height + 8,
+            label: r.label,
+            tone: r.tone ?? 'amber',
+          });
+        }
+        if (next.length > 0) {
+          setRings(next);
+          prevRingsRef.current = next;
+        }
+      };
+      measure();
+      const t1 = window.setTimeout(measure, 180);
+      const t2 = window.setTimeout(measure, 520);
+      const t3 = window.setTimeout(measure, 1100);
+      // Globe flies take ~1.4 s; re-measure once the map pin has landed.
+      const t4 = window.setTimeout(measure, 1700);
+      window.addEventListener('resize', measure);
+      window.addEventListener('scroll', measure, true);
+      return () => {
+        window.clearTimeout(t1);
+        window.clearTimeout(t2);
+        window.clearTimeout(t3);
+        window.clearTimeout(t4);
+        window.removeEventListener('resize', measure);
+        window.removeEventListener('scroll', measure, true);
+      };
+    }
+
+    // Story slide: FLIP-morph any persistent keys (`slope`, `ci`, `p`) into `[data-morph=...]`
+    if (step.scene === 'method' && prevRingsRef.current.length > 0) {
+      const morphed: MeasuredRing[] = [];
+      for (const prev of prevRingsRef.current) {
+        const target = document.querySelector(`[data-morph="${prev.key}"]`);
+        if (!target) continue;
+        const rect = target.getBoundingClientRect();
+        if (rect.width <= 0 || rect.height <= 0) continue;
+        morphed.push({
+          ...prev,
+          left: rect.left,
+          top: rect.top,
+          width: rect.width,
+          height: rect.height,
+          label: undefined,
+          fading: true,
+        });
+      }
+      prevRingsRef.current = [];
+      if (morphed.length > 0) {
+        requestAnimationFrame(() => setRings(morphed));
+        const clear = window.setTimeout(() => setRings([]), 700);
+        return () => window.clearTimeout(clear);
+      }
+    }
+    setRings([]);
+    prevRingsRef.current = [];
+  }, [step]);
 
   if (!state.active) return null;
   const isStory = step.kind === 'story';
@@ -171,6 +266,26 @@ export default function PresentMode({ onStep, onExit }: PresentModeProps) {
             <Scene scene={layerStep.scene!} reveal={reveal} />
           </div>
         ),
+      )}
+
+      {rings.length > 0 && (
+        <div className="pm-rings-layer" aria-hidden="true">
+          {rings.map((r) => (
+            <div
+              key={r.key}
+              className={`pm-ring pm-ring--${r.tone}${r.fading ? ' is-fading' : ''}`}
+              style={{ left: r.left, top: r.top, width: r.width, height: r.height }}
+            >
+              {r.label && (
+                <span
+                  className={`pm-ring-label${r.top < 34 ? ' is-below' : ''}${r.left + r.label.length * 7.4 + 28 > window.innerWidth - 8 ? ' is-right' : ''}`}
+                >
+                  {r.label}
+                </span>
+              )}
+            </div>
+          ))}
+        </div>
       )}
 
       {!isStory && step.caption && (

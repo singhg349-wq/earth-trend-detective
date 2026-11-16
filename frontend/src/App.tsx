@@ -28,6 +28,7 @@ import {
   deleteInvestigation,
   loadSaved,
   saveInvestigation,
+  upsertInvestigation,
   type SavedInvestigation,
 } from './data/library';
 import {
@@ -190,6 +191,9 @@ export default function App() {
   // Present mode (keyboard-driven talk). Off unless ?present=1 or the top-bar button.
   const [presenting, setPresenting] = useState(() => new URLSearchParams(window.location.search).get('present') === '1');
   const [presentStep, setPresentStep] = useState<PresentStep | null>(null);
+  const [draftName, setDraftName] = useState('');
+  const [draftNotes, setDraftNotes] = useState('');
+  const [draftTags, setDraftTags] = useState<string[]>([]);
   const [ensoKey, setEnsoKey] = useState(0);
   const demoToken = useRef(0);
   const presentStepRef = useRef<PresentStep | null>(null);
@@ -393,8 +397,14 @@ export default function App() {
           : [];
     if (regionIds.length === 0) return;
     const firstName = labels[regionIds[0]] ?? regionIds[0];
-    const name =
-      regionIds.length > 1 ? `${firstName} +${regionIds.length - 1} more` : firstName;
+    const secondName = regionIds.length > 1 ? (labels[regionIds[1]] ?? regionIds[1]) : '';
+    const defaultName =
+      regionIds.length === 2
+        ? `${firstName} vs ${secondName}`
+        : regionIds.length > 2
+          ? `${firstName} +${regionIds.length - 1} more`
+          : firstName;
+    const name = draftName.trim() || defaultName;
     const updated = saveInvestigation({
       name,
       mode: mode === 'compare' ? 'compare' : 'explore',
@@ -408,6 +418,8 @@ export default function App() {
               period,
             }))
           : exploreDoc ? [{regionId:exploreDoc.region.id,variable:exploreDoc.variable,season:exploreDoc.season.code,period:state.explorePeriod}] : undefined,
+      notes: draftNotes.trim() || undefined,
+      tags: draftTags.length > 0 ? draftTags : undefined,
     });
     dispatch({ type: 'setSaved', saved: updated });
     dispatch({ type: 'setBanner', message: 'Saved to this browser.' });
@@ -512,9 +524,14 @@ export default function App() {
         variable: selection.variable,
         season: selection.season,
         period: selection.period,
+        customRange: selection.customRange,
       },
     });
-    dispatch({ type: 'setExplorePeriod', period: selection.period });
+    dispatch({
+      type: 'setExplorePeriod',
+      period: selection.period,
+      customRange: selection.customRange,
+    });
     try {
       if (selection.place.regionId) {
         const summary = list.find(
@@ -585,7 +602,8 @@ export default function App() {
   async function runDemo(step: PresentStep) {
     const token = ++demoToken.current;
     const stale = () => demoToken.current !== token;
-    const wasDemo = presentStepRef.current?.kind === 'demo';
+    const prev = presentStepRef.current;
+    const wasDemo = prev?.kind === 'demo';
     presentStepRef.current = step;
     setPresentStep(step);
     const action = step.kind === 'demo' ? step.demo : undefined;
@@ -595,23 +613,65 @@ export default function App() {
       if (!stale()) resetApp();
       return;
     }
-    resetApp();
-    if (action.type === 'landing') return;
+    const sameInvestigation =
+      prev?.kind === 'demo' &&
+      prev.demo?.type === 'investigation' &&
+      action.type === 'investigation' &&
+      prev.demo.place.regionId === action.place.regionId &&
+      prev.demo.variable === action.variable &&
+      prev.demo.season === action.season &&
+      (prev.demo.compare?.place.regionId ?? null) === (action.compare?.place.regionId ?? null);
+    // fly → workflow → workflow → investigation continues one walkthrough without flashing landing.
+    const sameWorkflow =
+      prev?.kind === 'demo' &&
+      (prev.demo?.type === 'workflow' || prev.demo?.type === 'fly') &&
+      action.type === 'workflow';
+    const workflowToInvestigation =
+      prev?.kind === 'demo' &&
+      prev.demo?.type === 'workflow' &&
+      action.type === 'investigation' &&
+      !action.compare;
+    if (!sameInvestigation && !sameWorkflow && !workflowToInvestigation) {
+      resetApp();
+    }
+    if (workflowToInvestigation) {
+      setWorkflowOpen(false);
+    }
+    if (action.type === 'landing') {
+      setAutoRotate(true);
+      setSearchFocus({ kind: 'center', key: 'landing-globe', center: [30, 18], zoom: 1.9 });
+      return;
+    }
+    const flyTo = (place: { name: string; lon: number; lat: number }, zoom = 3.2) => {
+      setAutoRotate(false);
+      setPickedPoint({ lon: place.lon, lat: place.lat });
+      setSearchFocus({ kind: 'center', key: `present-fly-${place.name}`, center: [place.lon, place.lat], zoom });
+    };
+    if (action.type === 'fly') {
+      flyTo(action.place, action.zoom);
+      return;
+    }
     if (action.type === 'workflow') {
+      if (action.place && !sameWorkflow) flyTo(action.place);
       setWorkflowOpen(true);
       if (action.place) setPendingPlace(action.place);
-      if (action.variable || action.season) {
+      if (action.variable || action.season || action.period) {
         dispatch({
           type: 'applySharedSettings',
           patch: {
             ...(action.variable ? { variable: action.variable } : {}),
             ...(action.season ? { season: action.season } : {}),
+            ...(action.period ? { period: action.period } : {}),
           },
         });
       }
       return;
     }
     if (action.type === 'library') {
+      if (action.upsertDemo) {
+        const updated = upsertInvestigation(action.upsertDemo);
+        dispatch({ type: 'setSaved', saved: updated });
+      }
       dispatch({ type: 'navigate', mode: 'library' });
       return;
     }
@@ -619,6 +679,54 @@ export default function App() {
       window.location.hash = action.hash;
       setEnsoKey((key) => key + 1);
       setView('enso');
+      return;
+    }
+    if (action.type === 'timelapse') {
+      setWorkflowOpen(false);
+      setSearchOpen(false);
+      setView('globe');
+      setAutoRotate(false);
+      if (action.place) {
+        setPickedPoint({ lon: action.place.lon, lat: action.place.lat });
+      }
+      const slug = metricById(action.variable)?.slug ?? action.variable;
+      await openTimelapse(slug, action.season);
+      if (!stale()) dispatch({ type: 'togglePlay' });
+      return;
+    }
+    const scrollDrawer = (where?: 'top' | 'chart') => {
+      if (!where) return;
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          const bodyEl = document.querySelector('.inspector-body') as HTMLElement | null;
+          if (where === 'chart') {
+            const chartEl = document.querySelector('[data-anchor="chart"]') as HTMLElement | null;
+            if (chartEl && bodyEl) {
+              const bodyRect = bodyEl.getBoundingClientRect();
+              const chartRect = chartEl.getBoundingClientRect();
+              const targetTop = bodyEl.scrollTop + (chartRect.top - bodyRect.top) - 16;
+              bodyEl.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
+              window.scrollTo(0, 0);
+              if (document.documentElement) document.documentElement.scrollTop = 0;
+              if (document.body) document.body.scrollTop = 0;
+              const appEl = document.querySelector('.app');
+              if (appEl) appEl.scrollTop = 0;
+              return;
+            }
+          }
+          if (bodyEl) {
+            bodyEl.scrollTo({ top: where === 'chart' ? 380 : 0, behavior: 'smooth' });
+          }
+          window.scrollTo(0, 0);
+          if (document.documentElement) document.documentElement.scrollTop = 0;
+          if (document.body) document.body.scrollTop = 0;
+          const appEl = document.querySelector('.app');
+          if (appEl) appEl.scrollTop = 0;
+        }, 120);
+      });
+    };
+    if (sameInvestigation) {
+      scrollDrawer(action.scroll);
       return;
     }
     const waitFor = async <T,>(read: () => T | null | undefined, ms = 12000): Promise<T | null> => {
@@ -633,15 +741,6 @@ export default function App() {
     };
     const list = await waitFor(() => seriesListRef.current);
     if (!list || stale()) return;
-    const scrollDrawer = (where?: 'top' | 'chart') => {
-      if (!where) return;
-      requestAnimationFrame(() => {
-        setTimeout(() => {
-          const el = document.querySelector('.inspector-body');
-          if (el) el.scrollTo({ top: where === 'chart' ? 380 : 0, behavior: 'smooth' });
-        }, 120);
-      });
-    };
     if (action.compare && action.place.regionId && action.compare.place.regionId) {
       const s1 = list.find((item) => item.region_id === action.place.regionId && item.variable === action.variable);
       const s2 = list.find((item) => item.region_id === action.compare!.place.regionId && item.variable === action.compare!.variable);
@@ -698,6 +797,17 @@ export default function App() {
   }
 
   const items = inspectorItems(state);
+
+  // Present mode: a labelled pin while the walkthrough flies to a place and opens the workflow.
+  const presentDemo = presenting && presentStep?.kind === 'demo' ? presentStep.demo : undefined;
+  const presentPinPlace =
+    presentDemo?.type === 'fly' || presentDemo?.type === 'workflow' || presentDemo?.type === 'timelapse'
+      ? presentDemo.place
+      : undefined;
+  const presentPin = useMemo(
+    () => (presentPinPlace ? { lon: presentPinPlace.lon, lat: presentPinPlace.lat, label: presentPinPlace.name } : null),
+    [presentPinPlace],
+  );
 
   const focus = useMemo<FocusTarget | null>(() => {
     // A search-chosen point flies the globe before any result has loaded.
@@ -763,17 +873,18 @@ export default function App() {
           labels={labels}
           selectedRegionIds={selectedIds}
           focus={view === 'enso' ? (window.location.hash.includes('region=') ? {kind:'center',key:window.location.hash,center:[STUDY_REGIONS.find(r=>r.id===new URLSearchParams(window.location.hash.split('?')[1]).get('region'))?.lon ?? -160,STUDY_REGIONS.find(r=>r.id===new URLSearchParams(window.location.hash.split('?')[1]).get('region'))?.lat ?? 0],zoom:2} : {kind:'center', key:'enso-pacific', center:[-160,0], zoom:1.65}) : timelapse ? {kind:'center',key:'timelapse-'+timelapse.variable+'-'+timelapse.season,center:[pickedPoint?.lon ?? 30,pickedPoint?.lat ?? 0],zoom:1.9} : focus}
-          autoRotate={view !== 'enso' && autoRotate && mode !== 'library'}
+          autoRotate={view !== 'enso' && autoRotate && mode !== 'library' && (!presenting || presentStep?.demo?.type === 'landing')}
           onSelectRegion={(id) => handleRegionSelect(id)}
           onUserInteract={() => setAutoRotate(false)}
           onPickLocation={(lon, lat, hitRegionId) => handleGlobePick(lon, lat, hitRegionId)}
           pickedPoint={pickedPoint}
+          pin={presentPin}
           drawerWidth={view === 'enso' ? 420 : timelapse ? 0 : drawerWidth(state, viewportWidth)}
           timelapseFrame={view === 'enso' ? ensoOverlay : timelapseFrame}
         />
 
         {view === 'glossary' ? <GlossaryPage /> : view === 'enso' ? <EnsoPage key={ensoKey} onOverlay={setEnsoOverlay} /> : <>
-        {landing && !workflowOpen && !timelapse && !(presenting && presentStep?.kind === 'story') && <LandingHero onStart={() => setWorkflowOpen(true)} />}
+        {landing && !workflowOpen && !timelapse && !(presenting && presentStep?.kind === 'story') && presentDemo?.type !== 'fly' && <LandingHero onStart={() => setWorkflowOpen(true)} />}
 
         {workflowOpen && mode === 'explore' && !exploreDoc && (
           <InvestigationPanel
@@ -792,6 +903,7 @@ export default function App() {
             }
             onRun={(selection) => void runInvestigation(selection)}
             onClose={() => setWorkflowOpen(false)}
+            autoFocus={!presenting}
           />
         )}
 
@@ -955,15 +1067,39 @@ export default function App() {
             onOpenTimelapse={(variable, season) => void openTimelapse(variable, season)}
             onOverride={(id, patch) => dispatch({ type: 'overrideSlot', id, patch })}
             onClearOverride={(id) => dispatch({ type: 'clearOverride', id })}
-            onPeriodChange={(id, period) => {
+            onPeriodChange={(id, period, customRange) => {
               if (mode === 'explore') {
-                dispatch({ type: 'setExplorePeriod', period });
+                dispatch({ type: 'setExplorePeriod', period, customRange });
               } else {
-                dispatch({ type: 'applySharedSettings', patch: { period } });
-                dispatch({ type: 'overrideSlot', id, patch: { period } });
+                dispatch({ type: 'applySharedSettings', patch: { period, customRange } });
+                dispatch({ type: 'overrideSlot', id, patch: { period, customRange } });
               }
             }}
             sharedSettings={comparison.shared}
+            onNameChange={setDraftName}
+            onNotesChange={setDraftNotes}
+            onTagsChange={setDraftTags}
+            activeTab={
+              presentStep?.kind === 'demo' && presentStep.demo?.type === 'investigation'
+                ? presentStep.demo.tab
+                : undefined
+            }
+            typedNote={
+              presentStep?.kind === 'demo' && presentStep.demo?.type === 'investigation'
+                ? presentStep.demo.typedNote
+                : undefined
+            }
+            typedName={
+              presentStep?.kind === 'demo' && presentStep.demo?.type === 'investigation'
+                ? presentStep.demo.typedName
+                : undefined
+            }
+            typedTags={
+              presentStep?.kind === 'demo' && presentStep.demo?.type === 'investigation'
+                ? presentStep.demo.typedTags
+                : undefined
+            }
+            openWhy={presentStep?.kind === 'demo' && presentStep.demo?.type === 'investigation' && Boolean(presentStep.demo.openWhy)}
             catalog={(seriesList ?? []).map((item) => ({
               regionId: item.region_id,
               label: item.region_label,
@@ -984,6 +1120,11 @@ export default function App() {
           <LibraryOverlay
             datasets={seriesList ?? []}
             saved={saved}
+            initialTab={
+              presentStep?.kind === 'demo' && presentStep.demo?.type === 'library'
+                ? (presentStep.demo.tab ?? 'saved')
+                : 'catalog'
+            }
             onClose={() => navigate('explore')}
             onOpenDataset={openDataset}
             onOpenSaved={openSaved}

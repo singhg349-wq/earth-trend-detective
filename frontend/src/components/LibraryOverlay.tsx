@@ -8,21 +8,30 @@ type Tab = 'catalog' | 'saved';
 interface LibraryOverlayProps {
   datasets: SeriesSummary[];
   saved: SavedInvestigation[];
+  initialTab?: Tab;
   onClose: () => void;
   onOpenDataset: (id: string) => void;
   onOpenSaved: (item: SavedInvestigation) => void;
   onDeleteSaved: (id: string) => void;
 }
 
+const VAR_SHORT: Record<string, string> = {
+  temperature: 'Temp',
+  precipitation: 'Rain',
+  aerosol_optical_depth: 'AOD',
+  soil_moisture: 'Soil',
+};
+
 export default function LibraryOverlay({
   datasets,
   saved,
+  initialTab = 'catalog',
   onClose,
   onOpenDataset,
   onOpenSaved,
   onDeleteSaved,
 }: LibraryOverlayProps) {
-  const [tab, setTab] = useState<Tab>('catalog');
+  const [tab, setTab] = useState<Tab>(initialTab);
 
   // --- Catalog search ---
   const [catalogQuery, setCatalogQuery] = useState('');
@@ -91,12 +100,6 @@ export default function LibraryOverlay({
   // --- Catalog tab ---
   const catalogTab = (
     <div className="library-body">
-      <p className="muted">
-        Catalog is read from <code>data/artifacts/index.json</code>. Only DJF
-        rainfall is indexed today; two further ENSO context artifacts exist for
-        Indonesia and Coastal Peru and are used by the starter investigation.
-      </p>
-
       {/* Search box for catalog */}
       {filteredDatasets.length < datasets.length && (
         <p className="muted small">
@@ -158,12 +161,6 @@ export default function LibraryOverlay({
   // --- Saved tab ---
   const savedTab = (
     <div className="library-body">
-      <p className="muted">
-        Saved locally in this browser (localStorage). Prototype only: it stores
-        the selection configuration, not the data, and re-resolves against the
-        current artifacts on reopen. Accounts/sync are planned later.
-      </p>
-
       {/* Tag filter UI */}
       {allSavedTags.length > 0 && (
         <div className="tag-filter">
@@ -201,9 +198,8 @@ export default function LibraryOverlay({
       ) : (
         <ul className="saved-list">
           {filteredSaved.map((item) => {
-            // Count slots that reference valid configurations
-            const slotCount = item.slots ? item.slots.length : 0;
             const itemTags = item.tags || [];
+            const regionLabelMap = new Map(datasets.map((d) => [d.region_id, d.region_label]));
 
             return (
               <li key={item.id} className="saved-item">
@@ -214,11 +210,35 @@ export default function LibraryOverlay({
                     {item.regionIds.length} region(s) · saved{' '}
                     {new Date(item.savedAt).toLocaleString()}
                   </p>
+                  {item.notes && (
+                    <p
+                      className="saved-notes"
+                      style={{
+                        marginTop: '6px',
+                        fontSize: '0.9rem',
+                        lineHeight: 1.4,
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                      }}
+                    >
+                      {item.notes}
+                    </p>
+                  )}
                 </div>
                 <div className="saved-tags-and-slots">
-                  <span className="saved-slot-count">
-                    {slotCount} slot(s)
-                  </span>
+                  {item.slots && item.slots.length > 0 ? (
+                    <span className="saved-tags">
+                      {item.slots.map((s, idx) => (
+                        <span key={`${s.regionId}-${idx}`} className="tag">
+                          {regionLabelMap.get(s.regionId) ?? s.regionId} · {VAR_SHORT[s.variable] ?? s.variable} · {s.season}
+                        </span>
+                      ))}
+                    </span>
+                  ) : (
+                    <span className="saved-slot-count">0 slot(s)</span>
+                  )}
                   {itemTags.length > 0 && (
                     <span className="saved-tags">
                       {itemTags.map((tag) => (

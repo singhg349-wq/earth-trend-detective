@@ -79,6 +79,35 @@ export function saveInvestigation(input: {
   return updated;
 }
 
+export function upsertInvestigation(input: {
+  id: string;
+  name: string;
+  mode: 'explore' | 'compare';
+  regionIds: string[];
+  slots?: SavedSlot[];
+  notes?: string;
+  tags?: string[];
+}): SavedInvestigation[] {
+  const all = readAll().filter((item) => item.id !== input.id);
+  const next: SavedInvestigation = {
+    id: input.id,
+    name: input.name,
+    mode: input.mode,
+    regionIds: input.regionIds,
+    savedAt: new Date().toISOString(),
+    ...(input.slots ? { slots: input.slots } : {}),
+    ...(input.notes ? { notes: input.notes } : {}),
+    ...(input.tags && input.tags.length > 0 ? { tags: input.tags } : {}),
+  };
+  const updated = [next, ...all].slice(0, 50);
+  try {
+    localStorage.setItem(KEY, JSON.stringify(updated));
+  } catch {
+    // Storage full or blocked; the in-memory list still reflects the save.
+  }
+  return updated;
+}
+
 export function deleteInvestigation(id: string): SavedInvestigation[] {
   const updated = readAll().filter((item) => item.id !== id);
   try {

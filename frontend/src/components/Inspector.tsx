@@ -1,7 +1,7 @@
 import { metricById } from '../lib/metrics';
 import { METHOD_CHECK, comparisonLabel } from '../data/validation';
 import InfoTip from './InfoTip';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { KeyboardEvent } from 'react';
 import { readInference } from '../data/inference';
 import {
@@ -24,6 +24,7 @@ export interface InspectItem {
   id: string;
   regionId: string;
   period: PeriodKey;
+  customRange?: [number, number];
   overridden: boolean;
   doc: SeriesDoc;
   enso: EnsoDoc | null;
@@ -53,9 +54,15 @@ interface InspectorProps {
   onOpenTimelapse?: (variable: string, season: string) => void;
   onOverride?: (id: string, patch: { variable?: string; season?: string; period?: string }) => void;
   onClearOverride?: (id: string) => void;
-  onPeriodChange?: (id: string, period: PeriodKey) => void;
+  onPeriodChange?: (id: string, period: PeriodKey, customRange?: [number, number]) => void;
   onNotesChange?: (value: string) => void;
+  onNameChange?: (value: string) => void;
   onTagsChange?: (tags: string[]) => void;
+  activeTab?: TabKey;
+  typedNote?: string;
+  typedName?: string;
+  typedTags?: string[];
+  openWhy?: boolean;
   catalog?: Array<{ regionId: string; label: string; variable: string; season: string }>;
   sharedSettings?: { variable: string; season: string; period: string };
 }
@@ -71,16 +78,6 @@ type TabKey = (typeof TABS)[number]['key'];
 
 function seasonText(doc: SeriesDoc): string {
   return doc.season.code;
-}
-
-function compareNote(items: InspectItem[]): string {
-  if (items.length < 2) return '';
-  const firstUnits = items[0].doc.units;
-  const sameUnits = items.every((item) => item.doc.units === firstUnits);
-  if (sameUnits) {
-    return 'Both series share one axis (same units). The two series are shown side by side with no slope-difference or significance claim about the comparison.';
-  }
-  return 'The two series use different units, so they are shown on independent axes and no direct difference claim is made.';
 }
 
 function viewMethod(doc: SeriesDoc): string {
@@ -104,12 +101,21 @@ export default function Inspector(props: InspectorProps) {
     onClearOverride,
     onPeriodChange,
     onNotesChange,
+    onNameChange,
     onTagsChange,
+    activeTab,
+    typedNote,
+    typedName,
+    typedTags,
+    openWhy,
     catalog = [],
     sharedSettings: propSharedSettings,
   } = props;
 
-  const [tab, setTab] = useState<TabKey>('standard');
+  const [tab, setTab] = useState<TabKey>(activeTab ?? 'standard');
+  useEffect(() => {
+    if (activeTab) setTab(activeTab);
+  }, [activeTab]);
   const [exportNotice, setExportNotice] = useState<string | null>(null);
   const [expandedChecks, setExpandedChecks] = useState<Record<string, boolean>>({});
   const [sharedHoverYear, setSharedHoverYear] = useState<number | null>(null);
@@ -134,7 +140,9 @@ export default function Inspector(props: InspectorProps) {
   const seasons = Array.from(new Set(catalog.map((c) => c.season))).sort();
 
   // Resolve each item with its own period
-  const resolvedRows = items.map((item) => resolveResult(item.doc, item.period, item.slot));
+  const resolvedRows = items.map((item) =>
+    resolveResult(item.doc, item.period, item.slot, item.customRange),
+  );
   const chartSeries: TrendSeries[] = items.map((item, index) => {
     const row = resolvedRows[index];
     return {
@@ -280,14 +288,75 @@ export default function Inspector(props: InspectorProps) {
                     className={items.every((item) => item.period === option.key) ? 'period-btn is-active' : 'period-btn'}
                     aria-pressed={items.every((item) => item.period === option.key)}
                     onClick={() => {
-                      items.forEach((item) => onPeriodChange?.(item.id, option.key));
+                      const avail = items[0]?.doc?.years ?? [];
+                      const minYr = avail.length > 0 ? avail[0] : 1981;
+                      const maxYr = avail.length > 0 ? avail[avail.length - 1] : 2026;
+                      const defaultRange: [number, number] = [Math.max(minYr, maxYr - 19), maxYr];
+                      items.forEach((item) =>
+                        onPeriodChange?.(
+                          item.id,
+                          option.key,
+                          option.key === 'custom' ? item.customRange ?? defaultRange : undefined,
+                        ),
+                      );
                     }}
                   >
                     {option.label}
                   </button>
                 ))}
+                {items.some((item) => item.period === 'custom') && (() => {
+                  const avail = items[0]?.doc?.years ?? [];
+                  const minYr = avail.length > 0 ? avail[0] : 1981;
+                  const maxYr = avail.length > 0 ? avail[avail.length - 1] : 2026;
+                  const curStart = items[0]?.customRange?.[0] ?? Math.max(minYr, maxYr - 19);
+                  const curEnd = items[0]?.customRange?.[1] ?? maxYr;
+                  const yearList = avail.length > 0 ? avail : Array.from({ length: maxYr - minYr + 1 }, (_, i) => minYr + i);
+                  return (
+                    <div className="custom-year-pickers" aria-label="Custom year range">
+                      <label className="custom-year-label">
+                        <span>Start</span>
+                        <select
+                          className="custom-year-select"
+                          aria-label="Start year"
+                          value={curStart}
+                          onChange={(e) => {
+                            const newStart = Number(e.target.value);
+                            const newEnd = Math.max(newStart, curEnd);
+                            items.forEach((item) => onPeriodChange?.(item.id, 'custom', [newStart, newEnd]));
+                          }}
+                        >
+                          {yearList.map((yr) => (
+                            <option key={yr} value={yr}>
+                              {yr}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <span className="custom-year-sep">–</span>
+                      <label className="custom-year-label">
+                        <span>End</span>
+                        <select
+                          className="custom-year-select"
+                          aria-label="End year"
+                          value={curEnd}
+                          onChange={(e) => {
+                            const newEnd = Number(e.target.value);
+                            const newStart = Math.min(newEnd, curStart);
+                            items.forEach((item) => onPeriodChange?.(item.id, 'custom', [newStart, newEnd]));
+                          }}
+                        >
+                          {yearList.map((yr) => (
+                            <option key={yr} value={yr}>
+                              {yr}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    </div>
+                  );
+                })()}
               </div>
-              <div className="export-controls" role="group" aria-label="Export the displayed result">
+              <div className="export-controls" data-anchor="export" role="group" aria-label="Export the displayed result">
                 <button type="button" className="btn btn-ghost" onClick={() => handleExport('csv')}>
                   CSV
                 </button>
@@ -327,6 +396,7 @@ export default function Inspector(props: InspectorProps) {
                     onClearOverride={onClearOverride}
                     onCompareSuggestion={onCompareSuggestion}
                     onOpenTimelapse={onOpenTimelapse}
+                    openWhy={openWhy}
                     variables={variables}
                     seasons={seasons}
                     inCompareMode={mode === 'compare'}
@@ -338,9 +408,6 @@ export default function Inspector(props: InspectorProps) {
               })}
             </div>
 
-            {items.length > 1 && (
-              <p className="muted small">{compareNote(items)}</p>
-            )}
           </div>
         )}
 
@@ -429,8 +496,12 @@ export default function Inspector(props: InspectorProps) {
             key={items.map((item) => item.id).sort().join('|')}
             items={items}
             onSave={onSave}
+            onNameChange={onNameChange}
             onNotesChange={onNotesChange}
             onTagsChange={onTagsChange}
+            typedNote={typedNote}
+            typedName={typedName}
+            typedTags={typedTags}
           />
         )}
       </div>

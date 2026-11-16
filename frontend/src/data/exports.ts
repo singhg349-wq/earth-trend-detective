@@ -12,12 +12,13 @@ import { comparisonLabel } from './validation';
 import { senSlopeForPeriod } from '../lib/stats';
 import type { SeriesDoc } from '../types';
 
-export type PeriodKey = 'full' | 'first-half' | 'second-half';
+export type PeriodKey = 'full' | 'first-half' | 'second-half' | 'custom';
 
 export const PERIOD_OPTIONS: ReadonlyArray<{ key: PeriodKey; label: string }> = [
   { key: 'full', label: 'Full' },
   { key: 'first-half', label: 'First half' },
   { key: 'second-half', label: 'Second half' },
+  { key: 'custom', label: 'Custom' },
 ];
 
 /** Stated wherever a half window is selected. */
@@ -39,19 +40,42 @@ export interface PeriodWindow {
 
 /**
  * Concept B's split: full stored period, or the two halves of its own year
- * span with the midpoint assigned to the first half.
+ * span with the midpoint assigned to the first half, or a custom [start, end] window.
  */
-export function periodWindow(key: PeriodKey, years: readonly number[]): PeriodWindow | null {
+export function periodWindow(
+  key: PeriodKey,
+  years: readonly number[],
+  customRange?: [number, number],
+): PeriodWindow | null {
   if (years.length === 0) return null;
   const first = years[0];
   const last = years[years.length - 1];
   const mid = Math.floor((first + last) / 2);
-  const bounds: Record<PeriodKey, [number, number]> = {
-    full: [first, last],
-    'first-half': [first, mid],
-    'second-half': [mid + 1, last],
-  };
-  const [start, end] = bounds[key];
+  let start: number;
+  let end: number;
+  if (key === 'full') {
+    start = first;
+    end = last;
+  } else if (key === 'first-half') {
+    start = first;
+    end = mid;
+  } else if (key === 'second-half') {
+    start = mid + 1;
+    end = last;
+  } else if (key === 'custom') {
+    if (customRange && Number.isFinite(customRange[0]) && Number.isFinite(customRange[1])) {
+      const clampedStart = Math.max(first, Math.min(last, Math.trunc(customRange[0])));
+      const clampedEnd = Math.max(first, Math.min(last, Math.trunc(customRange[1])));
+      start = Math.min(clampedStart, clampedEnd);
+      end = Math.max(clampedStart, clampedEnd);
+    } else {
+      start = Math.max(first, last - 19);
+      end = last;
+    }
+  } else {
+    start = first;
+    end = last;
+  }
   return { key, start, end, label: `${start}–${end}` };
 }
 
@@ -102,8 +126,13 @@ export function formatInterval(value: [number, number] | null, units: string): s
   return `${value[0].toFixed(3)} to ${value[1].toFixed(3)} ${units} per decade`;
 }
 
-export function resolveResult(doc: SeriesDoc, key: PeriodKey, slot = 'A'): ResolvedResult {
-  const period = periodWindow(key, doc.years);
+export function resolveResult(
+  doc: SeriesDoc,
+  key: PeriodKey,
+  slot = 'A',
+  customRange?: [number, number],
+): ResolvedResult {
+  const period = periodWindow(key, doc.years, customRange);
   const points = period
     ? doc.years
         .map((year, index) => ({ year, value: doc.values[index] ?? null }))
@@ -215,7 +244,8 @@ export const RESULT_COLUMNS: ReadonlyArray<{ key: ResultColumnKey; label: string
 function windowText(period: PeriodWindow): string {
   if (period.key === 'full') return `${period.label} (full period)`;
   if (period.key === 'first-half') return `${period.label} (first half)`;
-  return `${period.label} (second half)`;
+  if (period.key === 'second-half') return `${period.label} (second half)`;
+  return `${period.label} (custom)`;
 }
 
 function seasonText(row: ResolvedResult): string {

@@ -146,10 +146,24 @@ export const STORY_LAYOUTS: Record<string, BlobLayout> = {
   ],
   // Three stations of the pipeline: files → tiles → cells.
   built: [
-    { cx: 300, cy: 568, rx: 182, ry: 182, shape: 'pebble', colors: COOL },
-    { cx: 1300, cy: 568, rx: 182, ry: 182, rot: 40, shape: 'pebble', colors: WARM },
-    { cx: 800, cy: 568, rx: 182, ry: 182, rot: 80, shape: 'pebble', colors: MINT },
+    { cx: 220, cy: 840, rx: 170, ry: 150, shape: 'pebble', colors: COOL },
+    { cx: 1380, cy: 860, rx: 170, ry: 150, rot: 40, shape: 'pebble', colors: WARM },
+    { cx: 800, cy: 900, rx: 170, ry: 120, rot: 80, shape: 'pebble', colors: MINT },
     { cx: 1620, cy: 60, rx: 130, ry: 130, shape: 'orb', colors: DEEP },
+  ],
+  // Case study: a warm pin over a prairie horizon, the question floats above.
+  caseIntro: [
+    { cx: 800, cy: 1320, rx: 1100, ry: 560, shape: 'orb', colors: DEEP },
+    { cx: 1360, cy: 420, rx: 150, ry: 150, rot: 12, shape: 'drop', colors: WARM },
+    { cx: 1560, cy: 90, rx: 54, ry: 54, shape: 'orb', colors: MINT },
+    { cx: -120, cy: 160, rx: 190, ry: 150, shape: 'pebble', colors: COOL },
+  ],
+  // Pacific bridge: a warm tongue spreads east beneath the two columns.
+  ensoBridge: [
+    { cx: 800, cy: 1010, rx: 980, ry: 34, rot: -2, shape: 'ribbon', amp: 70, phase: 1.4, colors: EMBER },
+    { cx: 1620, cy: 860, rx: 210, ry: 170, shape: 'pebble', colors: WARM },
+    { cx: 1540, cy: 80, rx: 70, ry: 70, shape: 'orb', colors: MINT },
+    { cx: -140, cy: 820, rx: 230, ry: 190, shape: 'pebble', colors: COOL },
   ],
   // One big cool panel carries the chart.
   method: [
@@ -189,7 +203,7 @@ export const STORY_LAYOUTS: Record<string, BlobLayout> = {
   // A planet edge on the right.
   impact: [
     { cx: 1720, cy: 450, rx: 640, ry: 700, shape: 'orb', colors: COOL },
-    { cx: 985, cy: 150, rx: 66, ry: 66, shape: 'orb', colors: WARM },
+    { cx: 1180, cy: 790, rx: 66, ry: 66, shape: 'orb', colors: WARM },
     { cx: 40, cy: 940, rx: 170, ry: 130, shape: 'pebble', colors: MINT },
     { cx: 1660, cy: -60, rx: 150, ry: 150, shape: 'orb', colors: DEEP },
   ],

@@ -42,11 +42,15 @@ function validateTag(tag: string): { valid: boolean; error?: string } {
 interface NotesPanelProps {
   items: InspectItem[];
   onSave: () => void;
+  onNameChange?: (value: string) => void;
   onNotesChange?: (value: string) => void;
   onTagsChange?: (tags: string[]) => void;
+  typedNote?: string;
+  typedName?: string;
+  typedTags?: string[];
 }
 
-export default function NotesPanel({ items, onSave, onNotesChange, onTagsChange }: NotesPanelProps) {
+export default function NotesPanel({ items, onSave, onNameChange, onNotesChange, onTagsChange, typedNote, typedName, typedTags }: NotesPanelProps) {
   const storageKey = noteStorageKey(items);
   const [draft, setDraft] = useState<NoteDraft>(() => readNoteDraft(storageKey));
   const [savedAt, setSavedAt] = useState<string | null>(null);
@@ -62,9 +66,27 @@ export default function NotesPanel({ items, onSave, onNotesChange, onTagsChange 
   }, [storageKey, draft]);
 
   useEffect(() => {
+    onNameChange?.(draft.name);
     onNotesChange?.(draft.notes);
     onTagsChange?.(draft.tags);
-  }, [draft.notes, draft.tags, onNotesChange, onTagsChange]);
+  }, [draft.name, draft.notes, draft.tags, onNameChange, onNotesChange, onTagsChange]);
+
+  useEffect(() => {
+    if (typedName === undefined && typedTags === undefined) return;
+    setDraft((prev) => ({ ...prev, ...(typedName !== undefined ? { name: typedName } : {}), ...(typedTags !== undefined ? { tags: typedTags } : {}) }));
+  }, [typedName, typedTags]);
+
+  useEffect(() => {
+    if (!typedNote) return;
+    let i = 0;
+    setDraft((prev) => ({ ...prev, notes: '' }));
+    const timer = window.setInterval(() => {
+      i += 1;
+      setDraft((prev) => ({ ...prev, notes: typedNote.slice(0, i) }));
+      if (i >= typedNote.length) window.clearInterval(timer);
+    }, 24);
+    return () => window.clearInterval(timer);
+  }, [typedNote]);
 
   const handleTagInputKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter' || event.key === ',') {
@@ -123,10 +145,6 @@ export default function NotesPanel({ items, onSave, onNotesChange, onTagsChange 
     <div role="tabpanel" id="inspector-panel-notes" aria-labelledby="inspector-tab-notes" tabIndex={0}>
       <section className="inspector-section notes-panel">
         <h3>Notes & save</h3>
-        <p className="muted small">
-          Notes and tags are stored in this browser only (localStorage). Nothing is
-          uploaded or synced.
-        </p>
         <div className="notes-form">
           <label>
             <span>Name</span>
@@ -164,9 +182,6 @@ export default function NotesPanel({ items, onSave, onNotesChange, onTagsChange 
                   {tagError}
                 </p>
               )}
-              <p className="muted small">
-                Maximum 12 tags, 40 characters each. Empty tags are rejected.
-              </p>
             </div>
           </label>
         </div>
@@ -187,9 +202,6 @@ export default function NotesPanel({ items, onSave, onNotesChange, onTagsChange 
             </span>
           )}
         </div>
-        <p className="muted small">
-          Saving keeps this investigation in the local library: {items.map((item) => item.doc.region.label).join(', ')}.
-        </p>
       </section>
     </div>
   );

@@ -70,6 +70,7 @@ export interface InvestigationState {
   exploreEnso: EnsoDoc | null;
   /** Period window shown for the single explore result (the drawer's period control). */
   explorePeriod: PeriodKey;
+  exploreCustomRange?: [number, number];
   pins: PinState;
   addMode: AddModeState;
   timelapse: TimelapseState | null;
@@ -87,6 +88,7 @@ export interface SlotPatch {
   variable?: string;
   season?: string;
   period?: string;
+  customRange?: [number, number];
 }
 
 /** One result to build a comparison from, already loaded. */
@@ -100,7 +102,8 @@ export interface ComparisonEntry {
 export type InvestigationAction =
   | { type: 'navigate'; mode: AppMode }
   | { type: 'loadExplore'; doc: SeriesDoc; enso: EnsoDoc | null }
-  | { type: 'setExplorePeriod'; period: PeriodKey }
+  | { type: 'setExplorePeriod'; period: PeriodKey; customRange?: [number, number] }
+  | { type: 'setExploreCustomRange'; customRange: [number, number] }
   | { type: 'clearExplore' }
   | { type: 'addSlot'; doc: SeriesDoc; enso: EnsoDoc | null; settings?: SlotSettings }
   | { type: 'startComparison'; entries: ComparisonEntry[] }
@@ -165,6 +168,7 @@ function toSlotSettings(patch: SlotPatch): Partial<SlotSettings> {
   if (patch.season) next.season = patch.season;
   const period = PERIOD_OPTIONS.find((option) => option.key === patch.period)?.key;
   if (period) next.period = period;
+  if (patch.customRange) next.customRange = patch.customRange;
   return next;
 }
 
@@ -208,7 +212,14 @@ export function investigationReducer(
       return { ...state, exploreDoc: action.doc, exploreEnso: action.enso };
 
     case 'setExplorePeriod':
-      return { ...state, explorePeriod: action.period };
+      return {
+        ...state,
+        explorePeriod: action.period,
+        ...(action.customRange ? { exploreCustomRange: action.customRange } : {}),
+      };
+
+    case 'setExploreCustomRange':
+      return { ...state, exploreCustomRange: action.customRange };
 
     case 'clearExplore':
       return { ...state, exploreDoc: null, exploreEnso: null };
@@ -379,7 +390,11 @@ export function investigationReducer(
         };
       }
       const { index } = action;
-      const window = periodWindow(state.comparison.shared.period, index.years);
+      const window = periodWindow(
+        state.comparison.shared.period,
+        index.years,
+        state.comparison.shared.customRange,
+      );
       const inWindow = window
         ? index.years.filter((year) => year >= window.start && year <= window.end)
         : index.years;
@@ -459,6 +474,7 @@ export function inspectorItems(state: InvestigationState): InspectItem[] {
       id: slot.id,
       regionId: slot.regionId,
       period: slot.period,
+      customRange: slot.customRange ?? state.comparison.shared.customRange,
       overridden: slot.overridden,
       doc: slot.doc,
       enso: slot.enso,
@@ -473,6 +489,7 @@ export function inspectorItems(state: InvestigationState): InspectItem[] {
         id: `explore_${exploreDoc.region.id}`,
         regionId: exploreDoc.region.id,
         period: state.explorePeriod,
+        customRange: state.exploreCustomRange,
         overridden: false,
         doc: exploreDoc,
         enso: state.exploreEnso,

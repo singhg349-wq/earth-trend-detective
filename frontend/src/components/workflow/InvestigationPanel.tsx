@@ -19,6 +19,7 @@ export interface WorkflowSelection {
   variable: MetricId;
   season: string;
   period: PeriodKey;
+  customRange?: [number, number];
 }
 
 const SEASONS: Array<{ code: string; label: string; detail: string }> = [
@@ -33,6 +34,7 @@ const PERIODS: Array<{ key: PeriodKey; label: string }> = [
   { key: 'full', label: 'Full record' },
   { key: 'first-half', label: 'First half' },
   { key: 'second-half', label: 'Second half' },
+  { key: 'custom', label: 'Custom' },
 ];
 
 interface InvestigationPanelProps {
@@ -44,6 +46,8 @@ interface InvestigationPanelProps {
   onChoosePoint: (lon: number, lat: number) => void;
   onRun: (selection: WorkflowSelection) => void;
   onClose: () => void;
+  /** Focus the place search on open (off in Present mode so arrow keys keep driving the talk). */
+  autoFocus?: boolean;
 }
 
 function fmtCoord(value: number, positive: string, negative: string): string {
@@ -65,14 +69,44 @@ export default function InvestigationPanel({
   onChoosePoint,
   onRun,
   onClose,
+  autoFocus = true,
 }: InvestigationPanelProps) {
   const [variable, setVariable] = useState<MetricId>(
     metricById(initialVariable)?.id ?? 'precipitation',
   );
-  const [available, setAvailable] = useState<string[]>(['precip','t2m']);
-  useEffect(() => { let alive = true; void getGridCatalog().then(c => { if(alive && c) setAvailable(Object.keys(c.index.variables)); }); return () => {alive = false;}; }, []);
   const [season, setSeason] = useState(initialSeason);
   const [period, setPeriod] = useState<PeriodKey>(initialPeriod);
+  const [available, setAvailable] = useState<string[]>(['precip','t2m']);
+  const [availableYears, setAvailableYears] = useState<number[]>([]);
+  const [customStart, setCustomStart] = useState<number>(1981);
+  const [customEnd, setCustomEnd] = useState<number>(2025);
+  useEffect(() => {
+    let alive = true;
+    void getGridCatalog().then((c) => {
+      if (alive && c) {
+        setAvailable(Object.keys(c.index.variables));
+        const vMeta = c.index.variables[variable] ?? Object.values(c.index.variables)[0];
+        const yrs = vMeta?.years_by_season?.[season] ?? vMeta?.years_by_season?.['DJF'] ?? vMeta?.years_by_season?.['ANN'];
+        if (yrs && yrs.length > 0) {
+          setAvailableYears(yrs);
+          const first = yrs[0];
+          const last = yrs[yrs.length - 1];
+          setCustomStart(Math.max(first, last - 19));
+          setCustomEnd(last);
+        }
+      }
+    });
+    return () => {
+      alive = false;
+    };
+  }, [variable, season]);
+  // Follow external changes to the defaults (Present mode drives the panel step by step).
+  useEffect(() => {
+    const id = metricById(initialVariable)?.id;
+    if (id) setVariable(id);
+  }, [initialVariable]);
+  useEffect(() => setSeason(initialSeason), [initialSeason]);
+  useEffect(() => setPeriod(initialPeriod), [initialPeriod]);
   const isRegion = place?.regionId != null;
   const canRun = place !== null;
 
@@ -89,6 +123,7 @@ export default function InvestigationPanel({
       // Named regions only carry a DJF series; grid points honour the full set.
       season: isRegion ? 'DJF' : season,
       period,
+      customRange: period === 'custom' ? [customStart, customEnd] : undefined,
     });
   }
 
@@ -109,7 +144,7 @@ export default function InvestigationPanel({
           <span className="inv-step-no">01</span> Place
         </p>
         <PlaceSearch
-          autoFocus
+          autoFocus={autoFocus}
           onChoose={choosePlace}
           onClose={onClose}
         />
@@ -190,6 +225,52 @@ export default function InvestigationPanel({
             </button>
           ))}
         </div>
+        {period === 'custom' && (
+          <div className="inv-custom" style={{ marginTop: '8px' }} aria-label="Custom year range">
+            <label>
+              <span>Start</span>
+              <select
+                aria-label="Start year"
+                value={customStart}
+                onChange={(e) => {
+                  const val = Number(e.target.value);
+                  setCustomStart(val);
+                  if (val > customEnd) setCustomEnd(val);
+                }}
+              >
+                {(availableYears.length > 0
+                  ? availableYears
+                  : Array.from({ length: 45 }, (_, i) => 1981 + i)
+                ).map((yr) => (
+                  <option key={yr} value={yr}>
+                    {yr}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              <span>End</span>
+              <select
+                aria-label="End year"
+                value={customEnd}
+                onChange={(e) => {
+                  const val = Number(e.target.value);
+                  setCustomEnd(val);
+                  if (val < customStart) setCustomStart(val);
+                }}
+              >
+                {(availableYears.length > 0
+                  ? availableYears
+                  : Array.from({ length: 45 }, (_, i) => 1981 + i)
+                ).map((yr) => (
+                  <option key={yr} value={yr}>
+                    {yr}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+        )}
       </div>
 
       <button

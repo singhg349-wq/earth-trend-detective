@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import InfoTip from '../../components/InfoTip';
 const MODES = ['Normal', 'El Niño', 'La Niña'] as const;
-export default function PacificExplainer() {
+/** `warmOnly` hides the cool-phase view while an El Niño impact map is on screen. */
+export default function PacificExplainer({ warmOnly = false }: { warmOnly?: boolean }) {
   const [mode, setMode] = useState<typeof MODES[number]>('Normal');
   const warmEnd = mode === 'El Niño' ? 535 : mode === 'La Niña' ? 225 : 325;
   return <section><h2>01 — What El Niño is<InfoTip term="enso" /></h2>
-    <div className="enso-toggle">{MODES.map(m => <button type="button" key={m} aria-pressed={m === mode} onClick={() => setMode(m)}>{m}</button>)}</div>
+    <div className="enso-toggle">{MODES.filter(m => !warmOnly || m !== 'La Niña').map(m => <button type="button" key={m} aria-pressed={m === mode} onClick={() => setMode(m)}>{m}</button>)}</div>
     <svg viewBox="0 0 620 250" role="img" aria-label={`${mode}: equatorial Pacific from Asia and Australia to South America. ${mode === 'El Niño' ? 'Weaker trade winds allow warm water and rising air to move east; the eastern thermocline deepens.' : 'Easterly trade winds push warm surface water west; cooler water rises in the east.'}`}>
       <defs><marker id="enso-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10" fill="currentColor" /></marker></defs>
       <path d="M30 115H590V220H30Z" fill="#193d58" />

@@ -292,7 +292,7 @@ export default function RegionRankList({
             </p>
           ) : null}
 
-          <div className="rb-foot"><p>p-value<InfoTip term="pValue" /> · Mann–Kendall test<InfoTip term="mannKendall" /></p><p>Sen’s slope<InfoTip term="senSlope" /></p><p>Raw p-values, ranked for navigation only: no multiple-testing correction on this list. The trend maps use Benjamini–Hochberg (q = 0.10).</p></div>
+          <div className="rb-foot"><p><span title="Raw p-values, ranked for navigation only: no multiple-testing correction on this list. The trend maps use Benjamini–Hochberg (q = 0.10).">p-value</span><InfoTip term="pValue" /> · Mann–Kendall test<InfoTip term="mannKendall" /></p><p>Sen’s slope<InfoTip term="senSlope" /></p></div>
         </>
       )}
     </section>

@@ -29,6 +29,9 @@ import {
 } from '../../data/explain';
 import { comparisonLabel } from '../../data/validation';
 import TrendChart from '../TrendChart';
+import WhyCard from './WhyCard';
+import { diagnoseTrend, type NextStep } from '../../data/diagnose';
+import { STUDY_REGIONS } from '../../lib/gazetteer';
 import SlotMenu from '../SlotMenu';
 import type { TrendSeries } from '../TrendChart';
 
@@ -54,6 +57,7 @@ interface ResultCardProps {
   chartSeries: TrendSeries[];
   sharedHoverYear: number | null;
   onHoverYearChange: (year: number | null) => void;
+  openWhy?: boolean;
 }
 
 export default function ResultCard(props: ResultCardProps) {
@@ -78,11 +82,13 @@ export default function ResultCard(props: ResultCardProps) {
     chartSeries,
     sharedHoverYear,
     onHoverYearChange,
+    openWhy,
   } = props;
 
   const view = readInference(item.doc.trend?.inference);
   const isSubPeriod = item.period !== 'full';
-  const sentences = isSubPeriod ? subPeriodSummary(row) : summarySentences(item.doc, row);
+  const sentences = isSubPeriod ? subPeriodSummary(row) : [];
+  const diagnosis = isSubPeriod ? null : diagnoseTrend(item.doc);
 
   const isPolar = Boolean(
     item.doc.region.cells_used === 1 && (
@@ -104,14 +110,25 @@ export default function ResultCard(props: ResultCardProps) {
     season: item.doc.season.code,
     regionId: item.regionId,
     regionLabel: item.doc.region.label,
-    catalog: variables.map((v) => ({ variable: v, season: item.doc.season.code, regionId: item.regionId, label: item.doc.region.label })),
-    hasTimelapse: false,
+    catalog: STUDY_REGIONS.map((r) => ({ variable: item.doc.variable, season: item.doc.season.code, regionId: r.id, label: r.label })),
+    hasTimelapse: Boolean(metricById(item.doc.variable)),
     checksOpen,
     inCompareMode,
     onCompareSuggestion,
     onOpenTimelapse,
+    onToggleChecks: () => onToggleChecks(),
   };
-  const suggestions = buildSuggestions(suggestionContext);
+  const suggestions = buildSuggestions(suggestionContext).filter((s) => s.action !== 'compare');
+
+  const handleStep = (step: NextStep) => {
+    if (step.id === 'season' || step.id === 'annual') {
+      if (step.data?.season) onOverride?.(item.id, { season: step.data.season });
+    } else if (step.id === 'compare') {
+      if (step.data?.regionId) onCompareSuggestion?.(step.data.regionId);
+    } else if (step.id === 'enso') {
+      window.location.hash = `#enso?region=${encodeURIComponent(item.regionId)}&map=${encodeURIComponent(step.data?.map ?? '')}`;
+    }
+  };
 
   return (
     <section
@@ -170,7 +187,7 @@ export default function ResultCard(props: ResultCardProps) {
         <div className="headline-result">
           <p className="ed-eyebrow">{metricById(item.doc.variable)?.label ?? item.doc.variable} · {item.doc.season.code}<InfoTip term="seasons" /> · {row.period.label}</p>
           <p className="r4-trend-number">
-            {row.slopePerDecade === null ? 'Unavailable' : `${row.slopePerDecade > 0 ? '+' : ''}${row.slopePerDecade.toFixed(metricById(item.doc.variable)?.decimals ?? 3)}`}
+            <span data-anchor="slope">{row.slopePerDecade === null ? 'Unavailable' : `${row.slopePerDecade > 0 ? '+' : ''}${row.slopePerDecade.toFixed(metricById(item.doc.variable)?.decimals ?? 3)}`}</span>
             <span className={`r4-trend-verdict ${isSubPeriod ? 'r4-trend-verdict--subperiod' : view.status === 'ok' && view.pValue !== null && view.pValue < 0.05 ? 'r4-trend-verdict--sig' : 'r4-trend-verdict--neutral'}`}>
               {isSubPeriod
                 ? 'Sub-period window'
@@ -184,20 +201,23 @@ export default function ResultCard(props: ResultCardProps) {
           </p>
           {!isSubPeriod && view.status === 'ok' && (
             <dl className="r4-stat-rows">
-              <div>
+              <div data-anchor="p">
                 <dt>p-value<InfoTip term="pValue" /></dt>
                 <dd>{formatPValue(view.pValue).startsWith('<') ? `p ${formatPValue(view.pValue)}` : `p = ${formatPValue(view.pValue)}`}</dd>
               </div>
-              <div>
+              <div data-anchor="ci">
                 <dt>95% confidence interval<InfoTip term="confidence" /></dt>
                 <dd>{formatInterval(view.ci, slopeUnits(item.doc))}</dd>
               </div>
             </dl>
           )}
-          <p className="plain-summary">{sentences[0]}</p>
-          {sentences.slice(1, 2).map((sentence, i) => (
-            <p key={i} className="plain-summary">{sentence}</p>
-          ))}
+          {diagnosis ? (
+            <WhyCard diagnosis={diagnosis} onStep={handleStep} defaultOpen={openWhy} />
+          ) : (
+            sentences.slice(0, 2).map((sentence, i) => (
+              <p key={i} className="plain-summary">{sentence}</p>
+            ))
+          )}
 
           <EnsoConnection doc={item.doc} />
           {/* Prewhitening sensitivity check status line */}
@@ -291,10 +311,6 @@ export default function ResultCard(props: ResultCardProps) {
             </tbody>
           </table>
         </div>
-        <p className="muted small">
-          Mean and half-window slopes are calculated in the browser from the stored
-          seasonal values.
-        </p>
         {isSubPeriod && (
           <p className="muted small">
             {SUB_PERIOD_SLOPE_NOTE} {SUB_PERIOD_SIGNIFICANCE_NOTE}
@@ -303,7 +319,7 @@ export default function ResultCard(props: ResultCardProps) {
       </details>
 
       {/* Chart */}
-      <details className="chart-expander" open>
+      <details className="chart-expander" open data-anchor="chart">
         <TrendChart
           series={chartSeries.filter((s) => s.id === item.doc.id)}
           units={item.doc.units}
@@ -336,67 +352,13 @@ function seasonText(doc: SeriesDoc): string {
   return doc.season.code;
 }
 
-function summarySentences(doc: SeriesDoc, row?: ResolvedResult): string[] {
-  const sentences: string[] = [];
-  const metric = metricById(doc.variable);
-  const p = readInference(doc.trend?.inference).pValue;
-  const rate = doc.trend?.sen_slope_per_decade;
-  const view = readInference(doc.trend?.inference);
-  const firstYear = doc.years[0];
-  const lastYear = doc.years[doc.years.length - 1];
-  const n = row?.n ?? view.n ?? 'not recorded';
-
-  if (typeof rate === 'number' && Number.isFinite(rate)) {
-    const pStr = p !== null ? formatPValue(p) : null;
-    const pClause = pStr ? (pStr.startsWith('<') ? `p ${pStr}` : `p = ${pStr}`) : null;
-    sentences.push(
-      `${metric?.label ?? doc.variable} here has been ${rate < 0 ? 'decreasing' : 'increasing'} over the full ${firstYear}–${lastYear} period (n = ${n} seasons)${pClause ? `; this is ${p! < 0.05 ? 'statistically significant at the 5% level' : 'not statistically significant'} (${pClause})` : '.'}`
-    );
-  }
-
-  if (view.status === 'ok' && view.method && view.pValue !== null) {
-    const significant = view.pValue < 0.05;
-    const pStr = formatPValue(view.pValue);
-    const pClause = pStr.startsWith('<') ? `p ${pStr}` : `p = ${pStr}`;
-    if (significant) {
-      sentences.push(
-        `Under the main test's assumptions (${view.method}), a monotonic pattern ` +
-          `this strong would be uncommon if no trend were present (${pClause}).`,
-      );
-    } else {
-      sentences.push(
-        `Under the main test's assumptions (${view.method}), a monotonic pattern ` +
-          `this strong would not be uncommon if no trend were present (${pClause}).`,
-      );
-    }
-    if (view.ci) {
-      sentences.push(
-        `The 95% confidence interval is ${formatInterval(view.ci, slopeUnits(doc))}; ` +
-          `it ${view.ci[0] <= 0 && view.ci[1] >= 0 ? 'includes zero' : 'does not include zero'}.`,
-      );
-    }
-    const mainSignificant = view.pValue < 0.05;
-    const strictPass = view.strictCheckPass;
-    if (strictPass !== null && strictPass !== mainSignificant) {
-      sentences.push(
-        'The prewhitening sensitivity check (Yue-Wang classic prewhitening) does not reach the same result as the main test.',
-      );
-    }
-  } else if (typeof rate === 'number' && Number.isFinite(rate)) {
-    sentences.push(
-      `The artifact did not record an inference result, so no p value or interval is available.`,
-    );
-  }
-
-  const validation = comparisonLabel(doc);
-  if (validation) {
-    sentences.push(`Method comparison: ${validation}.`);
-  }
-  return sentences;
-}
-
 function subPeriodSummary(row: ResolvedResult): string[] {
-  const label = row.period.key === 'first-half' ? 'First half' : 'Second half';
+  const label =
+    row.period.key === 'first-half'
+      ? 'First half'
+      : row.period.key === 'second-half'
+        ? 'Second half'
+        : 'Custom';
   const sentences = [
     `${label} window: ${row.period.start}–${row.period.end}, ${row.n} ${
       row.n === 1 ? 'season' : 'seasons'
@@ -428,14 +390,14 @@ function EnsoBlock({
   const rows: React.ReactNode[] = [];
   rows.push(
     <p key="head" className="muted">
-      Rank correlation between detrended {doc.region.label} DJF rainfall and the
+      Rank correlation between detrended {doc.region.label} {doc.season.code} {(metricById(doc.variable)?.label ?? doc.variable).toLowerCase()} and the
       CPC Oceanic Niño Index (ONI), from the pipeline&apos;s ENSO artifact.
     </p>,
   );
   if (!fullPeriod) {
     rows.push(
       <p key="window" className="muted small">
-        Full-period context: these ENSO statistics are not recalculated for half
+        Full-period context: these ENSO statistics are not recalculated for sub-period
         windows.
       </p>,
     );

@@ -18,6 +18,7 @@ export interface SlotSettings {
   variable: string;
   season: string;
   period: PeriodKey;
+  customRange?: [number, number];
 }
 
 export interface ComparisonSlot extends SlotSettings {
@@ -44,7 +45,11 @@ export type AddResult =
   | { ok: false; reason: 'duplicate' | 'full' };
 
 export function slotKey(regionId: string, settings: SlotSettings): string {
-  return `${regionId}|${settings.variable}|${settings.season}|${settings.period}`;
+  const range =
+    settings.period === 'custom' && settings.customRange
+      ? `|${settings.customRange[0]}-${settings.customRange[1]}`
+      : '';
+  return `${regionId}|${settings.variable}|${settings.season}|${settings.period}${range}`;
 }
 
 export function createSlot(input: {

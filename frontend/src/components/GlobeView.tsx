@@ -1,6 +1,6 @@
 import { mercatorRaster } from '../lib/globeRaster';
 import { useEffect, useRef, useState } from 'react';
-import { Map as MapLibreMap, setWorkerUrl } from 'maplibre-gl';
+import { Map as MapLibreMap, Marker, setWorkerUrl } from 'maplibre-gl';
 import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url';
 import type { GeoJSONSource, ImageSource, StyleSpecification } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -73,10 +73,17 @@ interface GlobeViewProps {
   onPickLocation?: (lon: number, lat: number, hitRegionId: string | null) => void;
   /** Currently picked coordinate for point marker and footprint display. */
   pickedPoint?: { lon: number; lat: number } | null;
+  /** Labelled DOM pin (Present mode). Carries data-anchor="globe-pin" so rings can target it. */
+  pin?: { lon: number; lat: number; label: string } | null;
   /** Width of the right-hand drawer in pixels (0 when closed). Used for safe-frame padding. */
   drawerWidth?: number;
   /** Global raster draped on the globe, e.g. one time-lapse frame. */
-  timelapseFrame?: { url: string; extent: [number, number, number, number]; significanceUrl?: string } | null;
+  timelapseFrame?: {
+    url: string;
+    extent: [number, number, number, number];
+    significanceUrl?: string;
+    focusPin?: { lon: number; lat: number; label: string } | null;
+  } | null;
 }
 
 /** Read the camera altitude above sea level (metres) without depending on internals. */
@@ -120,6 +127,7 @@ export default function GlobeView({
   onUserInteract,
   onPickLocation,
   pickedPoint,
+  pin = null,
   drawerWidth = 0,
   timelapseFrame = null,
 }: GlobeViewProps) {
@@ -342,6 +350,11 @@ export default function GlobeView({
     const map = mapRef.current;
     if (!map || !ready) return;
     let cancelled = false, raf = 0;
+    const active = Boolean(timelapseFrame);
+    if (map.getLayer('earth-raster')) {
+      map.setPaintProperty('earth-raster', 'raster-saturation', active ? -1 : 0);
+      map.setPaintProperty('earth-raster', 'raster-brightness-max', active ? 0.45 : 1);
+    }
     if (!timelapseFrame) {
       for (const id of ['frame-0','frame-1','frame-significance']) if (map.getLayer(id)) map.setPaintProperty(id,'raster-opacity',0);
       return;
@@ -366,8 +379,8 @@ export default function GlobeView({
         if(cancelled) return;
         // rAF timestamps can precede `start` slightly: clamp so opacity never goes below 0.
         const t = prefersReducedMotion() ? 1 : Math.max(0, Math.min(1,(now-start)/160));
-        map.setPaintProperty(id,'raster-opacity',0.85*t);
-        if(map.getLayer(oldId)) map.setPaintProperty(oldId,'raster-opacity',0.85*(1-t));
+        map.setPaintProperty(id,'raster-opacity',1*t);
+        if(map.getLayer(oldId)) map.setPaintProperty(oldId,'raster-opacity',1*(1-t));
         if(t<1) raf=requestAnimationFrame(animate);
         else rasterSlot.current=slot;
       };
@@ -380,12 +393,58 @@ export default function GlobeView({
         const id='frame-significance';
         const existing=map.getSource(id) as ImageSource | undefined;
         if(existing) existing.updateImage({url,coordinates});
-        else {map.addSource(id,{type:'image',url,coordinates});map.addLayer({id,type:'raster',source:id,paint:{'raster-opacity':0.85,'raster-fade-duration':0}});}
-        map.setPaintProperty(id,'raster-opacity',0.85);
+        else {map.addSource(id,{type:'image',url,coordinates});map.addLayer({id,type:'raster',source:id,paint:{'raster-opacity':0.5,'raster-resampling':'nearest','raster-fade-duration':0}});}
+        map.setPaintProperty(id,'raster-opacity',0.5);
+        map.setPaintProperty(id,'raster-resampling','nearest');
       }).catch(()=>{});
     } else if(map.getLayer('frame-significance')) map.setPaintProperty('frame-significance','raster-opacity',0);
     return () => {cancelled=true;cancelAnimationFrame(raf);};
   },[ready,frameUrl,significanceUrl]);
+
+  // Labelled Present-mode pin (a DOM marker, so Present rings can measure it).
+  const pinLon = pin?.lon;
+  const pinLat = pin?.lat;
+  const pinLabel = pin?.label;
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready || pinLon == null || pinLat == null || !pinLabel) return;
+    const el = document.createElement('div');
+    el.dataset.anchor = 'globe-pin';
+    el.style.cssText = 'display:flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;background:rgba(8,14,24,0.88);border:1px solid rgba(246,169,69,0.75);color:#f3f6fa;font:600 13px/1.2 system-ui,sans-serif;white-space:nowrap;pointer-events:none;box-shadow:0 4px 14px rgba(0,0,0,0.45);';
+    const dot = document.createElement('span');
+    dot.style.cssText = 'width:10px;height:10px;border-radius:50%;background:#f6a945;border:2px solid #fff;flex-shrink:0;';
+    const text = document.createElement('span');
+    text.textContent = pinLabel;
+    el.append(dot, text);
+    const marker = new Marker({ element: el, anchor: 'bottom', offset: [0, -6] })
+      .setLngLat([pinLon, pinLat])
+      .addTo(map);
+    return () => {
+      marker.remove();
+    };
+  }, [ready, pinLon, pinLat, pinLabel]);
+
+  // Focused region pin in impact mode.
+  const focusPinLon = timelapseFrame?.focusPin?.lon;
+  const focusPinLat = timelapseFrame?.focusPin?.lat;
+  const focusPinLabel = timelapseFrame?.focusPin?.label;
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready || focusPinLon == null || focusPinLat == null || !focusPinLabel) return;
+    const el = document.createElement('div');
+    el.style.cssText = 'display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:rgba(8,14,24,0.84);border:1px solid rgba(255,255,255,0.28);color:#f3f6fa;font:600 12px/1.2 system-ui,sans-serif;white-space:nowrap;pointer-events:none;box-shadow:0 4px 14px rgba(0,0,0,0.45);';
+    const dot = document.createElement('span');
+    dot.style.cssText = 'width:8px;height:8px;border-radius:50%;background:#f6a945;border:1.5px solid #fff;flex-shrink:0;';
+    const text = document.createElement('span');
+    text.textContent = focusPinLabel;
+    el.append(dot, text);
+    const marker = new Marker({ element: el, anchor: 'bottom', offset: [0, -4] })
+      .setLngLat([focusPinLon, focusPinLat])
+      .addTo(map);
+    return () => {
+      marker.remove();
+    };
+  }, [ready, focusPinLon, focusPinLat, focusPinLabel]);
 
   // Picked point marker and 1° cell footprint.
   useEffect(() => {

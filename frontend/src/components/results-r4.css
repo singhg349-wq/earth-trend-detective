@@ -15,3 +15,18 @@
 .r4-trend-verdict--neutral{color:var(--ed-text-2,#9ba7b6);border-color:var(--ed-line);background:rgba(255,255,255,0.03)}
 .r4-trend-verdict--subperiod{color:var(--ed-text-3,#6e7b8c);border-color:var(--ed-line)}
 .polar-cell-caution{display:flex;align-items:center;gap:8px;margin:10px 0;padding:6px 12px;background:rgba(220,163,95,0.12);border:1px solid rgba(220,163,95,0.35);border-radius:4px;font:500 12px/1.4 var(--ed-sans,system-ui);color:var(--ed-warn,#dca35f)}
+
+/* WhyCard */
+.why-card{margin:12px 0}
+.why-takeaway{font:italic 22px/1.35 Georgia,serif;margin:0 0 8px}
+.why-toggle{background:none;border:1px solid var(--ed-line,#536174);color:inherit;padding:4px 10px;cursor:pointer;font:inherit}
+.why-detail{margin-top:10px;padding:10px 12px;border-left:2px solid var(--ed-line,#536174)}
+.why-votes,.why-reasons{margin:0 0 8px;padding:0;list-style:none}
+.why-votes{display:flex;gap:8px;flex-wrap:wrap}
+.why-vote{border:1px solid var(--ed-line,#536174);padding:4px 8px;font-size:13px}
+.why-vote--pass{border-color:#5fb37c}.why-vote--fail{border-color:#d98a5f}
+.why-reasons li{margin:4px 0;line-height:1.5}
+.why-bar{width:100%;max-width:300px;display:block}
+.why-bar-label{font-size:9px;fill:currentColor;opacity:.75}
+.why-bar-noise{fill:#8a96a6;opacity:.6}.why-bar-signal{fill:#9ad5e4}.why-bar-zero{stroke:currentColor;opacity:.5}
+.why-steps{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
