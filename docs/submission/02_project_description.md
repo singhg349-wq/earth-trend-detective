@@ -6,7 +6,7 @@ Built for **2026 NASA Space Apps: *Be An Earth System Trend Detective!***, Trend
 
 ## How We Decide Whether a Trend Is Real
 
-A short noisy line on a chart proves nothing on its own. Every full-period record shows Sen's slope per decade, a 95% interval, a 3-lag Hamed–Rao autocorrelation-corrected Mann–Kendall p-value, and a classic Yue–Wang prewhitening sensitivity check in plain language. Every chart defines p-value as how unusual a trend this large would be if there were no real trend. Global trend overlays hatch false-discovery-rate significant cells at Benjamini–Hochberg `q = 0.10`. Sub-period slices (Option A Custom Year Range) display descriptive Sen slopes and means only, withholding p-values to prevent sub-period p-hacking.
+A short noisy line on a chart proves nothing on its own. Every full-period record shows Sen's slope per decade, a 95% interval, a 3-lag Hamed–Rao autocorrelation-corrected Mann–Kendall p-value, and a classic Yue–Wang prewhitening sensitivity check in plain language. Every chart defines p-value as how unusual a trend this large would be if there were no real trend. Global trend overlays hatch false-discovery-rate significant cells at Benjamini–Hochberg `q = 0.10`. Sub-period slices (Custom Year Range) display descriptive Sen slopes and means only, withholding p-values to prevent sub-period p-hacking.
 
 ## El Niño History & Composite Associations (No Forecasting)
 

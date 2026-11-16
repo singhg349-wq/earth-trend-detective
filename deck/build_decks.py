@@ -1105,7 +1105,7 @@ def build_deck(out_path: Path, morph: bool, blob_cache: dict, bg_plain: Path, bg
     tb_foot, tf = add_tb(s7, 290, 816, 860, 40)
     add_run(
         tf.paragraphs[0],
-        "Built with AI coding assistance. Trends are observed history; links are associations. Custom domain trendtrace.earth coming soon.",
+        "Team One · Gurshmeer Singh · Click Present (?present=1) on the live site for a guided interactive demo. Built with AI coding assistance.",
         10.2, FONT_SANS, HEX["white"], 68,
     )
 
